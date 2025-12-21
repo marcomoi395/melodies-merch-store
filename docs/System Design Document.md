@@ -72,16 +72,16 @@ Lưu trữ thông tin người mua hàng.
 **Table: `roles` (Vai trò)**
 
 | **Column Name** | **Data Type** | **Constraints**  | **Description**                                 |
-| --------------- | ------------- | ---------------- | ----------------------------------------------- |
-| `id`            | SERIAL        | PK               |                                                 |
+| --------------- |---------------| ---------------- | ----------------------------------------------- |
+| `id`            | UUID          | PK               |                                                 |
 | `name`          | VARCHAR(50)   | UNIQUE, NOT NULL | VD: 'Super Admin', 'Merchandiser', 'Warehouse'. |
 | `description`   | TEXT          |                  | Mô tả vai trò.                                  |
 
 **Table: `permissions` (Quyền hạn)**
 
 | **Column Name** | **Data Type** | **Constraints**  | **Description**                               |
-| --------------- | ------------- | ---------------- | --------------------------------------------- |
-| `id`            | SERIAL        | PK               |                                               |
+| --------------- |---------------| ---------------- | --------------------------------------------- |
+| `id`            | UUID          | PK               |                                               |
 | `slug`          | VARCHAR(100)  | UNIQUE, NOT NULL | VD: `product.create`, `order.view_sensitive`. |
 | `resource`      | VARCHAR(50)   |                  | VD: 'product', 'order'.                       |
 | `action`        | VARCHAR(50)   |                  | VD: 'create', 'read', 'update', 'delete'.     |
@@ -96,9 +96,9 @@ _Bảng trung gian để thực hiện quan hệ Many-to-Many._
 | `role_id`       | SERIAL        | FK -> `roles`   |
 
 | **Column Name** | **Data Type** | **Constraints**     |
-| --------------- | ------------- | ------------------- |
-| `role_id`       | SERIAL        | FK -> `roles`       |
-| `permission_id` | SERIAL        | FK -> `permissions` |
+| --------------- |--------------| ------------------- |
+| `role_id`       | UUID         | FK -> `roles`       |
+| `permission_id` | SERIAL       | FK -> `permissions` |
 
 ### Module Catalog (Sản phẩm & Nghệ sĩ)
 
@@ -119,8 +119,8 @@ _Bảng trung gian để thực hiện quan hệ Many-to-Many._
 **Table: `categories` (Danh mục)**
 
 | **Column Name** | **Data Type** | **Constraints**       | **Description**                |
-| --------------- | ------------- | --------------------- | ------------------------------ |
-| `id`            | SERIAL        | PK                    |                                |
+| --------------- |---------------| --------------------- | ------------------------------ |
+| `id`            | UUID          | PK                    |                                |
 | `name`          | VARCHAR(100)  | NOT NULL              | VD: V-Pop, Vinyl, Accessories. |
 | `slug`          | VARCHAR(100)  | UNIQUE                |                                |
 | `parent_id`     | INT           | FK -> `categories.id` | Hỗ trợ danh mục cha-con.       |
@@ -221,8 +221,8 @@ _Bảng trung gian để thực hiện quan hệ Many-to-Many._
 **Table: `discounts` (Mã giảm giá)**
 
 | **Column Name**       | **Data Type** | **Constraints**   | **Description**                                                       |
-| --------------------- | ------------- | ----------------- | --------------------------------------------------------------------- |
-| `id`                  | SERIAL        | PK                |                                                                       |
+| --------------------- |---------------| ----------------- | --------------------------------------------------------------------- |
+| `id`                  | UUID          | PK                |                                                                       |
 | `code`                | VARCHAR(50)   | UNIQUE, UPPERCASE | Mã nhập vào (VD: SALE50).                                             |
 | `type`                | VARCHAR(20)   |                   | 'percentage' (%) hoặc 'fixed_amount' (VND).                           |
 | `value`               | DECIMAL       | NOT NULL          | Giá trị giảm.                                                         |
@@ -249,9 +249,9 @@ _Bảng trung gian để thực hiện quan hệ Many-to-Many._
 **Table `discount_scopes` (Phạm vi áp dụng - Giải quyết vấn đề Sản phẩm)**
 
 | **Column Name** | **Data Type** | **Constraints**   | **Description**                |
-| --------------- | ------------- | ----------------- | ------------------------------ |
-| `id`            | SERIAL        | PK                |                                |
-| `discount_id`   | SERIAL        | FK -> `discounts` |                                |
+| --------------- |---------------| ----------------- | ------------------------------ |
+| `id`            | UUID          | PK                |                                |
+| `discount_id`   | UUID          | FK -> `discounts` |                                |
 | `type`          | VARCHAR(20)   | NOT NULL          | `'product'` hoặc `'category'`. |
 | `target_id`     | UUID          | NOT NULL          | ID của `products`.             |
 
@@ -274,8 +274,8 @@ Lưu log từ Payment Gateway để đối soát (Webhook).
 **Table: `posts` (Tin tức)**
 
 | **Column Name** | **Data Type** | **Constraints** | **Description**     |
-| --------------- | ------------- | --------------- | ------------------- |
-| `id`            | SERIAL        | PK              |                     |
+| --------------- |---------------| --------------- | ------------------- |
+| `id`            | UUID          | PK              |                     |
 | `title`         | VARCHAR(255)  | NOT NULL        |                     |
 | `slug`          | VARCHAR(255)  | UNIQUE          |                     |
 | `content`       | TEXT          |                 | Markdown hoặc HTML. |
