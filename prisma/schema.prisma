@@ -1,0 +1,324 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+    provider = "prisma-client"
+}
+
+datasource db {
+    provider = "postgresql"
+}
+
+model User {
+    id           String    @id @default(uuid()) @db.Uuid
+    email        String    @unique @db.VarChar(255)
+    passwordHash String?   @map("password_hash") @db.VarChar
+    fullName     String?   @map("full_name") @db.VarChar(100)
+    phone        String?   @db.VarChar(20)
+    provider     String?   @default("local") @db.VarChar(20)
+    createdAt    DateTime? @default(now()) @map("created_at") @db.Timestamp()
+    updatedAt    DateTime? @updatedAt @map("updated_at") @db.Timestamp()
+    isVerified   Boolean?  @default(false) @map("is_verified")
+
+    // Relations
+    userRoles      UserRole[]
+    carts          Cart[]
+    orders         Order[]
+    discountUsages DiscountUsage[]
+    posts          Post[]
+    auditLogs      AuditLog[]
+
+    @@map("users")
+}
+
+model Role {
+    id          String  @id @default(uuid()) @db.Uuid
+    name        String  @unique @db.VarChar(50)
+    description String? @db.Text
+
+    // Relations
+    userRoles       UserRole[]
+    rolePermissions RolePermission[]
+
+    @@map("roles")
+}
+
+model Permission {
+    id       String  @id @default(uuid()) @db.Uuid
+    name     String  @unique @db.VarChar(100)
+    resource String? @db.VarChar(50)
+    action   String? @db.VarChar(50)
+
+    // Relations
+    rolePermissions RolePermission[]
+
+    @@map("permissions")
+}
+
+model UserRole {
+    userId String @map("user_id") @db.Uuid
+    roleId String @map("role_id") @db.Uuid
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+    @@id([userId, roleId])
+    @@map("user_roles")
+}
+
+model RolePermission {
+    roleId       String @map("role_id") @db.Uuid
+    permissionId String @map("permission_id") @db.Uuid
+
+    role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+    permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+    @@id([roleId, permissionId])
+    @@map("role_permissions")
+}
+
+model Artist {
+    id        String    @id @default(uuid()) @db.Uuid
+    stageName String    @map("stage_name") @db.VarChar(255)
+    slug      String    @unique @db.VarChar(255)
+    bio       String?   @db.Text
+    avatarUrl String?   @map("avatar_url") @db.VarChar
+    metadata  Json?     @db.JsonB
+    status    String?   @default("active") @db.VarChar(20)
+    deletedAt DateTime? @map("deleted_at") @db.Timestamp()
+
+    // Relations
+    productArtists ProductArtist[]
+
+    @@map("artists")
+}
+
+model Category {
+    id       String  @id @default(uuid()) @db.Uuid
+    name     String  @db.VarChar(100)
+    slug     String? @unique @db.VarChar(100)
+    parentId String? @map("parent_id") @db.Uuid
+
+    parent   Category?  @relation("CategoryToCategory", fields: [parentId], references: [id], onDelete: SetNull)
+    children Category[] @relation("CategoryToCategory")
+
+    products Product[]
+
+    @@map("categories")
+}
+
+model Product {
+    id               String    @id @default(uuid()) @db.Uuid
+    name             String    @db.VarChar(255)
+    slug             String?   @unique @db.VarChar(255)
+    description      String?   @db.Text
+    shortDescription String?   @map("short_description") @db.Text
+    categoryId       String?   @map("category_id") @db.Uuid
+    productType      String    @map("product_type") @db.VarChar(20)
+    status           String?   @default("draft") @db.VarChar(20)
+    tracklist        Json?     @db.JsonB
+    mediaGallery     Json?     @map("media_gallery") @db.JsonB
+    deletedAt        DateTime? @map("deleted_at") @db.Timestamp()
+
+    // Xóa Category -> Product giữ nguyên nhưng set category_id = NULL
+    category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+    // Relations
+    productArtists  ProductArtist[]
+    productVariants ProductVariant[]
+    cartItems       CartItem[]
+    orderItems      OrderItem[]
+
+    @@map("products")
+}
+
+model ProductArtist {
+    productId String @map("product_id") @db.Uuid
+    artistId  String @map("artist_id") @db.Uuid
+
+    product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+    artist  Artist  @relation(fields: [artistId], references: [id], onDelete: Cascade)
+
+    @@id([productId, artistId])
+    @@map("product_artists")
+}
+
+model ProductVariant {
+    id              String   @id @default(uuid()) @db.Uuid
+    productId       String?  @map("product_id") @db.Uuid
+    sku             String   @unique @db.VarChar(50)
+    name            String   @db.VarChar(100)
+    originalPrice   Decimal  @map("original_price") @db.Decimal(15, 2)
+    discountPercent Decimal? @default(0) @map("discount_percent") @db.Decimal(15, 2)
+    stockQuantity   Int?     @default(0) @map("stock_quantity")
+    attributes      Json?    @db.JsonB
+    isPreorder      Boolean? @default(false) @map("is_preorder")
+
+    product Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+    // Relations
+    cartItems  CartItem[]
+    orderItems OrderItem[]
+
+    @@map("product_variants")
+}
+
+model Cart {
+    id        String    @id @default(uuid()) @db.Uuid
+    userId    String?   @map("user_id") @db.Uuid
+    createdAt DateTime? @map("created_at") @db.Timestamp()
+
+    user      User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    cartItems CartItem[]
+
+    @@map("carts")
+}
+
+model CartItem {
+    id               String  @id @default(uuid()) @db.Uuid
+    cartId           String? @map("cart_id") @db.Uuid
+    productId        String? @map("product_id") @db.Uuid
+    productVariantId String? @map("product_variant_id") @db.Uuid
+    quantity         Int?    @default(1)
+
+    cart           Cart?           @relation(fields: [cartId], references: [id], onDelete: Cascade)
+    product        Product?        @relation(fields: [productId], references: [id], onDelete: Cascade)
+    productVariant ProductVariant? @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
+
+    @@unique([cartId, productId, productVariantId])
+    @@map("cart_items")
+}
+
+model Order {
+    id              String    @id @default(uuid()) @db.Uuid
+    userId          String?   @map("user_id") @db.Uuid
+    email           String?   @db.VarChar(255)
+    fullName        String?   @map("full_name") @db.VarChar(100)
+    phone           String?   @db.VarChar(20)
+    status          String?   @default("PENDING") @db.VarChar(20)
+    subtotal        Decimal   @db.Decimal
+    shippingFee     Decimal   @map("shipping_fee") @db.Decimal
+    discountAmount  Decimal?  @default(0) @map("discount_amount") @db.Decimal
+    totalAmount     Decimal   @map("total_amount") @db.Decimal
+    currency        String?   @default("VND") @db.VarChar(20)
+    appliedVoucher  String?   @map("applied_voucher") @db.VarChar
+    shippingAddress Json      @map("shipping_address") @db.JsonB
+    trackingCode    String?   @map("tracking_code") @db.VarChar(50)
+    note            String?   @db.Text
+    paymentMethod   String?   @map("payment_method") @db.VarChar(20)
+    createdAt       DateTime? @map("created_at") @db.Timestamp()
+
+    // Thường E-commerce sẽ giữ lại data setNull để report 
+    user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+    // Relations
+    orderItems     OrderItem[]
+    discountUsages DiscountUsage[]
+    transactions   Transaction[]
+
+    @@map("orders")
+}
+
+model OrderItem {
+    id                 String  @id @default(uuid()) @db.Uuid
+    orderId            String? @map("order_id") @db.Uuid
+    productId          String? @map("product_id") @db.Uuid
+    productVariantId   String? @map("product_variant_id") @db.Uuid
+    productName        String  @map("product_name") @db.VarChar
+    variantName        String  @map("variant_name") @db.VarChar
+    quantity           Int
+    price              Decimal @db.Decimal
+    originalPrice      Decimal @map("original_price") @db.Decimal
+    discountPercentage Decimal @map("discount_percentage") @db.Decimal
+    totalLinePrice     Decimal @map("total_line_price") @db.Decimal
+
+    order Order? @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+    // KHÔNG được xóa OrderItem để giữ lịch sử đơn hàng. 
+    product        Product?        @relation(fields: [productId], references: [id], onDelete: SetNull)
+    productVariant ProductVariant? @relation(fields: [productVariantId], references: [id], onDelete: SetNull)
+
+    @@map("order_items")
+}
+
+model Discount {
+    id         String    @id @default(uuid()) @db.Uuid
+    code       String?   @unique @db.VarChar(50)
+    type       String?   @db.VarChar(20)
+    value      Decimal   @db.Decimal
+    startDate  DateTime? @map("start_date") @db.Timestamp()
+    endDate    DateTime? @map("end_date") @db.Timestamp()
+    usageLimit Int?      @map("usage_limit")
+    usedCount  Int?      @default(0) @map("used_count")
+    isActive   Boolean?  @default(true) @map("is_active")
+    appliesTo  String?   @default("all") @map("applies_to") @db.VarChar(20)
+
+    // Relations
+    discountUsages DiscountUsage[]
+
+    @@map("discounts")
+}
+
+model DiscountUsage {
+    id         String    @id @default(uuid()) @db.Uuid
+    discountId String?   @map("discount_id") @db.Uuid
+    userId     String?   @map("user_id") @db.Uuid
+    orderId    String?   @map("order_id") @db.Uuid
+    usedAt     DateTime? @default(now()) @map("used_at") @db.Timestamp()
+
+    // Xóa Discount -> SetNull (giữ lịch sử)
+    discount Discount? @relation(fields: [discountId], references: [id], onDelete: SetNull)
+    user     User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    order    Order?    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+    @@map("discount_usages")
+}
+
+model Transaction {
+    id                   String   @id @default(uuid()) @db.Uuid
+    orderId              String?  @map("order_id") @db.Uuid
+    type                 String?  @db.VarChar
+    provider             String?  @db.VarChar
+    gatewayTransactionId String?  @map("gateway_transaction_id") @db.VarChar
+    amount               Decimal? @db.Decimal
+    status               String?  @db.VarChar
+    rawResponse          Json?    @map("raw_response") @db.JsonB
+
+    order Order? @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+    @@map("transactions")
+}
+
+model Post {
+    id          String    @id @default(uuid()) @db.Uuid
+    title       String    @db.VarChar(255)
+    slug        String?   @unique @db.VarChar(255)
+    content     String?   @db.Text
+    authorId    String?   @map("author_id") @db.Uuid
+    publishedAt DateTime? @map("published_at") @db.Timestamp()
+    isPublished Boolean?  @map("is_pulished")
+
+    author User? @relation(fields: [authorId], references: [id], onDelete: SetNull)
+
+    @@map("posts")
+}
+
+model AuditLog {
+    id         String    @id @default(uuid()) @db.Uuid
+    actorId    String?   @map("actor_id") @db.Uuid
+    action     String    @db.VarChar(50)
+    resource   String    @db.VarChar(50)
+    resourceId String?   @map("resource_id") @db.VarChar
+    oldData    Json?     @map("old_data") @db.JsonB
+    newData    Json?     @map("new_data") @db.JsonB
+    ipAddress  String?   @map("ip_address") @db.VarChar(45)
+    userAgent  String?   @map("user_agent") @db.Text
+    createdAt  DateTime? @default(now()) @map("created_at") @db.Timestamp()
+
+    actor User? @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+    @@map("audit_logs")
+}
