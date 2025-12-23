@@ -21,6 +21,7 @@ model User {
     provider     String?   @default("local") @db.VarChar(20)
     createdAt    DateTime? @default(now()) @map("created_at") @db.Timestamp()
     updatedAt    DateTime? @updatedAt @map("updated_at") @db.Timestamp()
+    status       String?   @default("active") @db.VarChar(20)
     isVerified   Boolean?  @default(false) @map("is_verified")
 
     // Relations
