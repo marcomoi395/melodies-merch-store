@@ -1,15 +1,18 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Inject, Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
-import { JwtService } from '@nestjs/jwt';
+import { v4 } from 'uuid';
 import { IRegisterUser } from './auth.interface';
+import Redis from 'ioredis';
 
 @Injectable()
 export class AuthService {
     constructor(
+        @Inject('REDIS_CLIENT') private readonly redis: Redis,
         private prisma: PrismaService,
         private user: UserService,
         private jwt: JwtService,
@@ -51,10 +54,13 @@ export class AuthService {
         return null;
     }
 
-    login(user: User) {
-        const payload: { sub: string; email: string } = {
+    async login(user: User) {
+        const tokenId = v4();
+
+        const payload: { sub: string; email: string; jti: string } = {
             sub: user.id,
             email: user.email,
+            jti: tokenId,
         };
 
         const accessToken = this.jwt.sign(payload, {
@@ -63,6 +69,12 @@ export class AuthService {
         const refreshToken = this.jwt.sign(payload, {
             expiresIn: '7d',
         });
+
+        // Save the refresh token to redis
+        const key = `whitelist:${user.id}:${tokenId}`;
+        const ttl = 7 * 24 * 60 * 60;
+
+        await this.redis.set(key, refreshToken, 'EX', ttl);
 
         return {
             accessToken,

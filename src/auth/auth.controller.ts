@@ -23,8 +23,8 @@ export class AuthController {
     @UseGuards(AuthGuard('local'))
     @HttpCode(200)
     @Post('login')
-    login(@Req() req: Request & { user: User }) {
-        const data = this.authService.login(req.user);
+    async login(@Req() req: Request & { user: User }) {
+        const data = await this.authService.login(req.user);
         return {
             statusCode: 200,
             message: 'Login successful',
