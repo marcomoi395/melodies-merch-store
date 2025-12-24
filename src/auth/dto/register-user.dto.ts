@@ -12,3 +12,8 @@ export class RegisterUserDto {
     @IsNotEmpty()
     fullName: string;
 }
+
+export class LogoutDto {
+    @IsNotEmpty()
+    refreshToken: string;
+}
