@@ -1,4 +1,4 @@
-import { ConflictException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
@@ -6,7 +6,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 import { v4 } from 'uuid';
-import { IRegisterUser } from './auth.interface';
+import { IJwtPayload, IRegisterUser } from './auth.interface';
 import Redis from 'ioredis';
 
 @Injectable()
@@ -57,7 +57,7 @@ export class AuthService {
     async login(user: User) {
         const tokenId = v4();
 
-        const payload: { sub: string; email: string; jti: string } = {
+        const payload: IJwtPayload = {
             sub: user.id,
             email: user.email,
             jti: tokenId,
@@ -81,5 +81,23 @@ export class AuthService {
             refreshToken,
             user,
         };
+    }
+
+    async logout(refreshToken: string, userId: string) {
+        try {
+            const decode: IJwtPayload = this.jwt.verify(refreshToken);
+
+            if (userId !== decode.sub) {
+                throw new BadRequestException('Invalid token for user');
+            }
+
+            const key = `whitelist:${decode.sub}:${decode.jti}`;
+            await this.redis.del(key);
+        } catch (error) {
+            if (error instanceof BadRequestException) {
+                throw error;
+            }
+            throw new BadRequestException('Invalid refresh token');
+        }
     }
 }

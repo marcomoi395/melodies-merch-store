@@ -1,9 +1,18 @@
-import { Body, Controller, HttpCode, Post, Req, UseGuards } from '@nestjs/common';
+import {
+    BadRequestException,
+    Body,
+    Controller,
+    HttpCode,
+    Post,
+    Req,
+    UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from '@prisma/client';
 import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { Request } from 'express';
+import { IJwtPayload } from './auth.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -29,6 +38,24 @@ export class AuthController {
             statusCode: 200,
             message: 'Login successful',
             data,
+        };
+    }
+
+    @UseGuards(AuthGuard('jwt'))
+    @HttpCode(200)
+    @Post('logout')
+    async logout(@Req() req: Request & { user: IJwtPayload }) {
+        const refreshToken = req.header('x-refresh-token');
+
+        if (!refreshToken) {
+            throw new BadRequestException('Refresh token is required in header');
+        }
+
+        await this.authService.logout(refreshToken, req.user.sub);
+
+        return {
+            statusCode: 200,
+            message: 'Logout successful',
         };
     }
 }
