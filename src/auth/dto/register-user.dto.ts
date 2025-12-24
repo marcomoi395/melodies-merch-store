@@ -13,7 +13,7 @@ export class RegisterUserDto {
     fullName: string;
 }
 
-export class LogoutDto {
+export class RefreshTokenDto {
     @IsNotEmpty()
     refreshToken: string;
 }

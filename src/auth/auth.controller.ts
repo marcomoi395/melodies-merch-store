@@ -2,7 +2,7 @@ import { Body, Controller, HttpCode, Post, Req, UseGuards } from '@nestjs/common
 import { AuthGuard } from '@nestjs/passport';
 import { User } from '@prisma/client';
 import { AuthService } from './auth.service';
-import { LogoutDto, RegisterUserDto } from './dto/register-user.dto';
+import { RefreshTokenDto, RegisterUserDto } from './dto/register-user.dto';
 import { Request } from 'express';
 import { IJwtPayload } from './auth.interface';
 
@@ -36,12 +36,24 @@ export class AuthController {
     @UseGuards(AuthGuard('jwt'))
     @HttpCode(200)
     @Post('logout')
-    async logout(@Req() req: Request & { user: IJwtPayload }, @Body() payload: LogoutDto) {
+    async logout(@Req() req: Request & { user: IJwtPayload }, @Body() payload: RefreshTokenDto) {
         await this.authService.logout(payload.refreshToken, req.user.sub);
 
         return {
             statusCode: 200,
             message: 'Logout successful',
+        };
+    }
+
+    @HttpCode(200)
+    @Post('refresh')
+    async refreshTokens(@Body() payload: RefreshTokenDto) {
+        const data = await this.authService.refreshTokens(payload.refreshToken);
+
+        return {
+            statusCode: 200,
+            message: 'Tokens refreshed successfully',
+            data,
         };
     }
 }
