@@ -122,9 +122,12 @@ model Product {
     categoryId       String?   @map("category_id") @db.Uuid
     productType      String    @map("product_type") @db.VarChar(20)
     status           String?   @default("draft") @db.VarChar(20)
+    minPrice         Decimal?  @map("min_price") @db.Decimal(12, 2)
     tracklist        Json?     @db.JsonB
     mediaGallery     Json?     @map("media_gallery") @db.JsonB
     deletedAt        DateTime? @map("deleted_at") @db.Timestamp()
+    createdAt        DateTime  @default(now()) @map("created_at")
+    updatedAt        DateTime  @updatedAt @map("updated_at")
 
     // Xóa Category -> Product giữ nguyên nhưng set category_id = NULL
     category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
@@ -173,6 +176,7 @@ model Cart {
     id        String    @id @default(uuid()) @db.Uuid
     userId    String?   @map("user_id") @db.Uuid
     createdAt DateTime? @map("created_at") @db.Timestamp()
+    updatedAt DateTime  @updatedAt @map("updated_at")
 
     user      User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
     cartItems CartItem[]
@@ -213,6 +217,7 @@ model Order {
     note            String?   @db.Text
     paymentMethod   String?   @map("payment_method") @db.VarChar(20)
     createdAt       DateTime? @map("created_at") @db.Timestamp()
+    updatedAt       DateTime  @updatedAt @map("updated_at")
 
     // Thường E-commerce sẽ giữ lại data setNull để report 
     user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
@@ -258,6 +263,8 @@ model Discount {
     usedCount  Int?      @default(0) @map("used_count")
     isActive   Boolean?  @default(true) @map("is_active")
     appliesTo  String?   @default("all") @map("applies_to") @db.VarChar(20)
+    createdAt  DateTime? @map("created_at") @db.Timestamp()
+    updatedAt  DateTime  @updatedAt @map("updated_at")
 
     // Relations
     discountUsages DiscountUsage[]
@@ -281,14 +288,16 @@ model DiscountUsage {
 }
 
 model Transaction {
-    id                   String   @id @default(uuid()) @db.Uuid
-    orderId              String?  @map("order_id") @db.Uuid
-    type                 String?  @db.VarChar
-    provider             String?  @db.VarChar
-    gatewayTransactionId String?  @map("gateway_transaction_id") @db.VarChar
-    amount               Decimal? @db.Decimal
-    status               String?  @db.VarChar
-    rawResponse          Json?    @map("raw_response") @db.JsonB
+    id                   String    @id @default(uuid()) @db.Uuid
+    orderId              String?   @map("order_id") @db.Uuid
+    type                 String?   @db.VarChar
+    provider             String?   @db.VarChar
+    gatewayTransactionId String?   @map("gateway_transaction_id") @db.VarChar
+    amount               Decimal?  @db.Decimal
+    status               String?   @db.VarChar
+    rawResponse          Json?     @map("raw_response") @db.JsonB
+    createdAt            DateTime? @map("created_at") @db.Timestamp()
+    updatedAt            DateTime  @updatedAt @map("updated_at")
 
     order Order? @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
@@ -303,6 +312,8 @@ model Post {
     authorId    String?   @map("author_id") @db.Uuid
     publishedAt DateTime? @map("published_at") @db.Timestamp()
     isPublished Boolean?  @map("is_pulished")
+    createdAt   DateTime? @map("created_at") @db.Timestamp()
+    updatedAt   DateTime  @updatedAt @map("updated_at")
 
     author User? @relation(fields: [authorId], references: [id], onDelete: SetNull)
 
@@ -319,7 +330,8 @@ model AuditLog {
     newData    Json?     @map("new_data") @db.JsonB
     ipAddress  String?   @map("ip_address") @db.VarChar(45)
     userAgent  String?   @map("user_agent") @db.Text
-    createdAt  DateTime? @default(now()) @map("created_at") @db.Timestamp()
+    createdAt  DateTime? @map("created_at") @db.Timestamp()
+    updatedAt  DateTime  @updatedAt @map("updated_at")
 
     actor User? @relation(fields: [actorId], references: [id], onDelete: SetNull)
 

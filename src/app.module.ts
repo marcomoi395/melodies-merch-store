@@ -7,6 +7,7 @@ import { RedisModule } from './redis/redis.module';
 import Joi from 'joi';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { ProductsModule } from './products/products.module';
 
 @Module({
     imports: [
@@ -50,6 +51,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
         AuthModule,
         RedisModule,
         UserModule,
+        ProductsModule,
     ],
 })
 export class AppModule {}
