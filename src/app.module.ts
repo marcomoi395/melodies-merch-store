@@ -8,6 +8,7 @@ import Joi from 'joi';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { ProductsModule } from './products/products.module';
+import { ArtistsModule } from './artists/artists.module';
 
 @Module({
     imports: [
@@ -52,6 +53,7 @@ import { ProductsModule } from './products/products.module';
         RedisModule,
         UserModule,
         ProductsModule,
+        ArtistsModule,
     ],
 })
 export class AppModule {}

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GetProductsDto } from './dto/get-products.dto';
 import { Prisma, Product, ProductVariant } from 'generated/prisma/browser';
@@ -7,7 +7,7 @@ import { Prisma, Product, ProductVariant } from 'generated/prisma/browser';
 export class ProductsService {
     constructor(private prisma: PrismaService) {}
 
-    async findAll(query: GetProductsDto) {
+    async getProducts(query: GetProductsDto) {
         const {
             artistId,
             keyword,
@@ -91,6 +91,7 @@ export class ProductsService {
                 include: {
                     productVariants: true,
                     category: true,
+                    productArtists: true,
                 },
             }),
         ]);
@@ -119,5 +120,22 @@ export class ProductsService {
                 totalItems: total,
             },
         };
+    }
+
+    async getProductDetail(id: string) {
+        const result = await this.prisma.product.findUnique({
+            where: { id },
+            include: {
+                productVariants: true,
+                category: true,
+                productArtists: true,
+            },
+        });
+
+        if (!result) {
+            throw new NotFoundException('Product not found');
+        }
+
+        return result;
     }
 }
