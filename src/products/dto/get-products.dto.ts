@@ -18,13 +18,13 @@ export class GetProductsDto {
     @IsNumber()
     @Type(() => Number)
     @Min(1)
-    limit?: number = 20;
+    limit?: number;
 
     @IsOptional()
     @IsNumber()
     @Type(() => Number)
     @Min(1)
-    page?: number = 1;
+    page?: number;
 
     @IsOptional()
     @IsNumber()
