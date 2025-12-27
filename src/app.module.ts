@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { PrismaModule } from './prisma/prisma.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { RedisModule } from './redis/redis.module';
 import Joi from 'joi';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
     imports: [
@@ -22,6 +23,24 @@ import Joi from 'joi';
                 allowUnknown: true,
                 abortEarly: false,
             },
+        }),
+        MailerModule.forRootAsync({
+            imports: [ConfigModule],
+            useFactory: (config: ConfigService) => ({
+                transport: {
+                    host: 'smtp.gmail.com',
+                    port: 587,
+                    secure: false,
+                    auth: {
+                        user: config.get('MAIL_USER'),
+                        pass: config.get('MAIL_PASS'),
+                    },
+                },
+                defaults: {
+                    from: '"No Reply" <noreply@example.com>',
+                },
+            }),
+            inject: [ConfigService],
         }),
         AuthModule,
         RedisModule,
