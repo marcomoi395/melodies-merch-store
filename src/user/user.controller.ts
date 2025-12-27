@@ -3,6 +3,7 @@ import { UserService } from './user.service';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { IJwtPayload } from 'src/auth/auth.interface';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Controller('user')
 export class UserController {
@@ -14,7 +15,7 @@ export class UserController {
     async getUserProfile(@Req() req: Request & { user: IJwtPayload }) {
         return {
             statusCode: 200,
-            messagfe: 'User profile fetched successfully',
+            message: 'User profile fetched successfully',
             data: await this.userService.getUserProfile(req.user.sub),
         };
     }
@@ -28,8 +29,22 @@ export class UserController {
     ) {
         return {
             statusCode: 200,
-            messagfe: 'Update profile info successfully',
+            message: 'Update profile info successfully',
             data: await this.userService.updateProfileInfo(req.user.sub, payload),
+        };
+    }
+
+    @Patch('change-password')
+    @UseGuards(AuthGuard('jwt'))
+    @HttpCode(200)
+    async changePassword(
+        @Req() req: Request & { user: IJwtPayload },
+        @Body() payload: ChangePasswordDto,
+    ) {
+        return {
+            statusCode: 200,
+            message: 'Password changed successfully',
+            data: await this.userService.changePassword(req.user.sub, payload),
         };
     }
 }
