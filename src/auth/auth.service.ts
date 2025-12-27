@@ -1,3 +1,4 @@
+import { MailerService } from '@nestjs-modules/mailer';
 import {
     BadRequestException,
     ConflictException,
@@ -5,11 +6,13 @@ import {
     Inject,
     Injectable,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { User } from 'generated/prisma/browser';
 import Redis from 'ioredis';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { generateRandomToken } from 'src/shared/helper/generateRandomToken';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 import { v4 } from 'uuid';
@@ -22,10 +25,12 @@ export class AuthService {
         private prisma: PrismaService,
         private user: UserService,
         private jwt: JwtService,
+        private config: ConfigService,
+        private mailer: MailerService,
     ) {}
 
     async registerUserForClient(payload: IRegisterUser): Promise<User> {
-        const findUser = await this.user.findOneByEmail(payload.email);
+        const findUser = await this.user.getUser(payload.email);
         if (findUser) {
             throw new ConflictException('User with this email already exists');
         }
@@ -45,7 +50,7 @@ export class AuthService {
     }
 
     async validateUser(email: string, password: string): Promise<User | null> {
-        const findUser = await this.user.findOneByEmail(email);
+        const findUser = await this.user.getUser(email);
         if (!findUser || !findUser.passwordHash) {
             return null;
         }
@@ -168,5 +173,61 @@ export class AuthService {
             }
             throw new BadRequestException('Invalid refresh token');
         }
+    }
+
+    async requestPasswordReset(email: string) {
+        const user = await this.user.getUser(email);
+
+        if (!user) {
+            throw new BadRequestException('User with this email does not exist');
+        }
+
+        const token = generateRandomToken();
+        const key = `reset_password:${token}`;
+
+        const limitKey = `reset_password_limit:${user.id}`;
+        const isAllowed = await this.redis.set(limitKey, '1', 'EX', 60, 'NX');
+
+        if (!isAllowed) {
+            const ttl = await this.redis.ttl(limitKey);
+            throw new BadRequestException(
+                `You can request another password reset email in ${ttl} seconds`,
+            );
+        }
+
+        const host = this.config.get<string>('API_URL');
+        const url = `${host}/api/auth/reset-password?token=${token}`;
+
+        // Save token to Redis with expiration (15 minutes)
+        await this.redis.set(key, user.id, 'EX', 15 * 60);
+
+        await this.mailer.sendMail({
+            to: email,
+            subject: 'Đặt lại mật khẩu Melodies Merch Store',
+            template: './reset-password',
+            context: {
+                url,
+            },
+        });
+    }
+
+    async resetPassword(token: string, newPassword: string) {
+        const key = `reset_password:${token}`;
+
+        const userId = await this.redis.get(key);
+
+        if (!userId) {
+            throw new BadRequestException('Invalid or expired password reset token');
+        }
+
+        const passwordHash = await bcrypt.hash(newPassword, 10);
+
+        // Remove the key from Redis after successful verification
+        await this.redis.del(key);
+
+        await this.prisma.user.update({
+            where: { id: userId },
+            data: { passwordHash },
+        });
     }
 }

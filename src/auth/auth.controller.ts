@@ -5,6 +5,8 @@ import { User } from 'generated/prisma/browser';
 import { IJwtPayload } from './auth.interface';
 import { AuthService } from './auth.service';
 import { RefreshTokenDto, RegisterUserDto } from './dto/register-user.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -54,6 +56,27 @@ export class AuthController {
             statusCode: 200,
             message: 'Tokens refreshed successfully',
             data,
+        };
+    }
+
+    @Post('forgot-password')
+    @HttpCode(200)
+    async forgotPassword(@Body() body: ForgotPasswordDto) {
+        await this.authService.requestPasswordReset(body.email);
+        return {
+            statusCode: 200,
+            message: 'Password reset email sent successfully',
+        };
+    }
+
+    @Post('reset-password')
+    @HttpCode(200)
+    async resetPassword(@Body() body: ResetPasswordDto) {
+        await this.authService.resetPassword(body.token, body.newPassword);
+
+        return {
+            statusCode: 200,
+            message: 'Password reset successfully',
         };
     }
 }

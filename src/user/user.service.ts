@@ -1,14 +1,14 @@
+import { MailerService } from '@nestjs-modules/mailer';
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import * as bcrypt from 'bcryptjs';
 import { User } from 'generated/prisma/browser';
+import Redis from 'ioredis';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { generateRandomToken } from 'src/shared/helper/generateRandomToken';
+import { ChangePasswordDto } from './dto/change-password.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entity';
-import { ChangePasswordDto } from './dto/change-password.dto';
-import * as bcrypt from 'bcryptjs';
-import { MailerService } from '@nestjs-modules/mailer';
-import { ConfigService } from '@nestjs/config';
-import Redis from 'ioredis';
-import * as crypto from 'crypto';
 
 @Injectable()
 export class UserService {
@@ -19,7 +19,7 @@ export class UserService {
         @Inject('REDIS_CLIENT') private readonly redis: Redis,
     ) {}
 
-    async findOneByEmail(email: string): Promise<User | null> {
+    async getUserWithRole(email: string): Promise<User | null> {
         return await this.prisma.user.findUnique({
             where: { email: email },
             include: {
@@ -30,6 +30,10 @@ export class UserService {
                 },
             },
         });
+    }
+
+    async getUser(email: string) {
+        return await this.prisma.user.findUnique({ where: { email } });
     }
 
     async getUserProfile(userId: string) {
@@ -91,13 +95,13 @@ export class UserService {
 
         const ttl = await this.redis.ttl(key);
 
-        if (ttl > 13 * 60) {
+        if (ttl > 14 * 60) {
             throw new BadRequestException(
                 "You can't request another verification email yet. Please try again later.",
             );
         }
 
-        const token = this.generateRandomToken();
+        const token = generateRandomToken();
         const host = this.config.get<string>('API_URL');
         const url = `${host}/api/user/verify-account?userId=${userId}&token=${token}`;
 
@@ -130,9 +134,5 @@ export class UserService {
             where: { id: userId },
             data: { isVerified: true },
         });
-    }
-
-    private generateRandomToken(): string {
-        return crypto.randomBytes(32).toString('hex');
     }
 }
