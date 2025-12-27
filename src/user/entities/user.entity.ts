@@ -1,5 +1,5 @@
-import { User } from '@prisma/client';
 import { Exclude } from 'class-transformer';
+import { User } from 'generated/prisma/browser';
 
 export class UserEntity {
     id: string;
@@ -9,6 +9,7 @@ export class UserEntity {
     passwordHash: string | null;
     fullName: string | null;
     phone: string | null;
+    avatarUrl: string | null;
     provider: string | null;
     isVerified: boolean | null;
     status: string | null;

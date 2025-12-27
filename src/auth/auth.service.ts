@@ -6,14 +6,14 @@ import {
     Injectable,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
+import { User } from 'generated/prisma/browser';
+import Redis from 'ioredis';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 import { v4 } from 'uuid';
 import { IJwtPayload, IRegisterUser } from './auth.interface';
-import Redis from 'ioredis';
 
 @Injectable()
 export class AuthService {

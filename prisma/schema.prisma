@@ -6,6 +6,7 @@
 
 generator client {
     provider = "prisma-client"
+    output   = "../generated/prisma"
 }
 
 datasource db {
@@ -18,6 +19,7 @@ model User {
     passwordHash String?   @map("password_hash") @db.VarChar
     fullName     String?   @map("full_name") @db.VarChar(100)
     phone        String?   @db.VarChar(20)
+    avatarUrl    String?   @map("avatar_url") @db.VarChar(255)
     provider     String?   @default("local") @db.VarChar(20)
     createdAt    DateTime? @default(now()) @map("created_at") @db.Timestamp()
     updatedAt    DateTime? @updatedAt @map("updated_at") @db.Timestamp()
