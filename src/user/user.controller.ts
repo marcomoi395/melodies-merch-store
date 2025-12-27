@@ -1,9 +1,10 @@
-import { Body, Controller, Get, HttpCode, Patch, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Patch, Query, Req, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { IJwtPayload } from 'src/auth/auth.interface';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { VerificationTokenDto } from './dto/verification-token.dto';
 
 @Controller('user')
 export class UserController {
@@ -45,6 +46,28 @@ export class UserController {
             statusCode: 200,
             message: 'Password changed successfully',
             data: await this.userService.changePassword(req.user.sub, payload),
+        };
+    }
+
+    @Get('request-verification-email')
+    @UseGuards(AuthGuard('jwt'))
+    @HttpCode(200)
+    async requestVerificationEmail(@Req() req: Request & { user: IJwtPayload }) {
+        await this.userService.requestVerificationEmail(req.user.sub, req.user.email);
+        return {
+            statusCode: 200,
+            message: 'Verification email sent successfully',
+        };
+    }
+
+    @Get('verify-account')
+    @HttpCode(200)
+    async verificationToken(@Query() payload: VerificationTokenDto) {
+        await this.userService.verificationToken(payload.userId, payload.token);
+
+        return {
+            statusCode: 200,
+            message: 'Account verified successfully',
         };
     }
 }

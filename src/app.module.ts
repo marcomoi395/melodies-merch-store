@@ -6,6 +6,7 @@ import { UserModule } from './user/user.module';
 import { RedisModule } from './redis/redis.module';
 import Joi from 'joi';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 
 @Module({
     imports: [
@@ -36,8 +37,12 @@ import { MailerModule } from '@nestjs-modules/mailer';
                         pass: config.get('MAIL_PASS'),
                     },
                 },
-                defaults: {
-                    from: '"No Reply" <noreply@example.com>',
+                template: {
+                    dir: process.cwd() + '/src/shared/templates/',
+                    adapter: new HandlebarsAdapter(),
+                    options: {
+                        strict: true,
+                    },
                 },
             }),
             inject: [ConfigService],
