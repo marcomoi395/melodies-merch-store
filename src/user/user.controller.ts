@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Patch, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -60,10 +60,10 @@ export class UserController {
         };
     }
 
-    @Get('verify-account')
+    @Post('verify-account')
     @HttpCode(200)
-    async verificationToken(@Query() payload: VerificationTokenDto) {
-        await this.userService.verificationToken(payload.userId, payload.token);
+    async verificationToken(@Body() payload: VerificationTokenDto) {
+        await this.userService.verificationToken(payload.token);
 
         return {
             statusCode: 200,

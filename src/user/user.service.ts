@@ -91,22 +91,23 @@ export class UserService {
             throw new BadRequestException('User is already verified');
         }
 
-        const key = `verify-account:${userId}`;
+        const limitKey = `verify-account_limit:${userId}`;
+        const isAllowed = await this.redis.set(limitKey, '1', 'EX', 60, 'NX');
 
-        const ttl = await this.redis.ttl(key);
-
-        if (ttl > 14 * 60) {
+        if (!isAllowed) {
+            const ttl = await this.redis.ttl(limitKey);
             throw new BadRequestException(
-                "You can't request another verification email yet. Please try again later.",
+                'You can request a new verification email in ' + ttl + ' seconds',
             );
         }
 
         const token = generateRandomToken();
+        const key = `verify-account:${token}`;
         const host = this.config.get<string>('API_URL');
-        const url = `${host}/api/user/verify-account?userId=${userId}&token=${token}`;
+        const url = `${host}/api/user/verify-account?token=${token}`;
 
         // Save token to Redis with expiration (15 minutes)
-        await this.redis.set(key, token, 'EX', 15 * 60);
+        await this.redis.set(key, userId, 'EX', 15 * 60);
 
         await this.mailer.sendMail({
             to: email,
@@ -118,17 +119,17 @@ export class UserService {
         });
     }
 
-    async verificationToken(userId: string, token: string) {
-        const tokenKey = `verify-account:${userId}`;
+    async verificationToken(token: string) {
+        const key = `verify-account:${token}`;
 
-        const savedToken = await this.redis.get(tokenKey);
+        const userId = await this.redis.get(key);
 
-        if (!savedToken || savedToken !== token) {
+        if (!userId) {
             throw new BadRequestException('Invalid or expired verification token');
         }
 
         // Remove the key from Redis after successful verification
-        await this.redis.del(tokenKey);
+        await this.redis.del(key);
 
         await this.prisma.user.update({
             where: { id: userId },
