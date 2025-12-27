@@ -25,7 +25,7 @@ export class ProductsController {
         return {
             statusCode: 200,
             message: 'Product detail fetched successfully',
-            result,
+            data: result,
         };
     }
 }
