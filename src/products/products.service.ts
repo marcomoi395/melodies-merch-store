@@ -5,6 +5,7 @@ import { Prisma, Product, ProductVariant } from 'generated/prisma/browser';
 import { CategoryService } from 'src/category/category.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import slugify from 'slugify';
 
 @Injectable()
 export class ProductsService {
@@ -154,7 +155,7 @@ export class ProductsService {
     }
 
     async createNewProductForAdmin(payload: CreateProductDto) {
-        const { categoryId, artistIds, variants, ...productData } = payload;
+        const { categoryId, artistIds, variants, name, ...productData } = payload;
 
         if (categoryId) {
             const categoryExists = await this.categoryService.isCategoryExists({
@@ -175,10 +176,28 @@ export class ProductsService {
             throw new BadRequestException(`SKU '${existingSku.sku}' already exists`);
         }
 
+        let slug = slugify(name, {
+            lower: true,
+            strict: true,
+            locale: 'vi',
+            trim: true,
+        });
+
+        const existingSlug = await this.prisma.product.findUnique({
+            where: { slug: slug },
+        });
+
+        if (existingSlug) {
+            const randomString = Math.random().toString(36).substring(2, 7);
+            slug = `${slug}-${randomString}`;
+        }
+
         // Use Transaction
         return await this.prisma.$transaction(async (tx) => {
             const newProduct = await tx.product.create({
                 data: {
+                    name,
+                    slug,
                     ...productData,
                     ...(categoryId
                         ? {
