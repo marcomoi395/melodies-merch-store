@@ -435,4 +435,28 @@ export class ProductsService {
             });
         });
     }
+
+    async removeProductForAdmin(id: string) {
+        const product = await this.prisma.product.findUnique({
+            where: { id },
+            include: { orderItems: true },
+        });
+
+        if (!product) {
+            throw new NotFoundException('Product not found');
+        }
+
+        if (product.orderItems.length === 0) {
+            return this.prisma.product.delete({ where: { id } });
+        }
+
+        return this.prisma.product.update({
+            where: { id },
+            data: {
+                status: 'deleted',
+                deletedAt: new Date(),
+                slug: `${product.slug}-deleted-${Date.now()}`,
+            },
+        });
+    }
 }

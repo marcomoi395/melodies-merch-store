@@ -1,9 +1,10 @@
-import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { GetProductDetailDto } from '../dto/get-product-detail.dto';
 import { ProductsService } from '../products.service';
 import { GetProductsForAdminDto } from '../dto/get-products-for-admin.dto';
 import { CreateProductDto } from '../dto/create-product.dto';
 import { UpdateProductDto } from '../dto/update-product.dto';
+import { RemoveProductDto } from '../dto/remove-product.dto';
 
 @Controller('admin/products')
 export class ProductsAdminController {
@@ -51,6 +52,18 @@ export class ProductsAdminController {
         return {
             statusCode: 200,
             message: 'Product updated successfully',
+            data: result,
+        };
+    }
+
+    @Delete(':id')
+    // @UseGuards(AuthGuard('jwt'))
+    async removeProductForAdmin(@Param() param: RemoveProductDto) {
+        const result = await this.productsService.removeProductForAdmin(param.id);
+
+        return {
+            statusCode: 200,
+            message: 'Product removed successfully',
             data: result,
         };
     }
