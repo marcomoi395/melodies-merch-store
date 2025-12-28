@@ -50,9 +50,9 @@ export class ProductsService {
 
             // Filter by Price Range
             ...((price_min || price_max) && {
-                variants: {
+                productVariants: {
                     some: {
-                        price: {
+                        originalPrice: {
                             gte: price_min,
                             lte: price_max,
                         },
@@ -61,8 +61,8 @@ export class ProductsService {
             }),
 
             ...(stock_status && {
-                variants: {
-                    some: { stock: { gt: 0 } },
+                productVariants: {
+                    some: { stockQuantity: { gt: 0 } },
                 },
             }),
         };
