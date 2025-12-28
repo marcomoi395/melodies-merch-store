@@ -160,16 +160,27 @@ model ProductVariant {
     originalPrice   Decimal  @map("original_price") @db.Decimal(15, 2)
     discountPercent Decimal? @default(0) @map("discount_percent") @db.Decimal(15, 2)
     stockQuantity   Int?     @default(0) @map("stock_quantity")
-    attributes      Json?    @db.JsonB
     isPreorder      Boolean? @default(false) @map("is_preorder")
 
     product Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
 
     // Relations
+    attributes VariantAttribute[]
     cartItems  CartItem[]
     orderItems OrderItem[]
 
     @@map("product_variants")
+}
+
+model VariantAttribute {
+    id        String @id @default(uuid()) @db.Uuid
+    variantId String @map("variant_id") @db.Uuid
+    key       String @db.VarChar(50) // Lưu "Size", "Color"...
+    value     String @db.VarChar(100) // Lưu "M", "Red"...
+
+    variant ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+    @@map("variant_attributes")
 }
 
 model Cart {
