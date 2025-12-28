@@ -58,6 +58,8 @@ export class ProductsService {
                     some: { stock: { gt: 0 } },
                 },
             }),
+
+            status: 'published',
         };
 
         let orderBy: Prisma.ProductOrderByWithRelationInput = { createdAt: 'desc' };
