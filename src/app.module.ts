@@ -9,6 +9,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { ProductsModule } from './products/products.module';
 import { ArtistsModule } from './artists/artists.module';
+import { CategoryModule } from './category/category.module';
 
 @Module({
     imports: [
@@ -54,6 +55,7 @@ import { ArtistsModule } from './artists/artists.module';
         UserModule,
         ProductsModule,
         ArtistsModule,
+        CategoryModule,
     ],
 })
 export class AppModule {}
