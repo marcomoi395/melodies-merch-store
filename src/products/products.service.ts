@@ -26,18 +26,18 @@ export class ProductsService {
             type,
         } = query;
 
+        const validArtistIds = artistId?.filter((id) => id) || [];
+        const validTypes = type?.filter((t) => t) || [];
+
         const where: Prisma.ProductWhereInput = {
-            // Filter by Artist
-            ...(artistId &&
-                artistId.length > 0 && {
-                    artistId: { in: artistId },
-                }),
+            ...(validArtistIds.length > 0 && {
+                artistId: { in: validArtistIds },
+            }),
 
             // Filter by Type
-            ...(type &&
-                type.length > 0 && {
-                    productType: { in: type },
-                }),
+            ...(validTypes.length > 0 && {
+                productType: { in: validTypes },
+            }),
 
             // Search by Keyword
             ...(keyword && {
