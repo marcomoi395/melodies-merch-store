@@ -1,7 +1,6 @@
-import { IsString, IsUUID } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class GetProductDetailDto {
     @IsString()
-    @IsUUID('4')
-    id: string;
+    slug: string;
 }

@@ -6,6 +6,23 @@ import { GetProductsByCategoryDto } from './dto/get-products-by-category.dto';
 export class CategoryService {
     constructor(private prisma: PrismaService) {}
 
+    async isCategoryExists(payload: { id?: string; slug?: string }) {
+        const { id, slug } = payload;
+
+        if (!id && !slug) {
+            return false;
+        }
+
+        const category = await this.prisma.category.findFirst({
+            where: {
+                OR: [...(id ? [{ id }] : []), ...(slug ? [{ slug }] : [])],
+            },
+            select: { id: true },
+        });
+
+        return !!category;
+    }
+
     async getCategoryTree() {
         return await this.prisma.category.findMany();
     }
