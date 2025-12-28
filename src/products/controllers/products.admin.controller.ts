@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { GetProductDetailDto } from '../dto/get-product-detail.dto';
 import { ProductsService } from '../products.service';
 import { GetProductsForAdminDto } from '../dto/get-products-for-admin.dto';
 import { CreateProductDto } from '../dto/create-product.dto';
+import { UpdateProductDto } from '../dto/update-product.dto';
 
 @Controller('admin/products')
 export class ProductsAdminController {
@@ -36,8 +37,20 @@ export class ProductsAdminController {
         const result = await this.productsService.createNewProductForAdmin(body);
 
         return {
-            statusCode: 200,
+            statusCode: 201,
             message: 'Product created successfully',
+            data: result,
+        };
+    }
+
+    @Patch(':id')
+    // @UseGuards(AuthGuard('jwt'))
+    async updateProductForAdmin(@Body() body: UpdateProductDto, @Param('id') id: string) {
+        const result = await this.productsService.updateProductForAdmin(id, body);
+
+        return {
+            statusCode: 200,
+            message: 'Product updated successfully',
             data: result,
         };
     }

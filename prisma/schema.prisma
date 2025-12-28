@@ -161,6 +161,7 @@ model ProductVariant {
     discountPercent Decimal? @default(0) @map("discount_percent") @db.Decimal(15, 2)
     stockQuantity   Int?     @default(0) @map("stock_quantity")
     isPreorder      Boolean? @default(false) @map("is_preorder")
+    isDeleted       Boolean  @default(false) 
 
     product Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
 

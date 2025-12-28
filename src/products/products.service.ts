@@ -4,6 +4,7 @@ import { GetProductsDto } from './dto/get-products.dto';
 import { Prisma, Product, ProductVariant } from 'generated/prisma/browser';
 import { CategoryService } from 'src/category/category.service';
 import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 
 @Injectable()
 export class ProductsService {
@@ -228,6 +229,191 @@ export class ProductsService {
             });
 
             return newProduct;
+        });
+    }
+
+    async updateProductForAdmin(id: string, payload: UpdateProductDto) {
+        const { categoryId, artistIds, variants, ...productData } = payload;
+
+        const existingProduct = await this.prisma.product.findUnique({
+            where: { id },
+            include: { productVariants: true },
+        });
+
+        if (!existingProduct) {
+            throw new NotFoundException(`Product with ID ${id} not found`);
+        }
+
+        // Change slug if name is updated
+
+        if (categoryId) {
+            const categoryExists = await this.categoryService.isCategoryExists({
+                id: categoryId,
+            });
+            if (!categoryExists) {
+                throw new NotFoundException(`Category with ID ${categoryId} not found`);
+            }
+        }
+
+        //  Validate Unique SKU
+        if (variants && variants.length > 0) {
+            const skuSet = new Set(variants.map((v) => v.sku));
+            if (skuSet.size !== variants.length) {
+                throw new BadRequestException('Variant SKUs must be unique within the product.');
+            }
+
+            const skus = variants.map((v) => v.sku).filter((sku) => sku !== undefined);
+
+            const existingVariants = await this.prisma.productVariant.findMany({
+                where: {
+                    sku: { in: skus },
+                },
+                select: { id: true, sku: true, productId: true },
+            });
+
+            for (const inputVariant of variants) {
+                const matchInDb = existingVariants.find((v) => v.sku === inputVariant.sku);
+
+                if (matchInDb) {
+                    if (matchInDb.productId !== id) {
+                        throw new BadRequestException(
+                            `SKU '${inputVariant.sku}' has already been used in another product.`,
+                        );
+                    }
+
+                    if (inputVariant.id && matchInDb.id !== inputVariant.id) {
+                        throw new BadRequestException(
+                            `SKU '${inputVariant.sku}' has already been used in another variant of this product.`,
+                        );
+                    }
+
+                    if (!inputVariant.id) {
+                        throw new BadRequestException(
+                            `SKU '${inputVariant.sku}' has already been used in another variant of this product.`,
+                        );
+                    }
+                }
+            }
+        }
+
+        // Transaction Update
+        return await this.prisma.$transaction(async (tx) => {
+            await tx.product.update({
+                where: { id },
+                data: {
+                    ...productData,
+                    ...(categoryId
+                        ? {
+                              category: { connect: { id: categoryId } },
+                          }
+                        : {}),
+                    ...(artistIds
+                        ? {
+                              productArtists: {
+                                  deleteMany: {},
+                                  create: artistIds.map((artistId) => ({
+                                      artist: { connect: { id: artistId } },
+                                  })),
+                              },
+                          }
+                        : {}),
+                },
+            });
+
+            // Handle Variants
+            // Review each item in the submitted list:
+            // - If a variant matching the SKU for this product is found -> Update
+            // - If not found -> Create
+            if (variants) {
+                const incomingIds = variants.map((v) => v.id).filter((x) => x !== undefined);
+
+                // Identify variants to be removed
+                const variantsToRemove = await tx.productVariant.findMany({
+                    where: {
+                        productId: id,
+                        id: { notIn: incomingIds },
+                        isDeleted: false,
+                    },
+                    include: {
+                        _count: {
+                            select: { orderItems: true },
+                        },
+                    },
+                });
+
+                for (const variant of variantsToRemove) {
+                    if (variant._count.orderItems > 0) {
+                        // Soft delete if already referenced in orders
+                        await tx.productVariant.update({
+                            where: { id: variant.id },
+                            data: { isDeleted: true },
+                        });
+                    } else {
+                        // Hard delete if not referenced
+                        await tx.productVariant.delete({
+                            where: { id: variant.id },
+                        });
+                    }
+                }
+
+                for (const variant of variants) {
+                    if (variant.id) {
+                        await tx.productVariant.update({
+                            where: { id: variant.id, productId: id },
+                            data: {
+                                sku: variant.sku,
+                                name: variant.name,
+                                originalPrice: variant.originalPrice,
+                                discountPercent: variant.discountPercent || 0,
+                                stockQuantity: variant.stockQuantity,
+                                isPreorder: variant.isPreorder,
+                                isDeleted: false,
+                                attributes: {
+                                    deleteMany: {},
+                                    create: variant.attributes?.map((attr) => ({
+                                        key: attr.key,
+                                        value: attr.value,
+                                    })),
+                                },
+                            },
+                        });
+                    } else {
+                        await tx.productVariant.create({
+                            data: {
+                                productId: id,
+                                sku: variant.sku,
+                                name: variant.name,
+                                originalPrice: variant.originalPrice,
+                                discountPercent: variant.discountPercent || 0,
+                                stockQuantity: variant.stockQuantity,
+                                isPreorder: variant.isPreorder || false,
+                                attributes: {
+                                    create: variant.attributes?.map((attr) => ({
+                                        key: attr.key,
+                                        value: attr.value,
+                                    })),
+                                },
+                            },
+                        });
+                    }
+                }
+            }
+
+            return await tx.product.findUnique({
+                where: { id },
+                include: {
+                    productVariants: {
+                        where: { isDeleted: false },
+                        include: { attributes: true },
+                    },
+                    productArtists: {
+                        include: {
+                            artist: true,
+                        },
+                    },
+                    category: true,
+                },
+            });
         });
     }
 }
