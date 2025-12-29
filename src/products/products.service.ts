@@ -106,7 +106,11 @@ export class ProductsService {
                 include: {
                     productVariants: true,
                     category: true,
-                    productArtists: true,
+                    productArtists: {
+                        include: {
+                            artist: true,
+                        },
+                    },
                 },
             }),
         ]);
@@ -143,7 +147,11 @@ export class ProductsService {
             include: {
                 productVariants: true,
                 category: true,
-                productArtists: true,
+                productArtists: {
+                    include: {
+                        artist: true,
+                    },
+                },
             },
         });
 
@@ -164,6 +172,29 @@ export class ProductsService {
 
             if (!categoryExists) {
                 throw new NotFoundException(`Category with ID ${categoryId} not found`);
+            }
+        }
+
+        if (artistIds && artistIds.length > 0) {
+            const uniqueArtistIds = [...new Set(artistIds)];
+
+            const existingArtists = await this.prisma.artist.findMany({
+                where: {
+                    id: { in: uniqueArtistIds },
+                },
+                select: { id: true },
+            });
+
+            const existingArtistIds = existingArtists.map((a) => a.id);
+
+            const missingArtistIds = uniqueArtistIds.filter(
+                (id) => !existingArtistIds.includes(id),
+            );
+
+            if (missingArtistIds.length > 0) {
+                throw new BadRequestException(
+                    `Artist IDs not found: ${missingArtistIds.join(', ')}`,
+                );
             }
         }
 
@@ -242,7 +273,11 @@ export class ProductsService {
                             attributes: true,
                         },
                     },
-                    productArtists: true,
+                    productArtists: {
+                        include: {
+                            artist: true,
+                        },
+                    },
                     category: true,
                 },
             });
