@@ -10,6 +10,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 import { ProductsModule } from './products/products.module';
 import { ArtistsModule } from './artists/artists.module';
 import { CategoryModule } from './category/category.module';
+import { StaffModule } from './staff/staff.module';
 
 @Module({
     imports: [
@@ -56,6 +57,7 @@ import { CategoryModule } from './category/category.module';
         ProductsModule,
         ArtistsModule,
         CategoryModule,
+        StaffModule,
     ],
 })
 export class AppModule {}

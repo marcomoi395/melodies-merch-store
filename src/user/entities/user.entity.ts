@@ -12,6 +12,7 @@ export class UserEntity {
     avatarUrl: string | null;
     provider: string | null;
     isVerified: boolean | null;
+    isDeleted: boolean | null;
     status: string | null;
     createdAt: Date;
     updatedAt: Date;

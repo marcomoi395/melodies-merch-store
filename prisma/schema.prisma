@@ -24,6 +24,7 @@ model User {
     createdAt    DateTime? @default(now()) @map("created_at") @db.Timestamp()
     updatedAt    DateTime? @updatedAt @map("updated_at") @db.Timestamp()
     status       String?   @default("active") @db.VarChar(20)
+    isDeleted    Boolean?  @default(false) @map("is_deleted")
     isVerified   Boolean?  @default(false) @map("is_verified")
 
     // Relations
@@ -161,7 +162,7 @@ model ProductVariant {
     discountPercent Decimal? @default(0) @map("discount_percent") @db.Decimal(15, 2)
     stockQuantity   Int?     @default(0) @map("stock_quantity")
     isPreorder      Boolean? @default(false) @map("is_preorder")
-    isDeleted       Boolean  @default(false) 
+    isDeleted       Boolean  @default(false)
 
     product Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
 
