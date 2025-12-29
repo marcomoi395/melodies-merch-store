@@ -178,4 +178,30 @@ export class CategoryService {
             throw error;
         }
     }
+
+    async deleteCategoryForAdmin(id: string) {
+        const countChild = await this.prisma.category.count({
+            where: { parentId: id },
+        });
+
+        if (countChild > 0) {
+            throw new BadRequestException(
+                'Cannot delete category containing sub-categories. Please remove or move them first.',
+            );
+        }
+
+        try {
+            return await this.prisma.category.delete({
+                where: { id },
+            });
+        } catch (error) {
+            if (error instanceof PrismaClientKnownRequestError) {
+                if (error.code === 'P2025') {
+                    throw new NotFoundException('Category not found');
+                }
+            }
+
+            throw error;
+        }
+    }
 }

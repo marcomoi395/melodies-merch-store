@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Param, ParseUUIDPipe, Patch, Post } from '@nestjs/common';
 import { CategoryService } from '../category.service';
 import { CreateCategoryDto } from '../dto/create-category.dto';
 import { UpdateCategoryDto } from '../dto/update-category.dto';
@@ -19,13 +19,26 @@ export class CategoryAdminController {
     }
 
     @Patch(':id')
-    async updateCategoryForAdmin(@Body() body: UpdateCategoryDto, @Param('id') id: string) {
+    async updateCategoryForAdmin(
+        @Body() body: UpdateCategoryDto,
+        @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    ) {
         const result = await this.categoryService.updateCategory(id, body);
 
         return {
             statusCode: 200,
             message: 'Category updated successfully',
             data: result,
+        };
+    }
+
+    @Delete(':id')
+    async deleteCategoryForAdmin(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+        await this.categoryService.deleteCategoryForAdmin(id);
+
+        return {
+            statusCode: 204,
+            message: 'Category deleted successfully',
         };
     }
 }
