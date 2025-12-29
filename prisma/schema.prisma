@@ -43,6 +43,10 @@ model Role {
     name        String  @unique @db.VarChar(50)
     description String? @db.Text
 
+    createdAt DateTime? @default(now()) @map("created_at") @db.Timestamp()
+    updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamp()
+    deletedAt DateTime? @map("deleted_at") @db.Timestamp()
+
     // Relations
     userRoles       UserRole[]
     rolePermissions RolePermission[]
