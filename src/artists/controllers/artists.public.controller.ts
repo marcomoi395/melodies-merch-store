@@ -1,10 +1,10 @@
 import { Controller, Get, HttpCode, Param, Query } from '@nestjs/common';
-import { ArtistsService } from './artists.service';
-import { GetArtistsDto } from './dto/get-artists.dto';
-import { GetArtistDetailDto } from './dto/get-artist-detail.dto';
+import { ArtistsService } from '../artists.service';
+import { GetArtistsDto } from '../dto/get-artists.dto';
+import { GetArtistDetailDto } from '../dto/get-artist-detail.dto';
 
 @Controller('artists')
-export class ArtistsController {
+export class ArtistsPublicController {
     constructor(private readonly artistsService: ArtistsService) {}
 
     @Get()
