@@ -2,7 +2,7 @@ import { Controller, Get, Param, Query } from '@nestjs/common';
 import { CategoryService } from '../category.service';
 import { GetProductsByCategoryDto } from '../dto/get-products-by-category.dto';
 
-@Controller('category')
+@Controller('categories')
 export class CategoryPublicController {
     constructor(private readonly categoryService: CategoryService) {}
 

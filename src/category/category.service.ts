@@ -39,11 +39,12 @@ export class CategoryService {
                     category: {
                         slug: slug,
                     },
-                    status: 'active',
+                    status: 'published',
                 },
                 take: limit,
                 skip: (page - 1) * limit,
                 include: {
+                    category: true,
                     productVariants: true,
                     productArtists: true,
                 },
@@ -56,7 +57,7 @@ export class CategoryService {
                     category: {
                         slug: slug,
                     },
-                    status: 'active',
+                    status: 'published',
                 },
             }),
         ]);
