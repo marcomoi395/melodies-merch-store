@@ -23,8 +23,8 @@ model User {
     provider     String?   @default("local") @db.VarChar(20)
     createdAt    DateTime? @default(now()) @map("created_at") @db.Timestamp()
     updatedAt    DateTime? @updatedAt @map("updated_at") @db.Timestamp()
+    deletedAt    DateTime? @map("deleted_at") @db.Timestamp()
     status       String?   @default("active") @db.VarChar(20)
-    isDeleted    Boolean?  @default(false) @map("is_deleted")
     isVerified   Boolean?  @default(false) @map("is_verified")
 
     // Relations

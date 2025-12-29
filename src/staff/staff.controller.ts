@@ -1,6 +1,17 @@
-import { Body, Controller, Get, HttpCode, Post } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpCode,
+    Param,
+    ParseUUIDPipe,
+    Patch,
+    Post,
+} from '@nestjs/common';
 import { StaffService } from './staff.service';
 import { RegisterStaffDto } from './dto/register-staff.dto';
+import { UpdateStaffDto } from './dto/update-staff.dto';
 
 @Controller('admin/staff')
 export class StaffController {
@@ -25,6 +36,31 @@ export class StaffController {
         return {
             statusCode: 201,
             message: 'Staff registered successfully',
+            data: result,
+        };
+    }
+
+    @Patch(':id')
+    async updateStaffForAdmin(
+        @Body() body: UpdateStaffDto,
+        @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    ) {
+        const result = await this.staffService.updateStaffForAdmin(id, body);
+
+        return {
+            statusCode: 200,
+            message: 'Staff updated successfully',
+            data: result,
+        };
+    }
+
+    @Delete(':id')
+    async deleteAccountForAdmin(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+        const result = await this.staffService.deleteAccountForAdmin(id);
+
+        return {
+            statusCode: 200,
+            message: 'Account deleted successfully',
             data: result,
         };
     }

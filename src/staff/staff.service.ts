@@ -1,8 +1,14 @@
-import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
+import {
+    BadRequestException,
+    ConflictException,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RegisterStaffDto } from './dto/register-staff.dto';
 import * as bcrypt from 'bcryptjs';
 import { formatUserResponse } from 'src/shared/helper/formatUserResponse';
+import { UpdateStaffDto } from './dto/update-staff.dto';
 
 @Injectable()
 export class StaffService {
@@ -11,7 +17,7 @@ export class StaffService {
     async getAllStaff() {
         const staff = await this.prisma.user.findMany({
             where: {
-                isDeleted: false,
+                status: { not: 'deleted' },
                 userRoles: {
                     some: {},
                 },
@@ -99,5 +105,102 @@ export class StaffService {
         });
 
         return formatUserResponse(newStaff);
+    }
+
+    async updateStaffForAdmin(id: string, payload: UpdateStaffDto) {
+        const { roleIds, password, ...userData } = payload;
+
+        const existingUser = await this.prisma.user.findUnique({ where: { id } });
+        if (!existingUser) {
+            throw new NotFoundException('User not found');
+        }
+
+        // Handle roles
+        let uniqueRoleIds: string[] = [];
+        if (roleIds) {
+            uniqueRoleIds = [...new Set(roleIds)];
+            if (uniqueRoleIds.length !== roleIds.length) {
+                throw new BadRequestException('Duplicate role IDs are not allowed');
+            }
+
+            if (uniqueRoleIds.length > 0) {
+                const existingRole = await this.prisma.role.findMany({
+                    where: {
+                        id: { in: uniqueRoleIds },
+                    },
+                    select: { id: true },
+                });
+
+                const existingRoleIds = existingRole.map((a) => a.id);
+                const missingRoleIds = uniqueRoleIds.filter((id) => !existingRoleIds.includes(id));
+
+                if (missingRoleIds.length > 0) {
+                    throw new BadRequestException(
+                        'Some roles do not exist: ' + missingRoleIds.join(', '),
+                    );
+                }
+            }
+        }
+
+        let hashPassword: string = '';
+        if (password) {
+            hashPassword = await bcrypt.hash(password, 10);
+        }
+
+        // 5. Update data
+        const updatedStaff = await this.prisma.user.update({
+            where: { id },
+            data: {
+                ...userData,
+                ...(hashPassword && { passwordHash: hashPassword }),
+                ...(roleIds && {
+                    userRoles: {
+                        deleteMany: {},
+                        create: uniqueRoleIds.map((roleId) => ({
+                            role: {
+                                connect: { id: roleId },
+                            },
+                        })),
+                    },
+                }),
+            },
+            include: {
+                userRoles: {
+                    include: {
+                        role: {
+                            include: {
+                                rolePermissions: {
+                                    include: {
+                                        permission: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        });
+
+        return formatUserResponse(updatedStaff);
+    }
+
+    async deleteAccountForAdmin(id: string) {
+        const user = await this.prisma.user.findUnique({ where: { id } });
+
+        if (!user) {
+            throw new NotFoundException('User not found');
+        }
+
+        if (user.deletedAt) {
+            throw new BadRequestException('User has already been deleted');
+        }
+
+        await this.prisma.user.update({
+            where: { id },
+            data: {
+                status: 'deleted',
+                deletedAt: new Date(),
+            },
+        });
     }
 }
