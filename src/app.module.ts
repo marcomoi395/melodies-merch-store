@@ -11,6 +11,8 @@ import { ProductsModule } from './products/products.module';
 import { ArtistsModule } from './artists/artists.module';
 import { CategoryModule } from './category/category.module';
 import { StaffModule } from './staff/staff.module';
+import { RolesModule } from './roles/roles.module';
+import { PermissionsModule } from './permissions/permissions.module';
 
 @Module({
     imports: [
@@ -58,6 +60,8 @@ import { StaffModule } from './staff/staff.module';
         ArtistsModule,
         CategoryModule,
         StaffModule,
+        RolesModule,
+        PermissionsModule,
     ],
 })
 export class AppModule {}

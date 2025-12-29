@@ -8,6 +8,10 @@ export class UpdateStaffDto {
     @IsOptional()
     phone?: string;
 
+    @IsString()
+    @IsOptional()
+    avatarUrl?: string;
+
     @IsOptional()
     @IsString()
     @MinLength(6, { message: 'Password must be at least 6 characters long' })
