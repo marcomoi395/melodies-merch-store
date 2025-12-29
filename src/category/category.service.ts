@@ -1,6 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GetProductsByCategoryDto } from './dto/get-products-by-category.dto';
+import { CreateCategoryDto } from './dto/create-category.dto';
+import slugify from 'slugify';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/client';
 
 @Injectable()
 export class CategoryService {
@@ -71,5 +74,39 @@ export class CategoryService {
                 totalItems: total,
             },
         };
+    }
+
+    async createCategory(data: CreateCategoryDto) {
+        if (data.parentId) {
+            const findParent = await this.prisma.category.findUnique({
+                where: { id: data.parentId },
+            });
+
+            if (!findParent) {
+                throw new NotFoundException('Parent category not found');
+            }
+        }
+
+        const slug = slugify(data.name, {
+            lower: true,
+            strict: true,
+            locale: 'vi',
+            trim: true,
+        });
+
+        try {
+            return await this.prisma.category.create({
+                data: {
+                    slug,
+                    ...data,
+                },
+            });
+        } catch (error) {
+            if (error instanceof PrismaClientKnownRequestError && error.code === 'P2002') {
+                throw new ConflictException('Category with this name already exists');
+            }
+
+            throw error;
+        }
     }
 }
