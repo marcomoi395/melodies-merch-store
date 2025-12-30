@@ -6,7 +6,7 @@ import {
     UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { User } from 'generated/prisma/browser';
+import { IJwtPayload } from 'src/auth/auth.interface';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -27,10 +27,10 @@ export class PermissionGuard implements CanActivate {
         }
 
         // Get userId from decoded token (req.user)
-        const request: Request & { user: User } = context.switchToHttp().getRequest();
-        const user: User = request.user;
+        const request: Request & { user: IJwtPayload } = context.switchToHttp().getRequest();
+        const user = request.user;
 
-        if (!user || !user.id) {
+        if (!user || !user.sub) {
             throw new UnauthorizedException('Token is invalid or expired');
         }
 
@@ -41,7 +41,7 @@ export class PermissionGuard implements CanActivate {
                         role: {
                             userRoles: {
                                 some: {
-                                    userId: user.id,
+                                    userId: user.sub,
                                 },
                             },
                         },
@@ -56,7 +56,7 @@ export class PermissionGuard implements CanActivate {
         const userPermissions = permissionsData.map((p) => p.name.toLowerCase());
 
         const targetPermission =
-            `${requiredPermission.action}_${requiredPermission.resource}`.toLowerCase();
+            `${requiredPermission.resource}_${requiredPermission.action}`.toLowerCase();
 
         const hasPermission = userPermissions.includes(targetPermission);
 

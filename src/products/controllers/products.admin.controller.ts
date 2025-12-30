@@ -1,16 +1,31 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
-import { GetProductDetailDto } from '../dto/get-product-detail.dto';
-import { ProductsService } from '../products.service';
-import { GetProductsForAdminDto } from '../dto/get-products-for-admin.dto';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    Patch,
+    Post,
+    Query,
+    UseGuards,
+} from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { CreateProductDto } from '../dto/create-product.dto';
-import { UpdateProductDto } from '../dto/update-product.dto';
+import { GetProductDetailDto } from '../dto/get-product-detail.dto';
+import { GetProductsForAdminDto } from '../dto/get-products-for-admin.dto';
 import { RemoveProductDto } from '../dto/remove-product.dto';
+import { UpdateProductDto } from '../dto/update-product.dto';
+import { ProductsService } from '../products.service';
+import { RequiredPermission } from 'src/permissions/permissions.decorator';
+import { PermissionGuard } from 'src/permissions/permissions.guard';
 
 @Controller('admin/products')
 export class ProductsAdminController {
     constructor(private readonly productsService: ProductsService) {}
 
     @Get()
+    @UseGuards(AuthGuard('jwt'), PermissionGuard)
+    @RequiredPermission('PRODUCT', 'VIEW')
     async getProductsForAdmin(@Query() query: GetProductsForAdminDto) {
         const result = await this.productsService.getProducts(query, query.status);
 
