@@ -10,6 +10,7 @@ export class PermissionsService implements OnModuleInit {
 
     async onModuleInit() {
         await this.syncPermissions();
+        await this.syncSuperAdminRole();
     }
 
     private async syncPermissions() {
@@ -33,6 +34,36 @@ export class PermissionsService implements OnModuleInit {
         }
 
         this.logger.log('Permission synchronization completed.');
+    }
+    private async syncSuperAdminRole() {
+        const allPermissions = await this.getPermisisons();
+
+        await this.prisma.role.upsert({
+            where: {
+                name: 'SUPER_ADMIN',
+            },
+            update: {
+                rolePermissions: {
+                    deleteMany: {},
+                    create: allPermissions.map((permission) => ({
+                        permission: {
+                            connect: { id: permission.id },
+                        },
+                    })),
+                },
+            },
+            create: {
+                name: 'SUPER_ADMIN',
+                description: 'System Administrator with full access',
+                rolePermissions: {
+                    create: allPermissions.map((permission) => ({
+                        permission: {
+                            connect: { id: permission.id },
+                        },
+                    })),
+                },
+            },
+        });
     }
 
     async getPermisisons() {
