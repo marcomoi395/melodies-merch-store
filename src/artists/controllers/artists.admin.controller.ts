@@ -7,11 +7,17 @@ import {
     ParseUUIDPipe,
     Patch,
     Post,
+    UseGuards,
 } from '@nestjs/common';
 import { ArtistsService } from '../artists.service';
 import { CreateArtistDto } from '../dto/create-artist.dto';
 import { UpdateArtistDto } from '../dto/update-artist.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { RequiredPermission } from 'src/permissions/permissions.decorator';
+import { PermissionGuard } from 'src/permissions/permissions.guard';
 
+@UseGuards(AuthGuard('jwt'), PermissionGuard)
+@RequiredPermission('BRAND', 'MANAGE')
 @Controller('admin/artists')
 export class ArtistsAdminController {
     constructor(private readonly artistsService: ArtistsService) {}

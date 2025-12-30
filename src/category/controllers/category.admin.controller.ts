@@ -1,8 +1,22 @@
-import { Body, Controller, Delete, Param, ParseUUIDPipe, Patch, Post } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Param,
+    ParseUUIDPipe,
+    Patch,
+    Post,
+    UseGuards,
+} from '@nestjs/common';
 import { CategoryService } from '../category.service';
 import { CreateCategoryDto } from '../dto/create-category.dto';
 import { UpdateCategoryDto } from '../dto/update-category.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { RequiredPermission } from 'src/permissions/permissions.decorator';
+import { PermissionGuard } from 'src/permissions/permissions.guard';
 
+@UseGuards(AuthGuard('jwt'), PermissionGuard)
+@RequiredPermission('CATEGORY', 'MANAGE')
 @Controller('admin/categories')
 export class CategoryAdminController {
     constructor(private readonly categoryService: CategoryService) {}

@@ -37,6 +37,8 @@ export class ProductsAdminController {
     }
 
     @Get(':slug')
+    @UseGuards(AuthGuard('jwt'), PermissionGuard)
+    @RequiredPermission('PRODUCT', 'VIEW')
     async getProductDetailForAdmin(@Param() param: GetProductDetailDto) {
         const result = await this.productsService.getProductDetail(param.slug);
 
@@ -48,7 +50,8 @@ export class ProductsAdminController {
     }
 
     @Post('')
-    // @UseGuards(AuthGuard('jwt'))
+    @UseGuards(AuthGuard('jwt'), PermissionGuard)
+    @RequiredPermission('PRODUCT', 'CREATE')
     async createNewProductForAdmin(@Body() body: CreateProductDto) {
         const result = await this.productsService.createNewProductForAdmin(body);
 
@@ -60,7 +63,8 @@ export class ProductsAdminController {
     }
 
     @Patch(':id')
-    // @UseGuards(AuthGuard('jwt'))
+    @UseGuards(AuthGuard('jwt'), PermissionGuard)
+    @RequiredPermission('PRODUCT', 'UPDATE')
     async updateProductForAdmin(@Body() body: UpdateProductDto, @Param('id') id: string) {
         const result = await this.productsService.updateProductForAdmin(id, body);
 
@@ -72,7 +76,8 @@ export class ProductsAdminController {
     }
 
     @Delete(':id')
-    // @UseGuards(AuthGuard('jwt'))
+    @UseGuards(AuthGuard('jwt'), PermissionGuard)
+    @RequiredPermission('PRODUCT', 'DELETE')
     async removeProductForAdmin(@Param() param: RemoveProductDto) {
         const result = await this.productsService.removeProductForAdmin(param.id);
 

@@ -8,11 +8,17 @@ import {
     ParseUUIDPipe,
     Patch,
     Post,
+    UseGuards,
 } from '@nestjs/common';
 import { StaffService } from './staff.service';
 import { RegisterStaffDto } from './dto/register-staff.dto';
 import { UpdateStaffDto } from './dto/update-staff.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { RequiredPermission } from 'src/permissions/permissions.decorator';
+import { PermissionGuard } from 'src/permissions/permissions.guard';
 
+@UseGuards(AuthGuard('jwt'), PermissionGuard)
+@RequiredPermission('STAFF', 'MANAGE')
 @Controller('admin/staff')
 export class StaffController {
     constructor(private readonly staffService: StaffService) {}
