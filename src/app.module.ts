@@ -13,6 +13,7 @@ import { CategoryModule } from './category/category.module';
 import { StaffModule } from './staff/staff.module';
 import { RolesModule } from './roles/roles.module';
 import { PermissionsModule } from './permissions/permissions.module';
+import { PromotionModule } from './promotion/promotion.module';
 
 @Module({
     imports: [
@@ -62,6 +63,7 @@ import { PermissionsModule } from './permissions/permissions.module';
         StaffModule,
         RolesModule,
         PermissionsModule,
+        PromotionModule,
     ],
 })
 export class AppModule {}

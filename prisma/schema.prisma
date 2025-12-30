@@ -270,18 +270,20 @@ model OrderItem {
 }
 
 model Discount {
-    id         String    @id @default(uuid()) @db.Uuid
-    code       String?   @unique @db.VarChar(50)
-    type       String?   @db.VarChar(20)
-    value      Decimal   @db.Decimal
-    startDate  DateTime? @map("start_date") @db.Timestamp()
-    endDate    DateTime? @map("end_date") @db.Timestamp()
-    usageLimit Int?      @map("usage_limit")
-    usedCount  Int?      @default(0) @map("used_count")
-    isActive   Boolean?  @default(true) @map("is_active")
-    appliesTo  String?   @default("all") @map("applies_to") @db.VarChar(20)
-    createdAt  DateTime? @map("created_at") @db.Timestamp()
-    updatedAt  DateTime  @updatedAt @map("updated_at")
+    id          String    @id @default(uuid()) @db.Uuid
+    code        String?   @unique @db.VarChar(50)
+    description String?   @db.Text
+    type        String?   @db.VarChar(20)
+    value       Decimal   @db.Decimal
+    startDate   DateTime? @map("start_date") @db.Timestamp()
+    endDate     DateTime? @map("end_date") @db.Timestamp()
+    usageLimit  Int?      @map("usage_limit")
+    usedCount   Int?      @default(0) @map("used_count")
+    isActive    Boolean?  @default(true) @map("is_active")
+    appliesTo   String?   @default("all") @map("applies_to") @db.VarChar(20)
+    createdAt   DateTime? @map("created_at") @db.Timestamp()
+    updatedAt   DateTime  @updatedAt @map("updated_at")
+    deletedAt   DateTime? @map("deleted_at") @db.Timestamp()
 
     // Relations
     discountUsages DiscountUsage[]
