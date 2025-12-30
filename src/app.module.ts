@@ -14,6 +14,7 @@ import { StaffModule } from './staff/staff.module';
 import { RolesModule } from './roles/roles.module';
 import { PermissionsModule } from './permissions/permissions.module';
 import { PromotionModule } from './promotion/promotion.module';
+import { CartModule } from './cart/cart.module';
 
 @Module({
     imports: [
@@ -64,6 +65,7 @@ import { PromotionModule } from './promotion/promotion.module';
         RolesModule,
         PermissionsModule,
         PromotionModule,
+        CartModule,
     ],
 })
 export class AppModule {}

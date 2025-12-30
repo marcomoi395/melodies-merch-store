@@ -191,8 +191,8 @@ model VariantAttribute {
 
 model Cart {
     id        String    @id @default(uuid()) @db.Uuid
-    userId    String?   @map("user_id") @db.Uuid
-    createdAt DateTime? @map("created_at") @db.Timestamp()
+    userId    String?   @unique @map("user_id") @db.Uuid
+    createdAt DateTime? @default(now()) @map("created_at") @db.Timestamp()
     updatedAt DateTime  @updatedAt @map("updated_at")
 
     user      User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
