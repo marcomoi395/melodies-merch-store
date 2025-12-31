@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseUUIDPipe, Patch, Req } from '@nestjs/common';
+import { Controller, Get, Param, ParseUUIDPipe, Patch, Query, Req } from '@nestjs/common';
 import { OrderService } from '../order.service';
 import { Post, Body, UseGuards } from '@nestjs/common';
 import { OptionalJwtAuthGuard } from 'src/shared/guards/optional-jwt-auth.guard';
@@ -6,15 +6,16 @@ import { CreateOrderDto } from '../dto/create-order.dto';
 import { IJwtPayload } from 'src/auth/auth.interface';
 import { Request } from 'express';
 import { AuthGuard } from '@nestjs/passport';
+import { GetOrdersDto } from '../dto/get-order.dto';
 
 @Controller('order')
-export class OrderController {
+export class OrderPublicController {
     constructor(private readonly orderService: OrderService) {}
 
     @Get()
     @UseGuards(AuthGuard('jwt'))
-    async getOrders(@Req() req: Request & { user: IJwtPayload }) {
-        const result = await this.orderService.getOrdersByUserId(req.user.sub);
+    async getOrders(@Req() req: Request & { user: IJwtPayload }, @Query() query: GetOrdersDto) {
+        const result = await this.orderService.getOrdersByUserId(req.user.sub, query);
 
         return {
             statusCode: 200,

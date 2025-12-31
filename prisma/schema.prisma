@@ -235,7 +235,7 @@ model Order {
     trackingCode    String?   @map("tracking_code") @db.VarChar(50)
     note            String?   @db.Text
     paymentMethod   String?   @map("payment_method") @db.VarChar(20)
-    createdAt       DateTime? @map("created_at") @db.Timestamp()
+    createdAt       DateTime? @default(now()) @map("created_at") @db.Timestamp()
     updatedAt       DateTime  @updatedAt @map("updated_at")
 
     // Thường E-commerce sẽ giữ lại data setNull để report 

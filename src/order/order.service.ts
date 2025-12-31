@@ -2,23 +2,68 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { DiscountType } from 'src/promotion/dto/create-promotion.dto';
-import { OrderItemCreateManyInput } from 'generated/prisma/models';
+import { OrderItemCreateManyInput, OrderWhereInput } from 'generated/prisma/models';
 import { Decimal } from '@prisma/client/runtime/client';
+import { GetOrdersDto } from './dto/get-order.dto';
 
 @Injectable()
 export class OrderService {
     constructor(private prisma: PrismaService) {}
 
-    async getOrdersByUserId(userId: string) {
-        return await this.prisma.order.findMany({
-            where: { userId },
-            include: { orderItems: true },
-        });
+    async getOrdersByUserId(userId: string, query: GetOrdersDto) {
+        const { page = 1, limit = 20, sort, startDate, endDate, status } = query;
+
+        const where: OrderWhereInput = { userId };
+
+        if (status) {
+            where.status = status;
+        }
+        // Lọc theo khoảng thời gian
+        if (startDate || endDate) {
+            where.createdAt = {};
+            if (startDate) {
+                where.createdAt.gte = startDate;
+            }
+            if (endDate) {
+                where.createdAt.lte = endDate;
+            }
+        }
+
+        let orderBy: any = { createdAt: 'desc' };
+
+        if (sort) {
+            const [field, direction] = sort.split(':');
+            if (field && ['asc', 'desc'].includes(direction)) {
+                orderBy = { [field]: direction };
+            }
+        }
+
+        const [orders, total] = await Promise.all([
+            this.prisma.order.findMany({
+                where,
+                take: limit,
+                skip: (page - 1) * limit,
+                orderBy,
+                include: { orderItems: true },
+            }),
+            this.prisma.order.count({ where }),
+        ]);
+
+        return {
+            data: orders,
+            meta: {
+                total,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit),
+            },
+        };
     }
 
     async getOrderById(orderId: string) {
         return await this.prisma.order.findUnique({
             where: { id: orderId },
+            include: { orderItems: true },
         });
     }
 
@@ -199,6 +244,91 @@ export class OrderService {
             where: { id: orderId, userId },
             data: {
                 status: 'CANCELLED',
+            },
+        });
+    }
+
+    async getOrdersForAdmin(query: GetOrdersDto) {
+        const { page = 1, limit = 20, sort, startDate, endDate, status } = query;
+
+        const where: OrderWhereInput = {};
+
+        if (status) {
+            where.status = status;
+        }
+        // Lọc theo khoảng thời gian
+        if (startDate || endDate) {
+            where.createdAt = {};
+            if (startDate) {
+                where.createdAt.gte = startDate;
+            }
+            if (endDate) {
+                where.createdAt.lte = endDate;
+            }
+        }
+
+        let orderBy: any = { createdAt: 'desc' };
+
+        if (sort) {
+            const [field, direction] = sort.split(':');
+            if (field && ['asc', 'desc'].includes(direction)) {
+                orderBy = { [field]: direction };
+            }
+        }
+
+        const [orders, total] = await Promise.all([
+            this.prisma.order.findMany({
+                where,
+                take: limit,
+                skip: (page - 1) * limit,
+                orderBy,
+                include: { orderItems: true },
+            }),
+            this.prisma.order.count({ where }),
+        ]);
+
+        return {
+            data: orders,
+            meta: {
+                total,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit),
+            },
+        };
+    }
+
+    async getOrderDetailForAdmin(orderId: string) {
+        const order = await this.prisma.order.findUnique({
+            where: { id: orderId },
+            include: { orderItems: true },
+        });
+
+        if (!order) {
+            throw new BadRequestException('Order not found');
+        }
+
+        return order;
+    }
+
+    async changeOrderStatusForAdmin(orderId: string, status: string) {
+        const order = await this.prisma.order.findUnique({
+            where: { id: orderId },
+            include: { orderItems: true },
+        });
+
+        if (!order) {
+            throw new BadRequestException('Order not found');
+        }
+
+        if (order.status === status) {
+            throw new BadRequestException('Order is already in the desired status');
+        }
+
+        return await this.prisma.order.update({
+            where: { id: orderId },
+            data: {
+                status,
             },
         });
     }

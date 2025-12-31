@@ -10,7 +10,6 @@ export enum PermissionKey {
 
     ORDER_VIEW = 'ORDER_VIEW',
     ORDER_UPDATE_STATUS = 'ORDER_UPDATE_STATUS',
-    ORDER_CANCEL = 'ORDER_CANCEL',
     ORDER_EXPORT = 'ORDER_EXPORT',
 
     PROMOTION_MANAGE = 'PROMOTION_MANAGE',
@@ -49,7 +48,6 @@ export const PERMISSIONS_METADATA: PermissionMetadata[] = [
     // Order
     { name: PermissionKey.ORDER_VIEW, resource: 'ORDER', action: 'VIEW' },
     { name: PermissionKey.ORDER_UPDATE_STATUS, resource: 'ORDER', action: 'UPDATE_STATUS' },
-    { name: PermissionKey.ORDER_CANCEL, resource: 'ORDER', action: 'CANCEL' },
     { name: PermissionKey.ORDER_EXPORT, resource: 'ORDER', action: 'EXPORT' },
 
     // Marketing
