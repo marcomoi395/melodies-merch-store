@@ -35,6 +35,16 @@ export class OrderPublicController {
         };
     }
 
+    @Post('preview')
+    async previewOrder(@Body() createOrderDto: CreateOrderDto) {
+        const result = await this.orderService.previewOrder(createOrderDto);
+        return {
+            statusCode: 200,
+            message: 'Order preview generated successfully',
+            data: result,
+        };
+    }
+
     @Post()
     @UseGuards(OptionalJwtAuthGuard)
     async createOrder(

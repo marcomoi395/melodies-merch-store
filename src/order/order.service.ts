@@ -18,7 +18,6 @@ export class OrderService {
         if (status) {
             where.status = status;
         }
-        // Lọc theo khoảng thời gian
         if (startDate || endDate) {
             where.createdAt = {};
             if (startDate) {
@@ -65,6 +64,128 @@ export class OrderService {
             where: { id: orderId },
             include: { orderItems: true },
         });
+    }
+
+    async previewOrder(payload: CreateOrderDto) {
+        const { items, appliedVoucher, ...restData } = payload;
+
+        const productVariantIds = items.map((i) => i.productVariantId);
+        const productVariants = await this.prisma.productVariant.findMany({
+            where: {
+                id: { in: productVariantIds },
+                deletedAt: null,
+            },
+            include: {
+                product: true,
+            },
+        });
+
+        if (productVariants.length !== items.length) {
+            throw new BadRequestException('One or more product variants are invalid');
+        }
+
+        let subtotal = new Decimal(0);
+        const orderItemsPreview: OrderItemCreateManyInput[] = [];
+
+        for (const item of items) {
+            const productVariant = productVariants.find((p) => p.id === item.productVariantId);
+
+            if (!productVariant) {
+                throw new BadRequestException(
+                    'Invalid product variant ID: ' + item.productVariantId,
+                );
+            }
+
+            if ((productVariant.stockQuantity ?? 0) < item.quantity) {
+                throw new BadRequestException(
+                    `Sản phẩm ${productVariant.name} chỉ còn lại ${productVariant.stockQuantity}, không đủ số lượng yêu cầu.`,
+                );
+            }
+
+            const originalPrice = new Decimal(productVariant.originalPrice);
+            const discountPercent = new Decimal(productVariant.discountPercent || 0);
+
+            // Price = Original * (1 - Percent/100)
+            const itemPrice = originalPrice.mul(new Decimal(100).minus(discountPercent).div(100));
+            const lineTotal = itemPrice.mul(item.quantity);
+
+            subtotal = subtotal.plus(lineTotal);
+
+            if (!productVariant.product) {
+                throw new BadRequestException(
+                    `Data integrity error: Variant ${productVariant.id} has no parent Product.`,
+                );
+            }
+
+            const orderItem = {
+                productId: productVariant.productId,
+                productVariantId: productVariant.id,
+                productName: productVariant.product.name,
+                variantName: productVariant.name,
+                quantity: item.quantity,
+                price: new Decimal(itemPrice),
+                originalPrice: productVariant.originalPrice,
+                discountPercentage: productVariant.discountPercent || 0,
+                totalLinePrice: lineTotal,
+            };
+
+            orderItemsPreview.push(orderItem);
+        }
+
+        let discountAmount = new Decimal(0);
+
+        if (appliedVoucher) {
+            const code = await this.prisma.discount.findUnique({
+                where: { code: appliedVoucher, isActive: true },
+            });
+
+            if (!code) {
+                throw new BadRequestException('Invalid voucher code');
+            }
+
+            const now = new Date();
+            if (
+                code?.startDate &&
+                code?.endDate &&
+                (now < code?.startDate || now > code?.endDate)
+            ) {
+                throw new BadRequestException('Voucher code is not valid at this time');
+            }
+
+            if (
+                code.usageLimit !== null &&
+                code.usedCount !== null &&
+                code.usedCount >= code.usageLimit
+            ) {
+                throw new BadRequestException('Voucher code usage limit has been reached');
+            }
+
+            const voucherValue = new Decimal(code.value);
+
+            if (code.type === DiscountType.FIXED) {
+                discountAmount = voucherValue;
+            } else if (code.type === DiscountType.PERCENTAGE) {
+                discountAmount = subtotal.mul(voucherValue.div(100));
+            }
+
+            if (discountAmount.greaterThan(subtotal)) {
+                discountAmount = subtotal;
+            }
+        }
+
+        const total = subtotal.minus(discountAmount);
+
+        return {
+            email: restData.email,
+            fullName: restData.fullName,
+            phone: restData.phone,
+            subtotal,
+            shippingFee: 0,
+            discountAmount,
+            totalAmount: total,
+            appliedVoucher: appliedVoucher || null,
+            orderItems: orderItemsPreview,
+        };
     }
 
     async createOrder(payload: CreateOrderDto, userId: string | null = null) {
@@ -125,8 +246,8 @@ export class OrderService {
                 variantName: productVariant.name,
                 quantity: item.quantity,
                 price: new Decimal(itemPrice),
-                originalPrice: new Decimal(productVariant.originalPrice),
-                discountPercentage: new Decimal(productVariant.discountPercent || 0),
+                originalPrice: productVariant.originalPrice,
+                discountPercentage: productVariant.discountPercent || 0,
                 totalLinePrice: lineTotal,
             };
 
