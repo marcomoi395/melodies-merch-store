@@ -387,7 +387,7 @@ export class ProductsService {
                     where: {
                         productId: id,
                         id: { notIn: incomingIds },
-                        isDeleted: false,
+                        deletedAt: null,
                     },
                     include: {
                         _count: {
@@ -401,7 +401,7 @@ export class ProductsService {
                         // Soft delete if already referenced in orders
                         await tx.productVariant.update({
                             where: { id: variant.id },
-                            data: { isDeleted: true },
+                            data: { deletedAt: null },
                         });
                     } else {
                         // Hard delete if not referenced
@@ -422,7 +422,7 @@ export class ProductsService {
                                 discountPercent: variant.discountPercent || 0,
                                 stockQuantity: variant.stockQuantity,
                                 isPreorder: variant.isPreorder,
-                                isDeleted: false,
+                                deletedAt: null,
                                 attributes: {
                                     deleteMany: {},
                                     create: variant.attributes?.map((attr) => ({
@@ -458,7 +458,7 @@ export class ProductsService {
                 where: { id },
                 include: {
                     productVariants: {
-                        where: { isDeleted: false },
+                        where: { deletedAt: null },
                         include: { attributes: true },
                     },
                     productArtists: {

@@ -50,7 +50,7 @@ export class CartService {
         const productVariant = await this.prisma.productVariant.findUnique({
             where: {
                 id: productVariantId,
-                isDeleted: false,
+                deletedAt: null,
                 product: {
                     deletedAt: null,
                 },
@@ -113,7 +113,7 @@ export class CartService {
                 id: cartItemId,
                 cart: { userId },
                 productVariant: {
-                    isDeleted: false,
+                    deletedAt: null,
                 },
                 product: {
                     deletedAt: null,
@@ -159,7 +159,7 @@ export class CartService {
                 id: cartItemId,
                 cart: { userId },
                 productVariant: {
-                    isDeleted: false,
+                    deletedAt: null,
                 },
                 product: {
                     deletedAt: null,

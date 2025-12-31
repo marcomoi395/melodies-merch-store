@@ -158,15 +158,17 @@ model ProductArtist {
 }
 
 model ProductVariant {
-    id              String   @id @default(uuid()) @db.Uuid
-    productId       String?  @map("product_id") @db.Uuid
-    sku             String   @unique @db.VarChar(50)
-    name            String   @db.VarChar(100)
-    originalPrice   Decimal  @map("original_price") @db.Decimal(15, 2)
-    discountPercent Decimal? @default(0) @map("discount_percent") @db.Decimal(15, 2)
-    stockQuantity   Int?     @default(0) @map("stock_quantity")
-    isPreorder      Boolean? @default(false) @map("is_preorder")
-    isDeleted       Boolean  @default(false)
+    id              String    @id @default(uuid()) @db.Uuid
+    productId       String?   @map("product_id") @db.Uuid
+    sku             String    @unique @db.VarChar(50)
+    name            String    @db.VarChar(100)
+    originalPrice   Decimal   @map("original_price") @db.Decimal(15, 2)
+    discountPercent Decimal?  @default(0) @map("discount_percent") @db.Decimal(15, 2)
+    stockQuantity   Int?      @default(0) @map("stock_quantity")
+    isPreorder      Boolean?  @default(false) @map("is_preorder")
+    deletedAt       DateTime? @map("deleted_at") @db.Timestamp()
+    createdAt       DateTime  @default(now()) @map("created_at")
+    updatedAt       DateTime  @updatedAt @map("updated_at")
 
     product Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
 
