@@ -14,7 +14,7 @@ import {
 
 export enum PaymentMethod {
     COD = 'COD',
-    BANK_TRANSFER = 'BANK_TRANSFER',
+    MOMO = 'MOMO',
 }
 
 class CustomerInfoDto {
@@ -36,10 +36,6 @@ class OrderItemDto {
     @IsUUID()
     @IsNotEmpty()
     productVariantId: string;
-
-    @IsUUID()
-    @IsNotEmpty()
-    productId: string;
 
     @IsInt()
     @Min(1)

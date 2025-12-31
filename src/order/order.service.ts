@@ -9,6 +9,19 @@ import { Decimal } from '@prisma/client/runtime/client';
 export class OrderService {
     constructor(private prisma: PrismaService) {}
 
+    async getOrdersByUserId(userId: string) {
+        return await this.prisma.order.findMany({
+            where: { userId },
+            include: { orderItems: true },
+        });
+    }
+
+    async getOrderById(orderId: string) {
+        return await this.prisma.order.findUnique({
+            where: { id: orderId },
+        });
+    }
+
     async createOrder(payload: CreateOrderDto, userId: string | null = null) {
         const { items, appliedVoucher, ...restData } = payload;
         const productVariantIds = items.map((i) => i.productVariantId);
@@ -39,7 +52,7 @@ export class OrderService {
                 );
             }
 
-            if (productVariant.stockQuantity ?? 0 < item.quantity) {
+            if ((productVariant.stockQuantity ?? 0) < item.quantity) {
                 throw new BadRequestException(
                     'Insufficient stock for product variant ID: ' + item.productVariantId,
                 );
@@ -162,9 +175,31 @@ export class OrderService {
                     orderItems: {
                         create: orderItemsData,
                     },
+                    note: restData.note || null,
                 },
                 include: { orderItems: true },
             });
+        });
+    }
+
+    async cancelOrder(orderId: string, userId: string) {
+        const order = await this.prisma.order.findUnique({
+            where: { id: orderId, userId },
+        });
+
+        if (!order) {
+            throw new BadRequestException('Order not found');
+        }
+
+        if (order.status !== 'PENDING') {
+            throw new BadRequestException('Only pending orders can be cancelled');
+        }
+
+        return await this.prisma.order.update({
+            where: { id: orderId, userId },
+            data: {
+                status: 'CANCELLED',
+            },
         });
     }
 }
