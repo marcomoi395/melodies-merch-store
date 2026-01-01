@@ -19,10 +19,10 @@ export class ArtistsPublicController {
         };
     }
 
-    @Get(':id')
+    @Get(':slug')
     @HttpCode(200)
     async getArtistDetail(@Param() param: GetArtistDetailDto) {
-        const result = await this.artistsService.getArtistDetail(param.id);
+        const result = await this.artistsService.getArtistDetail(param.slug);
 
         return {
             statusCode: 200,

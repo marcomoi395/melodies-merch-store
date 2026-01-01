@@ -44,9 +44,9 @@ export class ArtistsService {
         };
     }
 
-    async getArtistDetail(id: string) {
+    async getArtistDetail(slug: string) {
         const result = await this.prisma.artist.findUnique({
-            where: { id },
+            where: { slug },
             include: {
                 productArtists: {
                     include: {
