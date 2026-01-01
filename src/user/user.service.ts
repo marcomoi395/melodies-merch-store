@@ -53,7 +53,8 @@ export class UserService {
             throw new NotFoundException("User doesn't exist");
         }
 
-        return await this.prisma.user.update({ where: { id: userId }, data: payload });
+        const result = await this.prisma.user.update({ where: { id: userId }, data: payload });
+        return new UserEntity(result);
     }
 
     async changePassword(userId: string, payload: ChangePasswordDto) {
@@ -75,7 +76,7 @@ export class UserService {
 
         const newPasswordHash = await bcrypt.hash(payload.newPassword, 10);
 
-        return await this.prisma.user.update({
+        await this.prisma.user.update({
             where: { id: userId },
             data: { passwordHash: newPasswordHash },
         });

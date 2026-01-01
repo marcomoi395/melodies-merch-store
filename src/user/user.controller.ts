@@ -42,10 +42,11 @@ export class UserController {
         @Req() req: Request & { user: IJwtPayload },
         @Body() payload: ChangePasswordDto,
     ) {
+        await this.userService.changePassword(req.user.sub, payload);
+
         return {
             statusCode: 200,
             message: 'Password changed successfully',
-            data: await this.userService.changePassword(req.user.sub, payload),
         };
     }
 
