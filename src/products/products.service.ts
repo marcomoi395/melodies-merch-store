@@ -105,7 +105,11 @@ export class ProductsService {
                 skip: (page - 1) * limit,
                 orderBy,
                 include: {
-                    productVariants: true,
+                    productVariants: {
+                        include: {
+                            attributes: true,
+                        },
+                    },
                     category: true,
                     productArtists: {
                         include: {
@@ -120,14 +124,15 @@ export class ProductsService {
         const mappedData = products.map((p: Product & { productVariants: ProductVariant[] }) => {
             const variantPrices = p.productVariants.map((v) =>
                 v.discountPercent
-                    ? Number(v.originalPrice) * (1 - Number(v.discountPercent))
+                    ? Number(v.originalPrice) * (1 - Number(v.discountPercent) / 100)
                     : Number(v.originalPrice),
             );
-            const maxPrice = variantPrices.length ? Math.max(...variantPrices) : p.minPrice;
+
+            const maxPrice = Math.max(...variantPrices);
 
             return {
                 ...p,
-                maxPrice: maxPrice,
+                maxPrice: Number(maxPrice),
             };
         });
 
@@ -146,7 +151,11 @@ export class ProductsService {
         const result = await this.prisma.product.findFirst({
             where: { slug, ...(status && { status }) },
             include: {
-                productVariants: true,
+                productVariants: {
+                    include: {
+                        attributes: true,
+                    },
+                },
                 category: true,
                 productArtists: {
                     include: {
@@ -155,12 +164,21 @@ export class ProductsService {
                 },
             },
         });
-
         if (!result) {
             throw new NotFoundException('Product not found');
         }
 
-        return result;
+        const variantPrices = result.productVariants.map((v) =>
+            v.discountPercent
+                ? Number(v.originalPrice) * (1 - Number(v.discountPercent) / 100)
+                : Number(v.originalPrice),
+        );
+        const maxPrice = Math.max(...variantPrices);
+
+        return {
+            ...result,
+            maxPrice,
+        };
     }
 
     async createNewProductForAdmin(payload: CreateProductDto) {
