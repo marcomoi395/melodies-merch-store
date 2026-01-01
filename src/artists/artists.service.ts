@@ -18,18 +18,6 @@ export class ArtistsService {
             this.prisma.artist.findMany({
                 take: limit,
                 skip: (page - 1) * limit,
-                include: {
-                    productArtists: {
-                        include: {
-                            product: {
-                                include: {
-                                    category: true,
-                                    productVariants: true,
-                                },
-                            },
-                        },
-                    },
-                },
             }),
         ]);
 
@@ -53,7 +41,11 @@ export class ArtistsService {
                         product: {
                             include: {
                                 category: true,
-                                productVariants: true,
+                                productVariants: {
+                                    include: {
+                                        attributes: true,
+                                    },
+                                },
                             },
                         },
                     },
