@@ -199,6 +199,15 @@ export class ProductsService {
             }
         }
 
+        // Calculate lowest price from variants
+        const prices = variants.map((variant) =>
+            variant.discountPercent
+                ? variant.originalPrice * ((100 - variant.discountPercent) / 100)
+                : variant.originalPrice,
+        );
+
+        const minPrice = Math.min(...prices);
+
         const skus = variants.map((v) => v.sku);
         const existingSku = await this.prisma.productVariant.findFirst({
             where: { sku: { in: skus } },
@@ -246,7 +255,7 @@ export class ProductsService {
                               },
                           }
                         : {}),
-
+                    minPrice,
                     productVariants: {
                         create: variants.map((variant) => ({
                             sku: variant.sku,
