@@ -5,13 +5,14 @@ import { DiscountType } from 'src/promotion/dto/create-promotion.dto';
 import { OrderItemCreateManyInput, OrderWhereInput } from 'generated/prisma/models';
 import { Decimal } from '@prisma/client/runtime/client';
 import { GetOrdersDto } from './dto/get-order.dto';
+import { PreviewOrderDto } from './dto/preview.dto';
 
 @Injectable()
 export class OrderService {
     constructor(private prisma: PrismaService) {}
 
     async getOrdersByUserId(userId: string, query: GetOrdersDto) {
-        const { page = 1, limit = 20, sort, startDate, endDate, status } = query;
+        const { page = 1, limit = 20, startDate, endDate, status } = query;
 
         const where: OrderWhereInput = { userId };
 
@@ -28,21 +29,11 @@ export class OrderService {
             }
         }
 
-        let orderBy: any = { createdAt: 'desc' };
-
-        if (sort) {
-            const [field, direction] = sort.split(':');
-            if (field && ['asc', 'desc'].includes(direction)) {
-                orderBy = { [field]: direction };
-            }
-        }
-
         const [orders, total] = await Promise.all([
             this.prisma.order.findMany({
                 where,
                 take: limit,
                 skip: (page - 1) * limit,
-                orderBy,
                 include: { orderItems: true },
             }),
             this.prisma.order.count({ where }),
@@ -66,7 +57,7 @@ export class OrderService {
         });
     }
 
-    async previewOrder(payload: CreateOrderDto) {
+    async previewOrder(payload: PreviewOrderDto) {
         const { items, appliedVoucher, ...restData } = payload;
 
         const productVariantIds = items.map((i) => i.productVariantId);
@@ -179,9 +170,6 @@ export class OrderService {
         const total = subtotal.minus(discountAmount);
 
         return {
-            email: restData.email,
-            fullName: restData.fullName,
-            phone: restData.phone,
             subtotal,
             shippingFee: 0,
             discountAmount,

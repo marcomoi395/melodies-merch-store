@@ -9,6 +9,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { GetOrdersDto } from '../dto/get-order.dto';
 import { plainToInstance } from 'class-transformer';
 import { OrderResponseDto } from '../dto/order-response.dto';
+import { PreviewOrderDto } from '../dto/preview.dto';
 
 @Controller('order')
 export class OrderPublicController {
@@ -47,8 +48,8 @@ export class OrderPublicController {
     }
 
     @Post('preview')
-    async previewOrder(@Body() createOrderDto: CreateOrderDto) {
-        const result = await this.orderService.previewOrder(createOrderDto);
+    async previewOrder(@Body() body: PreviewOrderDto) {
+        const result = await this.orderService.previewOrder(body);
 
         const mappedData = plainToInstance(OrderResponseDto, result, {
             excludeExtraneousValues: true,

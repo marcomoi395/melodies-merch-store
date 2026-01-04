@@ -32,7 +32,7 @@ class CustomerInfoDto {
     phone: string;
 }
 
-class OrderItemDto {
+export class OrderItemDto {
     @IsUUID()
     @IsNotEmpty()
     productVariantId: string;

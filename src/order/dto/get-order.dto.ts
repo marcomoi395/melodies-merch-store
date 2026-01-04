@@ -1,4 +1,4 @@
-import { IsDate, IsEnum, IsInt, IsOptional, IsString, Min } from 'class-validator';
+import { IsDate, IsEnum, IsInt, IsOptional, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 import { OrderStatus } from './update-order.dto';
 
@@ -14,10 +14,6 @@ export class GetOrdersDto {
     @IsInt()
     @Min(1)
     limit?: number = 20;
-
-    @IsOptional()
-    @IsString()
-    sort?: string;
 
     @IsOptional()
     @Type(() => Date)
