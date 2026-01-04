@@ -49,10 +49,56 @@ export class CategoryService {
                 },
                 take: limit,
                 skip: (page - 1) * limit,
-                include: {
-                    category: true,
-                    productVariants: true,
-                    productArtists: true,
+                select: {
+                    id: true,
+                    name: true,
+                    slug: true,
+                    shortDescription: true,
+                    productType: true,
+                    status: true,
+                    minPrice: true,
+                    mediaGallery: true,
+                    category: {
+                        select: {
+                            name: true,
+                            slug: true,
+                        },
+                    },
+
+                    productArtists: {
+                        where: {
+                            artist: {
+                                deletedAt: null,
+                            },
+                        },
+                        select: {
+                            artist: {
+                                select: {
+                                    id: true,
+                                    stageName: true,
+                                    avatarUrl: true,
+                                },
+                            },
+                        },
+                    },
+
+                    productVariants: {
+                        where: { deletedAt: null },
+                        select: {
+                            id: true,
+                            name: true,
+                            originalPrice: true,
+                            discountPercent: true,
+                            isPreorder: true,
+                            stockQuantity: true,
+                            attributes: {
+                                select: {
+                                    key: true,
+                                    value: true,
+                                },
+                            },
+                        },
+                    },
                 },
                 orderBy: {
                     createdAt: 'desc',
@@ -72,8 +118,24 @@ export class CategoryService {
             throw new NotFoundException('Products not found for this category');
         }
 
+        // Calculate maxPrice for each product
+        const mappedData = products.map((p) => {
+            const variantPrices = p.productVariants.map((v) =>
+                v.discountPercent
+                    ? Number(v.originalPrice) * (1 - Number(v.discountPercent) / 100)
+                    : Number(v.originalPrice),
+            );
+
+            const maxPrice = Math.max(...variantPrices);
+
+            return {
+                ...p,
+                maxPrice: Number(maxPrice),
+            };
+        });
+
         return {
-            data: products,
+            data: mappedData,
             meta: {
                 currentPage: page,
                 totalPages: Math.ceil(total / limit),
