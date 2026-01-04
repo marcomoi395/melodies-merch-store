@@ -16,6 +16,8 @@ import { Request } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { IJwtPayload } from 'src/auth/auth.interface';
 import { AddToCartDto } from './dto/add-to-cart.dto';
+import { plainToInstance } from 'class-transformer';
+import { CartResponseDto } from './dto/cart-response.dto';
 
 @Controller('cart')
 export class CartController {
@@ -26,10 +28,14 @@ export class CartController {
     async getCart(@Req() req: Request & { user: IJwtPayload }) {
         const result = await this.cartService.getCart(req.user.sub);
 
+        const mappedData = plainToInstance(CartResponseDto, result, {
+            excludeExtraneousValues: true,
+        });
+
         return {
             statusCode: 200,
             message: 'Cart fetched successfully',
-            data: result,
+            data: mappedData,
         };
     }
 
@@ -37,11 +43,14 @@ export class CartController {
     @UseGuards(AuthGuard('jwt'))
     async addToCart(@Req() req: Request & { user: IJwtPayload }, @Body() body: AddToCartDto) {
         const result = await this.cartService.addItemToCart(req.user.sub, body);
+        const mappedData = plainToInstance(CartResponseDto, result, {
+            excludeExtraneousValues: true,
+        });
 
         return {
             statusCode: 201,
             message: 'Item added to cart successfully',
-            data: result,
+            data: mappedData,
         };
     }
 
@@ -58,10 +67,14 @@ export class CartController {
             quantity,
         );
 
+        const mappedData = plainToInstance(CartResponseDto, result, {
+            excludeExtraneousValues: true,
+        });
+
         return {
             statusCode: 200,
             message: 'Cart item quantity updated successfully',
-            data: result,
+            data: mappedData,
         };
     }
 
@@ -71,11 +84,16 @@ export class CartController {
         @Req() req: Request & { user: IJwtPayload },
         @Param('cartItemId', ParseUUIDPipe) cartItemId: string,
     ) {
-        await this.cartService.removeCartItem(req.user.sub, cartItemId);
+        const result = await this.cartService.removeCartItem(req.user.sub, cartItemId);
+
+        const mappedData = plainToInstance(CartResponseDto, result, {
+            excludeExtraneousValues: true,
+        });
 
         return {
             statusCode: 200,
             message: 'Cart item removed successfully',
+            data: mappedData,
         };
     }
 }

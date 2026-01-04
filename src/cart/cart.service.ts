@@ -1,7 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AddToCartDto } from './dto/add-to-cart.dto';
-import { formatCartResponse } from 'src/shared/helper/formatCartResponse';
 
 @Injectable()
 export class CartService {
@@ -10,25 +9,67 @@ export class CartService {
     async getCart(userId: string) {
         const cart = await this.prisma.cart.findFirst({
             where: { userId },
-            include: {
+            select: {
+                id: true,
+                userId: true,
                 cartItems: {
-                    include: {
-                        product: true,
-                        productVariant: true,
+                    select: {
+                        id: true,
+                        cartId: true,
+                        quantity: true,
+                        productVariant: {
+                            select: {
+                                id: true,
+                                name: true,
+                                originalPrice: true,
+                                discountPercent: true,
+                                isPreorder: true,
+                                stockQuantity: true,
+                                attributes: {
+                                    select: {
+                                        key: true,
+                                        value: true,
+                                    },
+                                },
+                            },
+                        },
+                        product: {
+                            select: {
+                                id: true,
+                                name: true,
+                                slug: true,
+                                shortDescription: true,
+                                productType: true,
+                                status: true,
+                                mediaGallery: true,
+                                category: {
+                                    select: {
+                                        name: true,
+                                        slug: true,
+                                    },
+                                },
+                                productArtists: {
+                                    where: {
+                                        artist: { deletedAt: null },
+                                    },
+                                    select: {
+                                        artist: {
+                                            select: {
+                                                id: true,
+                                                stageName: true,
+                                                avatarUrl: true,
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
                     },
                 },
             },
         });
-
         if (cart) {
-            const { cartItems, ...rest } = cart;
-
-            const validItems = cartItems.filter((item) => item.product && item.productVariant);
-
-            return {
-                ...rest,
-                cartItems: validItems.map((item) => formatCartResponse(item as any)),
-            };
+            return cart;
         }
 
         return await this.prisma.cart.create({
@@ -41,116 +82,107 @@ export class CartService {
     async addItemToCart(userId: string, data: AddToCartDto) {
         const { productId, productVariantId, quantity } = data;
 
-        const cart = await this.prisma.cart.upsert({
-            where: { userId },
-            update: {},
-            create: { userId },
-        });
+        await this.prisma.$transaction(async (tx) => {
+            const cart = await tx.cart.upsert({
+                where: { userId },
+                update: {},
+                create: { userId },
+            });
 
-        const productVariant = await this.prisma.productVariant.findUnique({
-            where: {
-                id: productVariantId,
-                deletedAt: null,
-                product: {
+            const productVariant = await tx.productVariant.findUnique({
+                where: {
+                    id: productVariantId,
                     deletedAt: null,
+                    product: { deletedAt: null },
                 },
-            },
-            select: {
-                stockQuantity: true,
-            },
-        });
+                select: { stockQuantity: true },
+            });
 
-        const currentCartItemQuantity = await this.prisma.cartItem.findFirst({
-            where: {
-                cartId: cart.id,
-                productVariantId,
-            },
-            select: {
-                quantity: true,
-            },
-        });
+            if (!productVariant) {
+                throw new NotFoundException('Product variant not found');
+            }
 
-        if (productVariant === null) {
-            throw new NotFoundException('Product variant not found');
-        }
+            const currentCartItemQuantity = await tx.cartItem.findFirst({
+                where: {
+                    cartId: cart.id,
+                    productVariantId,
+                },
+                select: { quantity: true },
+            });
 
-        if (
-            data.quantity + (currentCartItemQuantity?.quantity ?? 0) >
-            (productVariant?.stockQuantity ?? 0)
-        ) {
-            throw new BadRequestException('Requested quantity exceeds available stock');
-        }
+            if (
+                data.quantity + (currentCartItemQuantity?.quantity ?? 0) >
+                (productVariant.stockQuantity ?? 0)
+            ) {
+                throw new BadRequestException('Requested quantity exceeds available stock');
+            }
 
-        const result = await this.prisma.cartItem.upsert({
-            where: {
-                cartId_productId_productVariantId: {
+            // 4. Upsert CartItem
+            await tx.cartItem.upsert({
+                where: {
+                    cartId_productId_productVariantId: {
+                        cartId: cart.id,
+                        productId,
+                        productVariantId,
+                    },
+                },
+                update: {
+                    quantity: { increment: quantity },
+                },
+                create: {
                     cartId: cart.id,
                     productId,
                     productVariantId,
+                    quantity: quantity,
                 },
-            },
-            update: {
-                quantity: { increment: quantity },
-            },
-            create: {
-                cartId: cart.id,
-                productId,
-                productVariantId,
-                quantity: quantity,
-            },
-            include: {
-                product: true,
-                productVariant: true,
-            },
+            });
         });
 
-        return formatCartResponse(result as any);
+        return this.getCart(userId);
     }
 
     async updateCartItemQuantity(userId: string, cartItemId: string, quantity: number) {
-        const cartItem = await this.prisma.cartItem.findFirst({
-            where: {
-                id: cartItemId,
-                cart: { userId },
-                productVariant: {
-                    deletedAt: null,
+        await this.prisma.$transaction(async (tx) => {
+            const cartItem = await tx.cartItem.findFirst({
+                where: {
+                    id: cartItemId,
+                    cart: { userId },
+                    productVariant: {
+                        deletedAt: null,
+                    },
+                    product: {
+                        deletedAt: null,
+                    },
                 },
-                product: {
-                    deletedAt: null,
+                include: {
+                    cart: true,
+                    productVariant: {
+                        select: { stockQuantity: true },
+                    },
                 },
-            },
-            include: {
-                cart: true,
-                productVariant: {
-                    select: { stockQuantity: true },
-                },
-            },
-        });
-
-        if (!cartItem) {
-            throw new NotFoundException('Cart item not found');
-        }
-
-        if (quantity <= 0) {
-            return await this.prisma.cartItem.delete({
-                where: { id: cartItemId },
             });
-        }
 
-        if (quantity > (cartItem.productVariant?.stockQuantity ?? 0)) {
-            throw new BadRequestException('Requested quantity exceeds available stock');
-        }
+            if (!cartItem) {
+                throw new NotFoundException('Cart item not found');
+            }
 
-        const result = await this.prisma.cartItem.update({
-            where: { id: cartItemId },
-            data: { quantity },
-            include: {
-                productVariant: true,
-                product: true,
-            },
+            if (quantity <= 0) {
+                return await tx.cartItem.delete({
+                    where: { id: cartItemId },
+                });
+            }
+
+            if (quantity > (cartItem.productVariant?.stockQuantity ?? 0)) {
+                throw new BadRequestException('Requested quantity exceeds available stock');
+            }
+
+            await tx.cartItem.update({
+                where: { id: cartItemId },
+                data: { quantity },
+            });
         });
 
-        return formatCartResponse(result as any);
+        return this.getCart(userId);
     }
 
     async removeCartItem(userId: string, cartItemId: string) {
@@ -174,5 +206,7 @@ export class CartService {
         await this.prisma.cartItem.delete({
             where: { id: cartItemId },
         });
+
+        return this.getCart(userId);
     }
 }
