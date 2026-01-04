@@ -38,15 +38,62 @@ export class ArtistsService {
     async getArtistDetail(slug: string) {
         const result = await this.prisma.artist.findUnique({
             where: { slug, deletedAt: null },
-            include: {
+            select: {
+                id: true,
+                stageName: true,
+                slug: true,
+                avatarUrl: true,
+                bio: true,
                 productArtists: {
-                    include: {
+                    where: {
                         product: {
-                            include: {
-                                category: true,
+                            deletedAt: null,
+                            status: 'published',
+                        },
+                    },
+                    select: {
+                        product: {
+                            select: {
+                                id: true,
+                                name: true,
+                                slug: true,
+                                shortDescription: true,
+                                productType: true,
+                                status: true,
+                                minPrice: true,
+                                mediaGallery: true,
+                                category: {
+                                    select: {
+                                        name: true,
+                                        slug: true,
+                                    },
+                                },
+                                productArtists: {
+                                    select: {
+                                        artist: {
+                                            select: {
+                                                id: true,
+                                                stageName: true,
+                                                avatarUrl: true,
+                                            },
+                                        },
+                                    },
+                                },
                                 productVariants: {
-                                    include: {
-                                        attributes: true,
+                                    where: { deletedAt: null },
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                        originalPrice: true,
+                                        discountPercent: true,
+                                        isPreorder: true,
+                                        stockQuantity: true,
+                                        attributes: {
+                                            select: {
+                                                key: true,
+                                                value: true,
+                                            },
+                                        },
                                     },
                                 },
                             },
@@ -60,7 +107,29 @@ export class ArtistsService {
             throw new NotFoundException('Artist not found');
         }
 
-        return result;
+        const { productArtists, ...restData } = result;
+
+        // Calculate maxPrice for each product
+        const mappedData = productArtists.map((p) => {
+            if (p.product.productVariants) {
+                const variantPrices = p.product.productVariants.map((v) =>
+                    v.discountPercent
+                        ? Number(v.originalPrice) * (1 - Number(v.discountPercent) / 100)
+                        : Number(v.originalPrice),
+                );
+
+                const maxPrice = Math.max(...variantPrices);
+
+                p.product['maxPrice'] = maxPrice;
+
+                return p;
+            }
+        });
+
+        return {
+            ...restData,
+            productArtists: mappedData,
+        };
     }
 
     async createArtistForAdmin(payload: CreateArtistDto) {
@@ -109,6 +178,11 @@ export class ArtistsService {
             if (error instanceof PrismaClientKnownRequestError && error.code === 'P2002') {
                 throw new ConflictException('Artist with this stage name already exists');
             }
+
+            if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
+                throw new NotFoundException(`Artist with ID ${id} not found`);
+            }
+
             throw error;
         }
     }

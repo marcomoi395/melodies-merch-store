@@ -15,6 +15,8 @@ import { UpdateArtistDto } from '../dto/update-artist.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { RequiredPermission } from 'src/permissions/permissions.decorator';
 import { PermissionGuard } from 'src/permissions/permissions.guard';
+import { plainToInstance } from 'class-transformer';
+import { ArtistResponseDto } from '../dto/artist-response.dto';
 
 @UseGuards(AuthGuard('jwt'), PermissionGuard)
 @RequiredPermission('BRAND', 'MANAGE')
@@ -26,10 +28,14 @@ export class ArtistsAdminController {
     async createNewArtistForAdmin(@Body() body: CreateArtistDto) {
         const result = await this.artistsService.createArtistForAdmin(body);
 
+        const mappedData = plainToInstance(ArtistResponseDto, result, {
+            excludeExtraneousValues: true,
+        });
+
         return {
             statusCode: 201,
             message: 'Artist created successfully',
-            data: result,
+            data: mappedData,
         };
     }
 
@@ -41,10 +47,14 @@ export class ArtistsAdminController {
     ) {
         const result = await this.artistsService.updateArtistForAdmin(id, body);
 
+        const mappedData = plainToInstance(ArtistResponseDto, result, {
+            excludeExtraneousValues: true,
+        });
+
         return {
             statusCode: 200,
             message: 'Artist updated successfully',
-            data: result,
+            data: mappedData,
         };
     }
 
