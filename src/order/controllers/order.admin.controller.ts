@@ -14,6 +14,8 @@ import { PermissionGuard } from 'src/permissions/permissions.guard';
 import { AuthGuard } from '@nestjs/passport';
 import { GetOrdersDto } from '../dto/get-order.dto';
 import { UpdateOrderDto } from '../dto/update-order.dto';
+import { plainToInstance } from 'class-transformer';
+import { OrderResponseDto } from '../dto/order-response.dto';
 
 @Controller('admin/order')
 export class OrderAdminController {
@@ -23,12 +25,17 @@ export class OrderAdminController {
     @UseGuards(AuthGuard('jwt'), PermissionGuard)
     @RequiredPermission('ORDER', 'VIEW')
     async getAllOrders(@Query() query: GetOrdersDto) {
-        const result = await this.orderService.getOrdersForAdmin(query);
+        const { data, meta } = await this.orderService.getOrdersForAdmin(query);
+
+        const mappedData = plainToInstance(OrderResponseDto, data, {
+            excludeExtraneousValues: true,
+        });
 
         return {
             statusCode: 200,
             message: 'Orders retrieved successfully',
-            data: result,
+            data: mappedData,
+            meta,
         };
     }
 
@@ -38,10 +45,14 @@ export class OrderAdminController {
     async getOrderDetailForAdmin(@Param('id', new ParseUUIDPipe()) id: string) {
         const result = await this.orderService.getOrderDetailForAdmin(id);
 
+        const mappedData = plainToInstance(OrderResponseDto, result, {
+            excludeExtraneousValues: true,
+        });
+
         return {
             statusCode: 200,
             message: 'Order detail retrieved successfully',
-            data: result,
+            data: mappedData,
         };
     }
 
@@ -54,10 +65,14 @@ export class OrderAdminController {
     ) {
         const result = await this.orderService.changeOrderStatusForAdmin(id, body.status);
 
+        const mappedData = plainToInstance(OrderResponseDto, result, {
+            excludeExtraneousValues: true,
+        });
+
         return {
             statusCode: 200,
             message: 'Order status updated successfully',
-            data: result,
+            data: mappedData,
         };
     }
 }

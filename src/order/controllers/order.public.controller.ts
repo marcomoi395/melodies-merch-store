@@ -7,6 +7,8 @@ import { IJwtPayload } from 'src/auth/auth.interface';
 import { Request } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { GetOrdersDto } from '../dto/get-order.dto';
+import { plainToInstance } from 'class-transformer';
+import { OrderResponseDto } from '../dto/order-response.dto';
 
 @Controller('order')
 export class OrderPublicController {
@@ -15,12 +17,17 @@ export class OrderPublicController {
     @Get()
     @UseGuards(AuthGuard('jwt'))
     async getOrders(@Req() req: Request & { user: IJwtPayload }, @Query() query: GetOrdersDto) {
-        const result = await this.orderService.getOrdersByUserId(req.user.sub, query);
+        const { data, meta } = await this.orderService.getOrdersByUserId(req.user.sub, query);
+
+        const mappedData = plainToInstance(OrderResponseDto, data, {
+            excludeExtraneousValues: true,
+        });
 
         return {
             statusCode: 200,
             message: 'Orders retrieved successfully',
-            data: result,
+            data: mappedData,
+            meta,
         };
     }
 
@@ -28,20 +35,29 @@ export class OrderPublicController {
     async getOrderByOrderId(@Param('id', new ParseUUIDPipe()) id: string) {
         const result = await this.orderService.getOrderById(id);
 
+        const mappedData = plainToInstance(OrderResponseDto, result, {
+            excludeExtraneousValues: true,
+        });
+
         return {
             statusCode: 200,
             message: 'Order retrieved successfully',
-            data: result,
+            data: mappedData,
         };
     }
 
     @Post('preview')
     async previewOrder(@Body() createOrderDto: CreateOrderDto) {
         const result = await this.orderService.previewOrder(createOrderDto);
+
+        const mappedData = plainToInstance(OrderResponseDto, result, {
+            excludeExtraneousValues: true,
+        });
+
         return {
             statusCode: 200,
             message: 'Order preview generated successfully',
-            data: result,
+            data: mappedData,
         };
     }
 
@@ -52,12 +68,16 @@ export class OrderPublicController {
         @Body() createOrderDto: CreateOrderDto,
     ) {
         const userId = req.user ? req.user.sub : null;
-
         const result = await this.orderService.createOrder(createOrderDto, userId);
+
+        const mappedData = plainToInstance(OrderResponseDto, result, {
+            excludeExtraneousValues: true,
+        });
+
         return {
             statusCode: 201,
             message: 'Order created successfully',
-            data: result,
+            data: mappedData,
         };
     }
 

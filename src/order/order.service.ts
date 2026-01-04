@@ -74,6 +74,9 @@ export class OrderService {
             where: {
                 id: { in: productVariantIds },
                 deletedAt: null,
+                product: {
+                    status: 'published',
+                },
             },
             include: {
                 product: true,
@@ -184,6 +187,7 @@ export class OrderService {
             discountAmount,
             totalAmount: total,
             appliedVoucher: appliedVoucher || null,
+            shippingAddress: restData.shippingAddress,
             orderItems: orderItemsPreview,
         };
     }
@@ -370,7 +374,7 @@ export class OrderService {
     }
 
     async getOrdersForAdmin(query: GetOrdersDto) {
-        const { page = 1, limit = 20, sort, startDate, endDate, status } = query;
+        const { page = 1, limit = 20, startDate, endDate, status } = query;
 
         const where: OrderWhereInput = {};
 
@@ -388,21 +392,11 @@ export class OrderService {
             }
         }
 
-        let orderBy: any = { createdAt: 'desc' };
-
-        if (sort) {
-            const [field, direction] = sort.split(':');
-            if (field && ['asc', 'desc'].includes(direction)) {
-                orderBy = { [field]: direction };
-            }
-        }
-
         const [orders, total] = await Promise.all([
             this.prisma.order.findMany({
                 where,
                 take: limit,
                 skip: (page - 1) * limit,
-                orderBy,
                 include: { orderItems: true },
             }),
             this.prisma.order.count({ where }),
