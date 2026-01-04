@@ -60,12 +60,11 @@ export class RolesController {
 
     @Delete(':id')
     async deleteRoleForAdmin(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
-        const result = await this.rolesService.deleteRoleForAdmin(id);
+        await this.rolesService.deleteRoleForAdmin(id);
 
         return {
             statusCode: 200,
             message: 'Role deleted successfully',
-            data: result,
         };
     }
 }
