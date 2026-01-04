@@ -122,6 +122,11 @@ export class ProductsService {
                     },
 
                     productArtists: {
+                        where: {
+                            artist: {
+                                deletedAt: null,
+                            },
+                        },
                         select: {
                             artist: {
                                 select: {
