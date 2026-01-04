@@ -16,6 +16,9 @@ export class ArtistsService {
         const [total, artists] = await Promise.all([
             this.prisma.artist.count(),
             this.prisma.artist.findMany({
+                where: {
+                    deletedAt: null,
+                },
                 take: limit,
                 skip: (page - 1) * limit,
             }),
@@ -34,7 +37,7 @@ export class ArtistsService {
 
     async getArtistDetail(slug: string) {
         const result = await this.prisma.artist.findUnique({
-            where: { slug },
+            where: { slug, deletedAt: null },
             include: {
                 productArtists: {
                     include: {
