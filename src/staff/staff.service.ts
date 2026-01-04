@@ -7,7 +7,7 @@ import {
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RegisterStaffDto } from './dto/register-staff.dto';
 import * as bcrypt from 'bcryptjs';
-import { formatUserResponse } from 'src/shared/helper/formatUserResponse';
+import { formatPermission } from 'src/shared/helper/formatUserResponse';
 import { UpdateStaffDto } from './dto/update-staff.dto';
 
 @Injectable()
@@ -39,7 +39,7 @@ export class StaffService {
             },
         });
 
-        return staff.map((user) => formatUserResponse(user));
+        return staff.map((user) => formatPermission(user));
     }
 
     async registerStaffForAdmin(payload: RegisterStaffDto) {
@@ -104,13 +104,13 @@ export class StaffService {
             },
         });
 
-        return formatUserResponse(newStaff);
+        return formatPermission(newStaff);
     }
 
     async updateStaffForAdmin(id: string, payload: UpdateStaffDto) {
         const { roleIds, password, ...userData } = payload;
 
-        const existingUser = await this.prisma.user.findUnique({ where: { id } });
+        const existingUser = await this.prisma.user.findUnique({ where: { id, deletedAt: null } });
         if (!existingUser) {
             throw new NotFoundException('User not found');
         }
@@ -149,7 +149,7 @@ export class StaffService {
 
         // 5. Update data
         const updatedStaff = await this.prisma.user.update({
-            where: { id },
+            where: { id, deletedAt: null },
             data: {
                 ...userData,
                 ...(hashPassword && { passwordHash: hashPassword }),
@@ -181,24 +181,21 @@ export class StaffService {
             },
         });
 
-        return formatUserResponse(updatedStaff);
+        return formatPermission(updatedStaff);
     }
 
     async deleteAccountForAdmin(id: string) {
-        const user = await this.prisma.user.findUnique({ where: { id } });
+        const user = await this.prisma.user.findUnique({ where: { id, deletedAt: null } });
 
         if (!user) {
             throw new NotFoundException('User not found');
-        }
-
-        if (user.deletedAt) {
-            throw new BadRequestException('User has already been deleted');
         }
 
         await this.prisma.user.update({
             where: { id },
             data: {
                 status: 'deleted',
+                email: `deleted_${user.email}`,
                 deletedAt: new Date(),
             },
         });

@@ -16,6 +16,8 @@ import { UpdateStaffDto } from './dto/update-staff.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { RequiredPermission } from 'src/permissions/permissions.decorator';
 import { PermissionGuard } from 'src/permissions/permissions.guard';
+import { plainToInstance } from 'class-transformer';
+import { StaffResponseDto } from './dto/staff-response.dto';
 
 @UseGuards(AuthGuard('jwt'), PermissionGuard)
 @RequiredPermission('STAFF', 'MANAGE')
@@ -28,10 +30,14 @@ export class StaffController {
     async getAllStaff() {
         const result = await this.staffService.getAllStaff();
 
+        const mappedData = plainToInstance(StaffResponseDto, result, {
+            excludeExtraneousValues: true,
+        });
+
         return {
             statusCode: 200,
             message: 'Staff retrieved successfully',
-            data: result,
+            data: mappedData,
         };
     }
 
@@ -39,10 +45,14 @@ export class StaffController {
     async registerStaffForAdmin(@Body() body: RegisterStaffDto) {
         const result = await this.staffService.registerStaffForAdmin(body);
 
+        const mappedData = plainToInstance(StaffResponseDto, result, {
+            excludeExtraneousValues: true,
+        });
+
         return {
             statusCode: 201,
             message: 'Staff registered successfully',
-            data: result,
+            data: mappedData,
         };
     }
 
@@ -53,21 +63,24 @@ export class StaffController {
     ) {
         const result = await this.staffService.updateStaffForAdmin(id, body);
 
+        const mappedData = plainToInstance(StaffResponseDto, result, {
+            excludeExtraneousValues: true,
+        });
+
         return {
             statusCode: 200,
             message: 'Staff updated successfully',
-            data: result,
+            data: mappedData,
         };
     }
 
     @Delete(':id')
     async deleteAccountForAdmin(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
-        const result = await this.staffService.deleteAccountForAdmin(id);
+        await this.staffService.deleteAccountForAdmin(id);
 
         return {
             statusCode: 200,
             message: 'Account deleted successfully',
-            data: result,
         };
     }
 }

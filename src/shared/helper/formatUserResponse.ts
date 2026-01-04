@@ -1,6 +1,6 @@
 import { UserRole, Role, RolePermission, Permission, User } from 'generated/prisma/browser';
 
-export function formatUserResponse(user: User & { userRoles: UserRole[] }) {
+export function formatPermission(user: User & { userRoles: UserRole[] }) {
     const { userRoles, ...otherInfo } = user;
 
     return {
