@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GetProductsDto } from './dto/get-products.dto';
-import { Prisma, Product, ProductVariant } from 'generated/prisma/browser';
+import { Prisma } from 'generated/prisma/browser';
 import { CategoryService } from 'src/category/category.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -96,6 +96,7 @@ export class ProductsService {
                     ...(status && { status }),
                 },
             }),
+
             this.prisma.product.findMany({
                 where: {
                     ...where,
@@ -104,24 +105,57 @@ export class ProductsService {
                 take: limit,
                 skip: (page - 1) * limit,
                 orderBy,
-                include: {
-                    productVariants: {
-                        include: {
-                            attributes: true,
+                select: {
+                    id: true,
+                    name: true,
+                    slug: true,
+                    shortDescription: true,
+                    productType: true,
+                    status: true,
+                    minPrice: true,
+                    mediaGallery: true,
+                    category: {
+                        select: {
+                            name: true,
+                            slug: true,
                         },
                     },
-                    category: true,
+
                     productArtists: {
-                        include: {
-                            artist: true,
+                        select: {
+                            artist: {
+                                select: {
+                                    id: true,
+                                    stageName: true,
+                                    avatarUrl: true,
+                                },
+                            },
+                        },
+                    },
+
+                    productVariants: {
+                        where: { deletedAt: null },
+                        select: {
+                            id: true,
+                            name: true,
+                            originalPrice: true,
+                            discountPercent: true,
+                            isPreorder: true,
+                            stockQuantity: true,
+                            attributes: {
+                                select: {
+                                    key: true,
+                                    value: true,
+                                },
+                            },
                         },
                     },
                 },
             }),
         ]);
 
-        // Map Response
-        const mappedData = products.map((p: Product & { productVariants: ProductVariant[] }) => {
+        // Calculate maxPrice for each product
+        const mappedData = products.map((p) => {
             const variantPrices = p.productVariants.map((v) =>
                 v.discountPercent
                     ? Number(v.originalPrice) * (1 - Number(v.discountPercent) / 100)
@@ -150,16 +184,49 @@ export class ProductsService {
     async getProductDetail(slug: string, status?: string) {
         const result = await this.prisma.product.findFirst({
             where: { slug, ...(status && { status }) },
-            include: {
-                productVariants: {
-                    include: {
-                        attributes: true,
+            select: {
+                id: true,
+                name: true,
+                slug: true,
+                shortDescription: true,
+                productType: true,
+                status: true,
+                minPrice: true,
+                mediaGallery: true,
+                category: {
+                    select: {
+                        name: true,
+                        slug: true,
                     },
                 },
-                category: true,
+
                 productArtists: {
-                    include: {
-                        artist: true,
+                    select: {
+                        artist: {
+                            select: {
+                                id: true,
+                                stageName: true,
+                                avatarUrl: true,
+                            },
+                        },
+                    },
+                },
+
+                productVariants: {
+                    where: { deletedAt: null },
+                    select: {
+                        id: true,
+                        name: true,
+                        originalPrice: true,
+                        discountPercent: true,
+                        isPreorder: true,
+                        stockQuantity: true,
+                        attributes: {
+                            select: {
+                                key: true,
+                                value: true,
+                            },
+                        },
                     },
                 },
             },
@@ -295,18 +362,51 @@ export class ProductsService {
                         })),
                     },
                 },
-                include: {
-                    productVariants: {
-                        include: {
-                            attributes: true,
+                select: {
+                    id: true,
+                    name: true,
+                    slug: true,
+                    shortDescription: true,
+                    productType: true,
+                    status: true,
+                    minPrice: true,
+                    mediaGallery: true,
+                    category: {
+                        select: {
+                            name: true,
+                            slug: true,
                         },
                     },
+
                     productArtists: {
-                        include: {
-                            artist: true,
+                        select: {
+                            artist: {
+                                select: {
+                                    id: true,
+                                    stageName: true,
+                                    avatarUrl: true,
+                                },
+                            },
                         },
                     },
-                    category: true,
+
+                    productVariants: {
+                        where: { deletedAt: null },
+                        select: {
+                            id: true,
+                            name: true,
+                            originalPrice: true,
+                            discountPercent: true,
+                            isPreorder: true,
+                            stockQuantity: true,
+                            attributes: {
+                                select: {
+                                    key: true,
+                                    value: true,
+                                },
+                            },
+                        },
+                    },
                 },
             });
 
@@ -483,17 +583,51 @@ export class ProductsService {
 
             return await tx.product.findUnique({
                 where: { id },
-                include: {
-                    productVariants: {
-                        where: { deletedAt: null },
-                        include: { attributes: true },
-                    },
-                    productArtists: {
-                        include: {
-                            artist: true,
+                select: {
+                    id: true,
+                    name: true,
+                    slug: true,
+                    shortDescription: true,
+                    productType: true,
+                    status: true,
+                    minPrice: true,
+                    mediaGallery: true,
+                    category: {
+                        select: {
+                            name: true,
+                            slug: true,
                         },
                     },
-                    category: true,
+
+                    productArtists: {
+                        select: {
+                            artist: {
+                                select: {
+                                    id: true,
+                                    stageName: true,
+                                    avatarUrl: true,
+                                },
+                            },
+                        },
+                    },
+
+                    productVariants: {
+                        where: { deletedAt: null },
+                        select: {
+                            id: true,
+                            name: true,
+                            originalPrice: true,
+                            discountPercent: true,
+                            isPreorder: true,
+                            stockQuantity: true,
+                            attributes: {
+                                select: {
+                                    key: true,
+                                    value: true,
+                                },
+                            },
+                        },
+                    },
                 },
             });
         });

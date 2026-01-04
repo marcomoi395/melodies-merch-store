@@ -18,6 +18,8 @@ import { UpdateProductDto } from '../dto/update-product.dto';
 import { ProductsService } from '../products.service';
 import { RequiredPermission } from 'src/permissions/permissions.decorator';
 import { PermissionGuard } from 'src/permissions/permissions.guard';
+import { plainToInstance } from 'class-transformer';
+import { ProductResponseDto } from '../dto/product-response.dto';
 
 @Controller('admin/products')
 export class ProductsAdminController {
@@ -27,12 +29,17 @@ export class ProductsAdminController {
     @UseGuards(AuthGuard('jwt'), PermissionGuard)
     @RequiredPermission('PRODUCT', 'VIEW')
     async getProductsForAdmin(@Query() query: GetProductsForAdminDto) {
-        const result = await this.productsService.getProducts(query, query.status);
+        const { meta, data } = await this.productsService.getProducts(query, query.status);
+
+        const mappedData = plainToInstance(ProductResponseDto, data, {
+            excludeExtraneousValues: true,
+        });
 
         return {
             statusCode: 200,
             message: 'Products fetched successfully',
-            ...result,
+            data: mappedData,
+            meta,
         };
     }
 
@@ -42,10 +49,14 @@ export class ProductsAdminController {
     async getProductDetailForAdmin(@Param() param: GetProductDetailDto) {
         const result = await this.productsService.getProductDetail(param.slug);
 
+        const mappedData = plainToInstance(ProductResponseDto, result, {
+            excludeExtraneousValues: true,
+        });
+
         return {
             statusCode: 200,
             message: 'Product detail fetched successfully',
-            data: result,
+            data: mappedData,
         };
     }
 
@@ -55,10 +66,14 @@ export class ProductsAdminController {
     async createNewProductForAdmin(@Body() body: CreateProductDto) {
         const result = await this.productsService.createNewProductForAdmin(body);
 
+        const mappedData = plainToInstance(ProductResponseDto, result, {
+            excludeExtraneousValues: true,
+        });
+
         return {
             statusCode: 201,
             message: 'Product created successfully',
-            data: result,
+            data: mappedData,
         };
     }
 
@@ -68,10 +83,14 @@ export class ProductsAdminController {
     async updateProductForAdmin(@Body() body: UpdateProductDto, @Param('id') id: string) {
         const result = await this.productsService.updateProductForAdmin(id, body);
 
+        const mappedData = plainToInstance(ProductResponseDto, result, {
+            excludeExtraneousValues: true,
+        });
+
         return {
             statusCode: 200,
             message: 'Product updated successfully',
-            data: result,
+            data: mappedData,
         };
     }
 
