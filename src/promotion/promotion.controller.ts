@@ -15,6 +15,8 @@ import { UpdatePromotionDto } from './dto/update-promotion.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { RequiredPermission } from 'src/permissions/permissions.decorator';
 import { PermissionGuard } from 'src/permissions/permissions.guard';
+import { plainToInstance } from 'class-transformer';
+import { PromotionResponseDto } from './dto/promotion-response.dto';
 
 @Controller('admin/promotion')
 @UseGuards(AuthGuard('jwt'), PermissionGuard)
@@ -26,10 +28,14 @@ export class PromotionController {
     async getAllPromotionCodes() {
         const result = await this.promotionService.getAllPromotionCodes();
 
+        const mappedData = plainToInstance(PromotionResponseDto, result, {
+            excludeExtraneousValues: true,
+        });
+
         return {
             statusCode: 200,
             message: 'Promotions fetched successfully',
-            data: result,
+            data: mappedData,
         };
     }
 
@@ -37,10 +43,14 @@ export class PromotionController {
     async createNewPromotionCode(@Body() body: CreatePromotionDto) {
         const result = await this.promotionService.createNewPromotionCode(body);
 
+        const mappedData = plainToInstance(PromotionResponseDto, result, {
+            excludeExtraneousValues: true,
+        });
+
         return {
             statusCode: 201,
             message: 'Promotion created successfully',
-            data: result,
+            data: mappedData,
         };
     }
 
@@ -51,10 +61,14 @@ export class PromotionController {
     ) {
         const result = await this.promotionService.updatePromotionCode(id, body);
 
+        const mappedData = plainToInstance(PromotionResponseDto, result, {
+            excludeExtraneousValues: true,
+        });
+
         return {
             statusCode: 200,
             message: 'Promotion updated successfully',
-            data: result,
+            data: mappedData,
         };
     }
 

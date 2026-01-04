@@ -283,7 +283,7 @@ model Discount {
     usedCount   Int?      @default(0) @map("used_count")
     isActive    Boolean?  @default(true) @map("is_active")
     appliesTo   String?   @default("all") @map("applies_to") @db.VarChar(20)
-    createdAt   DateTime? @map("created_at") @db.Timestamp()
+    createdAt   DateTime? @default(now()) @map("created_at") @db.Timestamp()
     updatedAt   DateTime  @updatedAt @map("updated_at")
     deletedAt   DateTime? @map("deleted_at") @db.Timestamp()
 
