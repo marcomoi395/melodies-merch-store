@@ -1,0 +1,3022 @@
+openapi: 3.0.3
+info:
+    version: 1.0.0
+    title: Melodies - Ecommerce Merch Platform
+    description: |
+        API Documentation for Melodies - Ecommerce Artists Merch Platform.
+    termsOfService: ''
+servers:
+    - url: 'http://localhost:3000/api'
+      description: Local Development Server
+paths:
+    /auth/register:
+        post:
+            tags:
+                - Auth
+            summary: Register new account
+            operationId: register
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                email:
+                                    type: string
+                                    format: email
+                                password:
+                                    type: string
+                                    minLength: 6
+                                fullName:
+                                    type: string
+                                phone:
+                                    type: string
+                            required:
+                                - email
+                                - password
+                                - fullName
+            responses:
+                '201':
+                    description: Account created successfully
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 201
+                                    message:
+                                        type: string
+                                        example: Registration successful
+                                    data:
+                                        $ref: '#/components/schemas/User'
+                            examples:
+                                Registration successful:
+                                    value:
+                                        statusCode: 201
+                                        message: Registration successful
+                                        data:
+                                            id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                                            email: user@example.com
+                                            fullName: string
+                                            phone: string
+                                            provider: local
+                                            isVerified: true
+                                            createdAt: '2019-08-24T14:15:22Z'
+                '400':
+                    $ref: '#/components/responses/BadRequestError'
+                '409':
+                    $ref: '#/components/responses/ConflictError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+    /auth/login:
+        post:
+            tags:
+                - Auth
+            summary: Login
+            operationId: login
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                email:
+                                    type: string
+                                    format: email
+                                password:
+                                    type: string
+                                    format: password
+                            required:
+                                - email
+                                - password
+            responses:
+                '200':
+                    description: Login successful
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                                        example: Login successful
+                                    data:
+                                        type: object
+                                        properties:
+                                            accessToken:
+                                                type: string
+                                            refreshToken:
+                                                type: string
+                                            user:
+                                                $ref: '#/components/schemas/User'
+                '401':
+                    $ref: '#/components/responses/UnauthorizedError'
+                '403':
+                    $ref: '#/components/responses/ForbiddenError'
+                '429':
+                    $ref: '#/components/responses/TooManyRequestsError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+    /auth/logout:
+        post:
+            tags:
+                - Auth
+            summary: Logout (Revoke session)
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                refreshToken:
+                                    type: string
+                            required:
+                                - refreshToken
+            responses:
+                '200':
+                    description: Logout successful
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                                        example: Logged out successfully
+                '401':
+                    $ref: '#/components/responses/UnauthorizedError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            security:
+                - bearerAuth: []
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+    /auth/refresh:
+        post:
+            tags:
+                - Auth
+            summary: Refresh Access Token
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                refreshToken:
+                                    type: string
+                            required:
+                                - refreshToken
+            responses:
+                '200':
+                    description: Token refreshed
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                                    data:
+                                        type: object
+                                        properties:
+                                            accessToken:
+                                                type: string
+                                            refreshToken:
+                                                type: string
+                '401':
+                    $ref: '#/components/responses/UnauthorizedError'
+                '403':
+                    $ref: '#/components/responses/ForbiddenError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            security:
+                - bearerAuth: []
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+    /user/me:
+        get:
+            tags:
+                - Auth
+            summary: Get current user profile
+            responses:
+                '200':
+                    description: User info
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                                    data:
+                                        $ref: '#/components/schemas/User'
+                '401':
+                    $ref: '#/components/responses/UnauthorizedError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            security:
+                - bearerAuth: []
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+    /user/profile:
+        patch:
+            tags:
+                - Auth
+            summary: Update profile info
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                fullName:
+                                    type: string
+                                phone:
+                                    type: string
+                                avatarUrl:
+                                    type: string
+            responses:
+                '200':
+                    description: Updated
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                                    data:
+                                        $ref: '#/components/schemas/User'
+                '400':
+                    $ref: '#/components/responses/BadRequestError'
+                '401':
+                    $ref: '#/components/responses/UnauthorizedError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            security:
+                - bearerAuth: []
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+    /user/change-password:
+        patch:
+            tags:
+                - Auth
+            summary: Change password
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                oldPassword:
+                                    type: string
+                                newPassword:
+                                    type: string
+                                    minLength: 6
+                            required:
+                                - oldPassword
+                                - newPassword
+            responses:
+                '200':
+                    description: Password changed
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                '400':
+                    $ref: '#/components/responses/BadRequestError'
+                '401':
+                    $ref: '#/components/responses/UnauthorizedError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            security:
+                - bearerAuth: []
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+    /user/request-verification-email:
+        get:
+            tags:
+                - Auth
+            summary: Request account verification email
+            responses:
+                '200':
+                    description: Email sent
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        example: 200
+                                    message:
+                                        example: Verification email has been sent to your registered email address.
+                '401':
+                    $ref: '#/components/responses/UnauthorizedError'
+                '409':
+                    $ref: '#/components/responses/ConflictError'
+                '429':
+                    $ref: '#/components/responses/TooManyRequestsError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            security:
+                - bearerAuth: []
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+    /user/verify-account:
+        post:
+            tags:
+                - Auth
+            summary: Submit verification token
+            parameters:
+                - name: token
+                  in: query
+                  schema:
+                      type: string
+            requestBody:
+                required: true
+                content: {}
+            responses:
+                '200':
+                    description: Verified successfully
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        example: 200
+                                    message:
+                                        example: Account has been successfully verified.
+                '400':
+                    $ref: '#/components/responses/BadRequestError'
+                '409':
+                    $ref: '#/components/responses/ConflictError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            security:
+                - bearerAuth: []
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+    /user/forgot-password:
+        post:
+            tags:
+                - Auth
+            summary: Request password reset
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                email:
+                                    type: string
+                                    format: email
+                            required:
+                                - email
+            responses:
+                '200':
+                    description: Reset email sent (if exists)
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                '400':
+                    $ref: '#/components/responses/BadRequestError'
+                '429':
+                    $ref: '#/components/responses/TooManyRequestsError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+    /user/reset-password:
+        post:
+            tags:
+                - Auth
+            summary: Reset password with token
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                token:
+                                    type: string
+                                newPassword:
+                                    type: string
+                            required:
+                                - token
+                                - newPassword
+            responses:
+                '200':
+                    description: Password reset successful
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                '400':
+                    $ref: '#/components/responses/BadRequestError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+    /products:
+        get:
+            tags:
+                - Catalog
+            summary: List and search products
+            parameters:
+                - name: keyword
+                  in: query
+                  schema:
+                      type: string
+                - name: artistId
+                  in: query
+                  schema:
+                      type: array
+                      items:
+                          type: string
+                          format: uuid
+                - name: type
+                  in: query
+                  schema:
+                      type: array
+                      items:
+                          type: string
+                          enum:
+                              - music
+                              - merch
+                - name: page
+                  in: query
+                  schema:
+                      type: integer
+                      default: 1
+                - name: limit
+                  in: query
+                  schema:
+                      type: integer
+                      default: 20
+                - name: price_min
+                  in: query
+                  schema:
+                      type: integer
+                - name: price_max
+                  in: query
+                  schema:
+                      type: integer
+                - name: sort
+                  in: query
+                  schema:
+                      type: string
+                - name: stock_status
+                  in: query
+                  schema:
+                      type: boolean
+            responses:
+                '200':
+                    description: List of products
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                                        example: Success
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/ProductResponse'
+                                    meta:
+                                        $ref: '#/components/schemas/MetaPagination'
+                '400':
+                    $ref: '#/components/responses/BadRequestError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+    '/products/{slug}':
+        get:
+            tags:
+                - Catalog
+            summary: Get product detail
+            parameters:
+                - name: slug
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                '200':
+                    description: Product detail found
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                                    data:
+                                        $ref: '#/components/schemas/ProductResponse'
+                '404':
+                    $ref: '#/components/responses/NotFoundError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+    /artists:
+        get:
+            tags:
+                - Catalog
+            summary: List artists
+            parameters:
+                - name: search
+                  in: query
+                  schema:
+                      type: string
+            responses:
+                '200':
+                    description: List artists
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/ArtistResponse'
+                '400':
+                    $ref: '#/components/responses/BadRequestError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+    '/artists/{slug}':
+        get:
+            tags:
+                - Catalog
+            summary: Get artist detail
+            parameters:
+                - name: slug
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                '200':
+                    description: Artist found
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                                    data:
+                                        allOf:
+                                            - $ref: '#/components/schemas/ArtistResponse'
+                                            - type: object
+                                              properties:
+                                                  bio:
+                                                      type: string
+                                                  products:
+                                                      type: array
+                                                      items:
+                                                          $ref: '#/components/schemas/ProductResponse'
+                '404':
+                    $ref: '#/components/responses/NotFoundError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+    /categories:
+        get:
+            tags:
+                - Catalog
+            summary: Get category tree
+            responses:
+                '200':
+                    description: List categories
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/Category'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+    '/categories/{slug}':
+        get:
+            tags:
+                - Catalog
+            summary: Get products by category
+            parameters:
+                - name: slug
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                '200':
+                    description: Products fetched successfully for the category
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/ProductResponse'
+                '404':
+                    $ref: '#/components/responses/NotFoundError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+    /cart:
+        get:
+            tags:
+                - Cart
+            summary: Get current cart
+            responses:
+                '200':
+                    description: Current cart
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                                    data:
+                                        $ref: '#/components/schemas/CartResponse'
+                '401':
+                    description: Unauthorized
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            security:
+                - bearerAuth: []
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+    /cart/items:
+        post:
+            tags:
+                - Cart
+            summary: Add item to cart
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                productId:
+                                    type: string
+                                    format: uuid
+                                productVariantId:
+                                    type: string
+                                    format: uuid
+                                quantity:
+                                    type: integer
+                                    minimum: 1
+                            required:
+                                - productId
+                                - productVariantId
+                                - quantity
+            responses:
+                '201':
+                    description: Item added
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 201
+                                    message:
+                                        type: string
+                                        example: Item added to cart
+                                    data:
+                                        $ref: '#/components/schemas/CartResponse'
+                '400':
+                    $ref: '#/components/responses/BadRequestError'
+                '404':
+                    $ref: '#/components/responses/NotFoundError'
+                '409':
+                    $ref: '#/components/responses/ConflictError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+    '/cart/items/{id}':
+        patch:
+            tags:
+                - Cart
+            summary: Update item quantity
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                      format: uuid
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                quantity:
+                                    type: integer
+                                    minimum: 1
+                            required:
+                                - quantity
+            responses:
+                '200':
+                    description: Cart updated
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                                    data:
+                                        $ref: '#/components/schemas/CartResponse'
+                '400':
+                    $ref: '#/components/responses/BadRequestError'
+                '404':
+                    $ref: '#/components/responses/NotFoundError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+        delete:
+            tags:
+                - Cart
+            summary: Remove item from cart
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                      format: uuid
+            responses:
+                '200':
+                    description: Item removed
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                                        example: Item removed
+                                    data:
+                                        $ref: '#/components/schemas/CartResponse'
+                '404':
+                    $ref: '#/components/responses/NotFoundError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+    /order/preview:
+        post:
+            tags:
+                - Orders
+            summary: Preview order
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CheckoutPreviewRequest'
+            responses:
+                '200':
+                    description: Checkout
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                                    data:
+                                        $ref: '#/components/schemas/CheckoutPreviewResponse'
+                '400':
+                    $ref: '#/components/responses/BadRequestError'
+                '409':
+                    $ref: '#/components/responses/ConflictError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+    /order:
+        get:
+            tags:
+                - Orders
+            summary: Get my order history
+            parameters:
+                - name: page
+                  in: query
+                  schema:
+                      type: integer
+                      default: 1
+                - name: limit
+                  in: query
+                  schema:
+                      type: integer
+                      default: 10
+                - name: startDate
+                  in: query
+                  schema:
+                      type: string
+                - name: endDate
+                  in: query
+                  schema:
+                      type: string
+                - name: status
+                  in: query
+                  schema:
+                      type: string
+            responses:
+                '200':
+                    description: List orders
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/OrderResponse'
+                                    meta:
+                                        $ref: '#/components/schemas/MetaPagination'
+                '401':
+                    $ref: '#/components/responses/UnauthorizedError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            security:
+                - bearerAuth: []
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+        post:
+            tags:
+                - Orders
+            summary: Create a new order
+            operationId: post-orders
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateOrderRequest'
+            responses:
+                '201':
+                    description: Order successfully created
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/OrderResponse'
+                '400':
+                    $ref: '#/components/responses/BadRequestError'
+                '401':
+                    $ref: '#/components/responses/UnauthorizedError'
+                '409':
+                    $ref: '#/components/responses/ConflictError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+    '/orders/{id}':
+        get:
+            tags:
+                - Orders
+            summary: Get order detail
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                      format: uuid
+            responses:
+                '200':
+                    description: Order detail
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                                    data:
+                                        $ref: '#/components/schemas/OrderResponse'
+                '403':
+                    $ref: '#/components/responses/ForbiddenError'
+                '404':
+                    $ref: '#/components/responses/NotFoundError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+        patch:
+            tags:
+                - Orders
+            summary: Cancel order (User)
+            description: Only possible if status is 'pending'
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                '200':
+                    description: Order cancelled
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                                        example: Order cancelled successfully
+                '400':
+                    $ref: '#/components/responses/BadRequestError'
+                '409':
+                    $ref: '#/components/responses/ConflictError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            security:
+                - bearerAuth: []
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+    /admin/staff:
+        get:
+            tags:
+                - Admin Staff
+            summary: List all staff members
+            responses:
+                '200':
+                    description: List staff
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/Staff'
+                '401':
+                    $ref: '#/components/responses/UnauthorizedError'
+                '403':
+                    $ref: '#/components/responses/ForbiddenError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            security:
+                - bearerAuth: []
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+        post:
+            tags:
+                - Admin Staff
+            summary: Create new staff
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                email:
+                                    type: string
+                                    format: email
+                                fullName:
+                                    type: string
+                                phone:
+                                    type: integer
+                                    nullable: true
+                                password:
+                                    type: string
+                                    format: password
+                                roleIds:
+                                    type: array
+                                    items:
+                                        type: string
+                                        format: uuid
+                            required:
+                                - email
+                                - fullName
+                                - password
+            responses:
+                '201':
+                    description: Staff created
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 201
+                                    message:
+                                        type: string
+                                    data:
+                                        $ref: '#/components/schemas/Staff'
+                '400':
+                    $ref: '#/components/responses/BadRequestError'
+                '401':
+                    $ref: '#/components/responses/UnauthorizedError'
+                '403':
+                    $ref: '#/components/responses/ForbiddenError'
+                '409':
+                    $ref: '#/components/responses/ConflictError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            security:
+                - bearerAuth: []
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+    '/admin/staff/{id}':
+        patch:
+            tags:
+                - Admin Staff
+            summary: Update staff information
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                      format: uuid
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                fullName:
+                                    type: string
+                                phone:
+                                    type: integer
+                                    nullable: true
+                                password:
+                                    type: string
+                                    format: password
+                                avatarUrl:
+                                    type: string
+                                roleIds:
+                                    type: array
+                                    items:
+                                        type: string
+                                        format: uuid
+            responses:
+                '200':
+                    description: Updated successfully
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                                    data:
+                                        $ref: '#/components/schemas/Staff'
+                '400':
+                    $ref: '#/components/responses/BadRequestError'
+                '401':
+                    $ref: '#/components/responses/UnauthorizedError'
+                '403':
+                    $ref: '#/components/responses/ForbiddenError'
+                '409':
+                    $ref: '#/components/responses/ConflictError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            security:
+                - bearerAuth: []
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+        delete:
+            tags:
+                - Admin Staff
+            summary: Delete employee accounts
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                      format: uuid
+            responses:
+                '200':
+                    description: Employee account successfully deleted
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                '400':
+                    $ref: '#/components/responses/BadRequestError'
+                '401':
+                    $ref: '#/components/responses/UnauthorizedError'
+                '403':
+                    $ref: '#/components/responses/ForbiddenError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            security:
+                - bearerAuth: []
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+    /admin/roles:
+        get:
+            tags:
+                - Admin Staff
+            summary: List available roles
+            responses:
+                '200':
+                    description: List roles
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/Role'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            security:
+                - bearerAuth: []
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+        post:
+            tags:
+                - Admin Staff
+            summary: Define new role
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                name:
+                                    type: string
+                                description:
+                                    type: string
+                                permissions:
+                                    type: array
+                                    items:
+                                        type: string
+                            required:
+                                - name
+            responses:
+                '201':
+                    description: Role created
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 201
+                                    message:
+                                        type: string
+                                    data:
+                                        $ref: '#/components/schemas/Role'
+                '400':
+                    $ref: '#/components/responses/BadRequestError'
+                '401':
+                    $ref: '#/components/responses/UnauthorizedError'
+                '403':
+                    $ref: '#/components/responses/ForbiddenError'
+                '409':
+                    $ref: '#/components/responses/ConflictError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            security:
+                - bearerAuth: []
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+    '/admin/roles/{id}':
+        patch:
+            tags:
+                - Admin Staff
+            summary: Modify role permissions
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                name:
+                                    type: string
+                                description:
+                                    type: string
+                                permissions:
+                                    type: array
+                                    items:
+                                        type: string
+                            required:
+                                - name
+            responses:
+                '200':
+                    description: List roles
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/Role'
+                '400':
+                    $ref: '#/components/responses/BadRequestError'
+                '401':
+                    $ref: '#/components/responses/UnauthorizedError'
+                '403':
+                    $ref: '#/components/responses/ForbiddenError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            security:
+                - bearerAuth: []
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+        delete:
+            tags:
+                - Admin Staff
+            summary: Remove role
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                '200':
+                    description: Role successfully deleted.
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 201
+                                    message:
+                                        type: string
+                '400':
+                    $ref: '#/components/responses/BadRequestError'
+                '401':
+                    $ref: '#/components/responses/UnauthorizedError'
+                '403':
+                    $ref: '#/components/responses/ForbiddenError'
+                '409':
+                    $ref: '#/components/responses/ConflictError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            security:
+                - bearerAuth: []
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+    /admin/products:
+        get:
+            tags:
+                - Admin Catalog
+            summary: Get the product list
+            parameters:
+                - name: keyword
+                  in: query
+                  schema:
+                      type: string
+                - name: artistId
+                  in: query
+                  schema:
+                      type: array
+                      items:
+                          type: string
+                          format: uuid
+                - name: type
+                  in: query
+                  schema:
+                      type: array
+                      items:
+                          type: string
+                          enum:
+                              - music
+                              - merch
+                - name: page
+                  in: query
+                  schema:
+                      type: integer
+                      default: 1
+                - name: limit
+                  in: query
+                  schema:
+                      type: integer
+                      default: 20
+                - name: price_min
+                  in: query
+                  schema:
+                      type: integer
+                - name: price_max
+                  in: query
+                  schema:
+                      type: integer
+                - name: sort
+                  in: query
+                  schema:
+                      type: string
+                - name: stock_status
+                  in: query
+                  schema:
+                      type: boolean
+            responses:
+                '200':
+                    description: List of products
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                                        example: Success
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/ProductResponse'
+                                    meta:
+                                        $ref: '#/components/schemas/MetaPagination'
+                '401':
+                    $ref: '#/components/responses/UnauthorizedError'
+                '403':
+                    $ref: '#/components/responses/ForbiddenError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            security:
+                - bearerAuth: []
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+        post:
+            tags:
+                - Admin Catalog
+            summary: Create new product
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                name:
+                                    type: string
+                                description:
+                                    type: string
+                                shortDescription:
+                                    type: string
+                                productType:
+                                    type: string
+                                    enum:
+                                        - music
+                                        - merch
+                                categoryId:
+                                    type: integer
+                                    nullable: true
+                                artistIds:
+                                    type: array
+                                    nullable: true
+                                    items:
+                                        type: string
+                                        format: uuid
+                                mediaGallery:
+                                    type: array
+                                    nullable: true
+                                    items:
+                                        type: string
+                                variants:
+                                    type: array
+                                    items:
+                                        $ref: '#/components/schemas/ProductVariant'
+            responses:
+                '201':
+                    description: Product created
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 201
+                                    message:
+                                        type: string
+                                    data:
+                                        $ref: '#/components/schemas/ProductResponse'
+                '400':
+                    $ref: '#/components/responses/BadRequestError'
+                '401':
+                    $ref: '#/components/responses/UnauthorizedError'
+                '403':
+                    $ref: '#/components/responses/ForbiddenError'
+                '409':
+                    $ref: '#/components/responses/ConflictError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            security:
+                - bearerAuth: []
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+    '/admin/products/{id}':
+        patch:
+            tags:
+                - Admin Catalog
+            summary: Update product details
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                      format: uuid
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                name:
+                                    type: string
+                                description:
+                                    type: string
+                                shortDescription:
+                                    type: string
+                                productType:
+                                    type: string
+                                    enum:
+                                        - music
+                                        - merch
+                                categoryId:
+                                    type: integer
+                                    nullable: true
+                                artistIds:
+                                    type: array
+                                    nullable: true
+                                    items:
+                                        type: string
+                                        format: uuid
+                                mediaGallery:
+                                    type: array
+                                    nullable: true
+                                    items:
+                                        type: string
+                                variants:
+                                    type: array
+                                    items:
+                                        $ref: '#/components/schemas/ProductVariant'
+            responses:
+                '200':
+                    description: Product updated
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                                    data:
+                                        $ref: '#/components/schemas/ProductResponse'
+                '400':
+                    $ref: '#/components/responses/BadRequestError'
+                '401':
+                    $ref: '#/components/responses/UnauthorizedError'
+                '403':
+                    $ref: '#/components/responses/ForbiddenError'
+                '409':
+                    $ref: '#/components/responses/ConflictError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            security:
+                - bearerAuth: []
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+        delete:
+            tags:
+                - Admin Catalog
+            summary: Soft delete (Archive) product
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                      format: uuid
+            responses:
+                '200':
+                    description: Product archived
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                                        example: Product archived successfully
+                '400':
+                    $ref: '#/components/responses/BadRequestError'
+                '401':
+                    $ref: '#/components/responses/UnauthorizedError'
+                '403':
+                    $ref: '#/components/responses/ForbiddenError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            security:
+                - bearerAuth: []
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+    /admin/categories:
+        post:
+            tags:
+                - Admin Catalog
+            summary: Create category
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                name:
+                                    type: string
+                                parentId:
+                                    type: integer
+                                    nullable: true
+                            required:
+                                - name
+            responses:
+                '201':
+                    description: Category created
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 201
+                                    message:
+                                        type: string
+                                    data:
+                                        $ref: '#/components/schemas/Category'
+                '400':
+                    $ref: '#/components/responses/BadRequestError'
+                '401':
+                    $ref: '#/components/responses/UnauthorizedError'
+                '403':
+                    $ref: '#/components/responses/ForbiddenError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            security:
+                - bearerAuth: []
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+    '/admin/categories/{id}':
+        patch:
+            tags:
+                - Admin Catalog
+            summary: Update category
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      type: integer
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                name:
+                                    type: string
+                                parentId:
+                                    type: integer
+                                    nullable: true
+            responses:
+                '200':
+                    description: Category updated
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                                    data:
+                                        $ref: '#/components/schemas/Category'
+                '400':
+                    $ref: '#/components/responses/BadRequestError'
+                '401':
+                    $ref: '#/components/responses/UnauthorizedError'
+                '403':
+                    $ref: '#/components/responses/ForbiddenError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            security:
+                - bearerAuth: []
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+        delete:
+            tags:
+                - Admin Catalog
+            summary: Delete category
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      type: integer
+            responses:
+                '200':
+                    description: Category deleted
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                '400':
+                    $ref: '#/components/responses/BadRequestError'
+                '401':
+                    $ref: '#/components/responses/UnauthorizedError'
+                '403':
+                    $ref: '#/components/responses/ForbiddenError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            security:
+                - bearerAuth: []
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+    /admin/artists:
+        post:
+            tags:
+                - Admin Catalog
+            summary: Create artist
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                stageName:
+                                    type: string
+                                bio:
+                                    type: string
+                                avatarUrl:
+                                    type: string
+                            required:
+                                - stageName
+            responses:
+                '201':
+                    description: Artist created
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 201
+                                    message:
+                                        type: string
+                                    data:
+                                        $ref: '#/components/schemas/ArtistResponse'
+                '400':
+                    $ref: '#/components/responses/BadRequestError'
+                '401':
+                    $ref: '#/components/responses/UnauthorizedError'
+                '403':
+                    $ref: '#/components/responses/ForbiddenError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            security:
+                - bearerAuth: []
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+    '/admin/artists/{id}':
+        put:
+            tags:
+                - Admin Catalog
+            summary: Update artist
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                      format: uuid
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                stageName:
+                                    type: string
+                                bio:
+                                    type: string
+                                avatarUrl:
+                                    type: string
+            responses:
+                '200':
+                    description: Artist updated
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                                    data:
+                                        $ref: '#/components/schemas/ArtistResponse'
+                '400':
+                    $ref: '#/components/responses/BadRequestError'
+                '401':
+                    $ref: '#/components/responses/UnauthorizedError'
+                '403':
+                    $ref: '#/components/responses/ForbiddenError'
+                '409':
+                    $ref: '#/components/responses/ConflictError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            security:
+                - bearerAuth: []
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+        delete:
+            tags:
+                - Admin Catalog
+            summary: Soft delete artist
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                      format: uuid
+            responses:
+                '200':
+                    description: Artist deleted
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                '400':
+                    $ref: '#/components/responses/BadRequestError'
+                '401':
+                    $ref: '#/components/responses/UnauthorizedError'
+                '403':
+                    $ref: '#/components/responses/ForbiddenError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            security:
+                - bearerAuth: []
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+    /admin/order:
+        get:
+            tags:
+                - Admin Orders
+            summary: List all orders with filters
+            parameters:
+                - name: status
+                  in: query
+                  schema:
+                      type: string
+                      enum:
+                          - pending
+                          - paid
+                          - processing
+                          - shipping
+                          - completed
+                          - cancelled
+                - name: startDate
+                  in: query
+                  schema:
+                      type: string
+                      format: date
+                - name: endDate
+                  in: query
+                  schema:
+                      type: string
+                      format: date
+                - name: page
+                  in: query
+                  schema:
+                      type: integer
+                      default: 1
+                - name: limit
+                  in: query
+                  schema:
+                      type: integer
+                      default: 20
+            responses:
+                '200':
+                    description: List orders
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/OrderResponse'
+                                    meta:
+                                        $ref: '#/components/schemas/MetaPagination'
+                '400':
+                    $ref: '#/components/responses/BadRequestError'
+                '401':
+                    $ref: '#/components/responses/UnauthorizedError'
+                '403':
+                    $ref: '#/components/responses/ForbiddenError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            security:
+                - bearerAuth: []
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+    '/admin/order/{id}':
+        get:
+            tags:
+                - Admin Orders
+            summary: Get detailed order info
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                '200':
+                    description: Order details
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                                    data:
+                                        $ref: '#/components/schemas/OrderResponse'
+                '400':
+                    $ref: '#/components/responses/BadRequestError'
+                '401':
+                    $ref: '#/components/responses/UnauthorizedError'
+                '403':
+                    $ref: '#/components/responses/ForbiddenError'
+                '404':
+                    $ref: '#/components/responses/NotFoundError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            security:
+                - bearerAuth: []
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+        patch:
+            tags:
+                - Admin Orders
+            summary: Update order status & tracking
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                status:
+                                    type: string
+                                    enum:
+                                        - PROCESSING
+                                        - PENDING
+                                        - SHIPPED
+                                        - DELIVERED
+                                        - CANCELLED
+            responses:
+                '200':
+                    description: Status updated
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                                        example: Order updated
+                                    data:
+                                        $ref: '#/components/schemas/OrderResponse'
+                '400':
+                    $ref: '#/components/responses/BadRequestError'
+                '401':
+                    $ref: '#/components/responses/UnauthorizedError'
+                '403':
+                    $ref: '#/components/responses/ForbiddenError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            security:
+                - bearerAuth: []
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+    /admin/promotion:
+        get:
+            tags:
+                - Admin Marketing
+            summary: List promotion campaigns
+            responses:
+                '200':
+                    description: List promotion
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/Promotion'
+                '401':
+                    $ref: '#/components/responses/UnauthorizedError'
+                '403':
+                    $ref: '#/components/responses/ForbiddenError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            security:
+                - bearerAuth: []
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+        post:
+            tags:
+                - Admin Marketing
+            summary: Create promotion campaign
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                code:
+                                    type: string
+                                value:
+                                    type: number
+                                type:
+                                    type: string
+                                    enum:
+                                        - percent
+                                        - fixed
+                                startDate:
+                                    type: string
+                                    format: date-time
+                                endDate:
+                                    type: string
+                                    format: date-time
+                                usageLimit:
+                                    type: integer
+                            required:
+                                - code
+                                - value
+                                - type
+                                - startDate
+            responses:
+                '201':
+                    description: Promotion created
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 201
+                                    message:
+                                        type: string
+                                    data:
+                                        $ref: '#/components/schemas/Promotion'
+                '400':
+                    $ref: '#/components/responses/BadRequestError'
+                '401':
+                    $ref: '#/components/responses/UnauthorizedError'
+                '403':
+                    $ref: '#/components/responses/ForbiddenError'
+                '409':
+                    $ref: '#/components/responses/ConflictError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            security:
+                - bearerAuth: []
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+    '/admin/promotion/{id}':
+        patch:
+            tags:
+                - Admin Marketing
+            summary: Edit discount campaign
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                      format: uuid
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                code:
+                                    type: string
+                                value:
+                                    type: number
+                                type:
+                                    type: string
+                                    enum:
+                                        - percent
+                                        - fixed
+                                startDate:
+                                    type: string
+                                    format: date-time
+                                endDate:
+                                    type: string
+                                    format: date-time
+                                usageLimit:
+                                    type: integer
+            responses:
+                '200':
+                    description: Discount updated
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                                    data:
+                                        $ref: '#/components/schemas/Promotion'
+                '400':
+                    $ref: '#/components/responses/BadRequestError'
+                '401':
+                    $ref: '#/components/responses/UnauthorizedError'
+                '403':
+                    $ref: '#/components/responses/ForbiddenError'
+                '409':
+                    $ref: '#/components/responses/ConflictError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            security:
+                - bearerAuth: []
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+        delete:
+            tags:
+                - Admin Marketing
+            summary: Delete discount code
+            operationId: delete-admin-discounts-id
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                '200':
+                    description: Discount successfully deleted
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    statusCode:
+                                        type: integer
+                                        example: 200
+                                    message:
+                                        type: string
+                '400':
+                    $ref: '#/components/responses/BadRequestError'
+                '401':
+                    $ref: '#/components/responses/UnauthorizedError'
+                '403':
+                    $ref: '#/components/responses/ForbiddenError'
+                '500':
+                    $ref: '#/components/responses/InternalServerError'
+            security:
+                - bearerAuth: []
+            servers:
+                - url: 'http://localhost:3000/api'
+                  description: Local Development Server
+tags:
+    - name: Auth
+      description: User authentication and profile management
+    - name: Catalog
+      description: 'Products, Artists, and Categories public view'
+    - name: Cart
+      description: Shopping cart management
+    - name: Checkout
+      description: Order placement and payment calculation
+    - name: Orders
+      description: User order history
+    - name: Admin Auth
+      description: Administrator authentication and secure access control
+    - name: Admin Staff
+      description: Staff account management and Role-Based Access Control (RBAC)
+    - name: Admin Catalog
+      description: 'Full CRUD operations for Products, Artists, Categories, and Inventory'
+    - name: Admin Orders
+      description: 'Order processing, status updates, shipping, and refunds'
+    - name: Admin Marketing
+      description: 'Management of banners, coupons, discounts, and promotional campaigns'
+    - name: Webhooks
+      description: 'Endpoints for external system callbacks (Payment gateways, logistics updates)'
+components:
+    securitySchemes:
+        bearerAuth:
+            type: http
+            scheme: bearer
+            bearerFormat: JWT
+    responses:
+        BadRequestError:
+            description: Bad Request
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/ErrorResponse'
+                    examples:
+                        default:
+                            value:
+                                statusCode: 400
+                                message: Invalid input
+        UnauthorizedError:
+            description: Unauthorized - Invalid credentials or session
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/ErrorResponse'
+                    examples:
+                        default:
+                            value:
+                                statusCode: 401
+                                message: Invalid session
+        ForbiddenError:
+            description: Forbidden - Access denied or Account locked
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/ErrorResponse'
+                    examples:
+                        default:
+                            value:
+                                statusCode: 403
+                                message: Access denied
+        NotFoundError:
+            description: Not Found - Resource does not exist
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/ErrorResponse'
+                    examples:
+                        default:
+                            value:
+                                statusCode: 404
+                                message: Resource not found
+        ConflictError:
+            description: Conflict - Resource already exists
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/ErrorResponse'
+                    examples:
+                        default:
+                            value:
+                                message: User with this email already exists
+                                error: Conflict
+                                statusCode: 409
+        TooManyRequestsError:
+            description: Too Many Requests - Rate limiting
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/ErrorResponse'
+                    examples:
+                        default:
+                            value:
+                                statusCode: 429
+                                message: 'Too many requests, please try again later'
+        InternalServerError:
+            description: Internal Server Error
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/ErrorResponse'
+                    examples:
+                        default:
+                            value:
+                                statusCode: 500
+                                message: Internal server error
+    schemas:
+        User:
+            type: object
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                email:
+                    type: string
+                    format: email
+                fullName:
+                    type: string
+                phone:
+                    type: string
+                avatarUrl:
+                    type: string
+                status:
+                    type: string
+                    enum:
+                        - active
+                        - inactive
+                provider:
+                    type: string
+                    enum:
+                        - local
+                        - google
+                isVerified:
+                    type: boolean
+                createdAt:
+                    type: string
+                    format: date-time
+                updatedAt:
+                    type: string
+                deletedAt:
+                    type: string
+        ProductResponse:
+            type: object
+            properties:
+                id:
+                    type: string
+                    example: product-uuid-789
+                name:
+                    type: string
+                    example: Áo thun M-TP Limited
+                slug:
+                    type: string
+                    example: ao-thun-m-tp-limited
+                shortDescription:
+                    type: string
+                    example: Sản phẩm độc quyền...
+                productType:
+                    type: string
+                    example: physical
+                status:
+                    type: string
+                    example: active
+                minPrice:
+                    type: number
+                    description: Giá thấp nhất (Decimal -> Number)
+                    example: 450000
+                maxPrice:
+                    type: number
+                    description: Giá cao nhất (Decimal -> Number)
+                    example: 550000
+                mediaGallery:
+                    type: array
+                    items:
+                        type: string
+                    example:
+                        - img1.jpg
+                        - img2.jpg
+                artists:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ProductArtist'
+                variants:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ProductVariant'
+                category:
+                    $ref: '#/components/schemas/CategoryResponse'
+        ProductArtist:
+            type: object
+            properties:
+                id:
+                    type: string
+                    example: 550e8400-e29b-41d4-a716-446655440000
+                stageName:
+                    type: string
+                    example: Sơn Tùng M-TP
+                avatarUrl:
+                    type: string
+                    example: 'https://example.com/avatar.jpg'
+        ProductVariant:
+            type: object
+            properties:
+                id:
+                    type: string
+                    example: variant-uuid-123
+                name:
+                    type: string
+                    example: Áo thun Size L
+                originalPrice:
+                    type: number
+                    description: Giá gốc (đã convert từ Decimal sang Number)
+                    example: 500000
+                discountPercent:
+                    type: number
+                    example: 10
+                stockQuantity:
+                    type: integer
+                    example: 100
+                isPreorder:
+                    type: boolean
+                    example: false
+                attributes:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Attribute'
+        Attribute:
+            type: object
+            properties:
+                key:
+                    type: string
+                    example: Size
+                value:
+                    type: string
+                    example: L
+        CategoryResponse:
+            type: object
+            properties:
+                name:
+                    type: string
+                    example: Áo thun
+                slug:
+                    type: string
+                    example: ao-thun
+        MetaPagination:
+            type: object
+            properties:
+                currentPage:
+                    type: integer
+                    example: 1
+                totalPages:
+                    type: integer
+                    example: 5
+                limit:
+                    type: integer
+                    example: 20
+                totalItems:
+                    type: integer
+                    example: 100
+        ArtistResponse:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: ID duy nhất của nghệ sĩ
+                    example: cm5ba...
+                stageName:
+                    type: string
+                    description: Nghệ danh
+                    example: Sơn Tùng M-TP
+                slug:
+                    type: string
+                    description: Slug dùng cho URL
+                    example: son-tung-m-tp
+                bio:
+                    type: string
+                    nullable: true
+                    description: Tiểu sử nghệ sĩ
+                avatarUrl:
+                    type: string
+                    nullable: true
+                    description: Đường dẫn ảnh đại diện
+                metadata:
+                    type: object
+                    description: Dữ liệu bổ sung tùy ý (JSON)
+                    example: {}
+            required:
+                - id
+                - stageName
+                - slug
+        Category:
+            type: object
+            properties:
+                id:
+                    type: integer
+                name:
+                    type: string
+                slug:
+                    type: string
+                parentId:
+                    type: integer
+                    nullable: true
+        CartResponse:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: ID của giỏ hàng
+                    example: cart-uuid-123
+                userId:
+                    type: string
+                    description: ID của người dùng sở hữu giỏ hàng
+                    example: user-uuid-999
+                cartItems:
+                    type: array
+                    description: Danh sách các sản phẩm trong giỏ hàng
+                    items:
+                        $ref: '#/components/schemas/CartItem'
+            required:
+                - id
+                - userId
+                - cartItems
+        CartItem:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: ID của item trong giỏ hàng
+                    example: item-uuid-001
+                cartId:
+                    type: string
+                    description: ID của giỏ hàng
+                    example: cart-uuid-123
+                quantity:
+                    type: integer
+                    description: Số lượng sản phẩm
+                    example: 2
+                product:
+                    $ref: '#/components/schemas/ProductResponse'
+            required:
+                - id
+                - cartId
+                - quantity
+                - product
+        CheckoutPreviewRequest:
+            type: object
+            properties:
+                items:
+                    type: array
+                    description: Danh sách các sản phẩm trong giỏ hàng
+                    minItems: 1
+                    items:
+                        $ref: '#/components/schemas/OrderItemRequest'
+                appliedVoucher:
+                    type: string
+                    nullable: true
+                    description: Mã giảm giá áp dụng (Optional)
+                    example: TEST
+                shippingAddress:
+                    type: string
+                    description: Địa chỉ giao hàng (dùng để tính phí ship)
+                    example: '123 Đường Lê Lợi, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh'
+            required:
+                - items
+                - shippingAddress
+        OrderItemRequest:
+            type: object
+            properties:
+                productVariantId:
+                    type: string
+                    description: ID của biến thể sản phẩm
+                    format: uuid
+                    example: bfb374bc-1ab0-4174-b17b-d3ec848536c0
+                quantity:
+                    type: integer
+                    description: Số lượng mua (phải lớn hơn hoặc bằng 1)
+                    minimum: 1
+                    example: 2
+            required:
+                - productVariantId
+                - quantity
+        CheckoutPreviewResponse:
+            type: object
+            properties:
+                subtotal:
+                    type: number
+                    description: Tổng tiền hàng chưa tính ship/giảm giá
+                    format: double
+                shippingFee:
+                    type: number
+                    description: Phí vận chuyển
+                    format: double
+                discountAmount:
+                    type: number
+                    nullable: true
+                    description: Số tiền được giảm (Optional)
+                    format: double
+                totalAmount:
+                    type: number
+                    description: Tổng tiền thanh toán cuối cùng
+                    format: double
+                appliedVoucher:
+                    type: string
+                    description: Mã voucher đã áp dụng (nếu có)
+                shippingAddress:
+                    type: string
+                    description: Địa chỉ giao hàng
+                orderItems:
+                    type: array
+                    description: Danh sách các sản phẩm trong đơn hàng
+                    items:
+                        $ref: '#/components/schemas/OrderItem'
+            required:
+                - subtotal
+                - shippingFee
+                - totalAmount
+                - appliedVoucher
+                - shippingAddress
+                - orderItems
+        OrderItem:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: ID của order item
+                    example: uuid-string-here
+                productId:
+                    type: string
+                    description: ID của sản phẩm
+                productVariantId:
+                    type: string
+                    description: ID của biến thể sản phẩm
+                productName:
+                    type: string
+                    description: Tên sản phẩm
+                variantName:
+                    type: string
+                    description: 'Tên biến thể (size, màu, v.v.)'
+                quantity:
+                    type: integer
+                    description: Số lượng mua
+                    example: 2
+                price:
+                    type: number
+                    description: Giá bán tại thời điểm mua (đã convert từ Decimal)
+                    format: double
+                originalPrice:
+                    type: number
+                    description: Giá gốc trước khi giảm (đã convert từ Decimal)
+                    format: double
+                discountPercentage:
+                    type: number
+                    description: Phần trăm giảm giá (đã convert từ Decimal)
+                    format: double
+                totalLinePrice:
+                    type: number
+                    description: Tổng tiền cho dòng item này (price * quantity)
+                    format: double
+            required:
+                - id
+                - productId
+                - productVariantId
+                - productName
+                - variantName
+                - quantity
+                - price
+                - originalPrice
+                - discountPercentage
+                - totalLinePrice
+        OrderResponse:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: ID của đơn hàng
+                    example: uuid-string-here
+                email:
+                    type: string
+                    description: Email người đặt
+                    format: email
+                fullName:
+                    type: string
+                    description: Họ tên đầy đủ người đặt
+                phone:
+                    type: string
+                    description: Số điện thoại
+                status:
+                    type: string
+                    description: 'Trạng thái đơn hàng (PENDING, PAID, SHIPPED, etc.)'
+                subtotal:
+                    type: number
+                    description: Tổng tiền hàng chưa tính ship/giảm giá
+                    format: double
+                shippingFee:
+                    type: number
+                    description: Phí vận chuyển
+                    format: double
+                discountAmount:
+                    type: number
+                    nullable: true
+                    description: Số tiền được giảm (Optional)
+                    format: double
+                totalAmount:
+                    type: number
+                    description: Tổng tiền thanh toán cuối cùng
+                    format: double
+                appliedVoucher:
+                    type: string
+                    description: Mã voucher đã áp dụng (nếu có)
+                paymentMethod:
+                    type: string
+                    description: 'Phương thức thanh toán (COD, BANKING, etc.)'
+                shippingAddress:
+                    type: string
+                    description: Địa chỉ giao hàng
+                note:
+                    type: string
+                    description: Ghi chú của khách hàng
+                createdAt:
+                    type: string
+                    description: Thời gian tạo đơn
+                    format: date-time
+                orderItems:
+                    type: array
+                    description: Danh sách các sản phẩm trong đơn hàng
+                    items:
+                        $ref: '#/components/schemas/OrderItem'
+            required:
+                - id
+                - email
+                - fullName
+                - phone
+                - status
+                - subtotal
+                - shippingFee
+                - totalAmount
+                - appliedVoucher
+                - paymentMethod
+                - shippingAddress
+                - note
+                - createdAt
+                - orderItems
+        CreateOrderRequest:
+            type: object
+            properties:
+                fullName:
+                    type: string
+                    description: Họ tên người nhận hàng
+                    example: Nguyễn Văn A
+                email:
+                    type: string
+                    description: Email để nhận thông báo đơn hàng
+                    format: email
+                    example: nguyenvana@example.com
+                phone:
+                    type: string
+                    description: Số điện thoại liên lạc
+                    pattern: '^[0-9+]{9,15}$'
+                    example: '0909123456'
+                items:
+                    type: array
+                    description: Danh sách sản phẩm muốn mua
+                    minItems: 1
+                    items:
+                        $ref: '#/components/schemas/OrderItemRequest'
+                appliedVoucher:
+                    type: string
+                    nullable: true
+                    description: Mã giảm giá (nếu có)
+                    example: TEST
+                shippingAddress:
+                    type: string
+                    description: Địa chỉ giao hàng chi tiết
+                    example: '123 Đường Lê Lợi, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh'
+                paymentMethod:
+                    type: string
+                    enum:
+                        - MOMO
+                        - COD
+                        - BANK_TRANSFER
+                        - ZALOPAY
+                    description: Phương thức thanh toán được chọn
+                    example: MOMO
+                note:
+                    type: string
+                    nullable: true
+                    description: Ghi chú thêm từ khách hàng
+                    example: Giao hàng trong giờ hành chính giúp mình nhé.
+            required:
+                - fullName
+                - email
+                - phone
+                - items
+                - shippingAddress
+                - paymentMethod
+        Staff:
+            type: object
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                email:
+                    type: string
+                    format: email
+                fullName:
+                    type: string
+                phone:
+                    type: string
+                avatarUrl:
+                    type: string
+                status:
+                    type: string
+                createdAt:
+                    type: string
+                    format: date-time
+                roles:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Role'
+        Role:
+            type: object
+            properties:
+                id:
+                    type: integer
+                name:
+                    type: string
+                description:
+                    type: string
+                permissions:
+                    type: array
+                    items:
+                        type: string
+                        example: product.create
+        Promotion:
+            type: object
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                code:
+                    type: string
+                description:
+                    type: string
+                type:
+                    type: string
+                    enum:
+                        - percentage
+                        - fixed
+                value:
+                    type: number
+                startDate:
+                    type: string
+                    format: date-time
+                endDate:
+                    type: string
+                    format: date-time
+                usageLimit:
+                    type: integer
+                usedCount:
+                    type: integer
+                isActive:
+                    type: boolean
+                createdAt:
+                    type: string
+                updatedAt:
+                    type: string
+        ErrorResponse:
+            type: object
+            properties:
+                statusCode:
+                    type: integer
+                message:
+                    type: string
