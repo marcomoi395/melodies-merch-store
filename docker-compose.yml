@@ -1,4 +1,16 @@
 services:
+    api:
+        build: .
+        container_name: nestjs_api
+        ports:
+            - '3000:3000'
+        env_file:
+            - .env
+        depends_on:
+            - db
+            - redis
+        networks:
+            - app-network
     db:
         image: postgres:16-alpine
         container_name: nestjs_postgres

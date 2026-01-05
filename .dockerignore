@@ -1,0 +1,15 @@
+redis_data/
+postgres_data/
+mysql_data/
+
+node_modules/
+
+.git/
+dist/
+build/
+
+.env
+npm-debug.log
+Dockerfile
+docker-compose.yml
+README.md
