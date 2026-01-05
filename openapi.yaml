@@ -30,12 +30,17 @@ paths:
                                     minLength: 6
                                 fullName:
                                     type: string
-                                phone:
-                                    type: string
                             required:
                                 - email
                                 - password
                                 - fullName
+                        examples:
+                            FullInfo:
+                                summary: Complete information
+                                value:
+                                    email: youngmarco@example.com
+                                    password: strongpassword123
+                                    fullName: Huynh Thanh Loi
             responses:
                 '201':
                     description: Account created successfully
@@ -53,18 +58,20 @@ paths:
                                     data:
                                         $ref: '#/components/schemas/User'
                             examples:
-                                Registration successful:
+                                Success:
+                                    summary: Account created successfully
                                     value:
                                         statusCode: 201
-                                        message: Registration successful
+                                        message: User registered successfully
                                         data:
                                             id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                                            email: user@example.com
-                                            fullName: string
-                                            phone: string
+                                            email: youngmarco@example.com
+                                            fullName: Huynh Thanh Loi
+                                            phone: ''
+                                            avatarUrl: 'null,'
                                             provider: local
-                                            isVerified: true
-                                            createdAt: '2019-08-24T14:15:22Z'
+                                            isVerified: false
+                                            createdAt: '2025-12-29T14:15:22Z'
                 '400':
                     $ref: '#/components/responses/BadRequestError'
                 '409':
@@ -96,6 +103,12 @@ paths:
                             required:
                                 - email
                                 - password
+                        examples:
+                            UserLogin:
+                                summary: Log in with Email
+                                value:
+                                    email: youngmarco@example.com
+                                    password: strongpassword123
             responses:
                 '200':
                     description: Login successful
@@ -119,6 +132,23 @@ paths:
                                                 type: string
                                             user:
                                                 $ref: '#/components/schemas/User'
+                            examples:
+                                LoginSuccess:
+                                    summary: Login successful
+                                    value:
+                                        statusCode: 200
+                                        message: Login successful
+                                        data:
+                                            accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IllvdW5nIE1hcmNvIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+                                            refreshToken: dGhpcyBpcyBhIHJlZnJlc2ggdG9rZW4gZXhhbXBsZQ==
+                                            user:
+                                                id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                                                email: youngmarco@example.com
+                                                fullName: Nguyen Van Loi
+                                                phone: '0909123456'
+                                                provider: local
+                                                isVerified: true
+                                                createdAt: '2025-12-29T14:15:22Z'
                 '401':
                     $ref: '#/components/responses/UnauthorizedError'
                 '403':
@@ -145,6 +175,11 @@ paths:
                                     type: string
                             required:
                                 - refreshToken
+                        examples:
+                            LogoutRequest:
+                                summary: Send Refresh Token to Revoke
+                                value:
+                                    refreshToken: dGhpcyBpcyBhIHJlZnJlc2ggdG9rZW4gZXhhbXBsZQ==
             responses:
                 '200':
                     description: Logout successful
@@ -159,6 +194,12 @@ paths:
                                     message:
                                         type: string
                                         example: Logged out successfully
+                            examples:
+                                LogoutSuccess:
+                                    summary: Logout successful
+                                    value:
+                                        statusCode: 200
+                                        message: Logged out successfully
                 '401':
                     $ref: '#/components/responses/UnauthorizedError'
                 '500':
@@ -183,6 +224,11 @@ paths:
                                     type: string
                             required:
                                 - refreshToken
+                        examples:
+                            LogoutRequest:
+                                summary: Send Refresh Token to Revoke
+                                value:
+                                    refreshToken: dGhpcyBpcyBhIHJlZnJlc2ggdG9rZW4gZXhhbXBsZQ==
             responses:
                 '200':
                     description: Token refreshed
@@ -203,6 +249,15 @@ paths:
                                                 type: string
                                             refreshToken:
                                                 type: string
+                            examples:
+                                RefreshSuccess:
+                                    summary: Token reissue successful
+                                    value:
+                                        statusCode: 200
+                                        message: Token refreshed successfully
+                                        data:
+                                            accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.newaccesstoken.signature
+                                            refreshToken: new.refreshtoken.value
                 '401':
                     $ref: '#/components/responses/UnauthorizedError'
                 '403':
@@ -234,6 +289,23 @@ paths:
                                         type: string
                                     data:
                                         $ref: '#/components/schemas/User'
+                            examples:
+                                LoginSuccess:
+                                    summary: Login successful
+                                    value:
+                                        statusCode: 200
+                                        message: Login successful
+                                        data:
+                                            accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IllvdW5nIE1hcmNvIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+                                            refreshToken: dGhpcyBpcyBhIHJlZnJlc2ggdG9rZW4gZXhhbXBsZQ==
+                                            user:
+                                                id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                                                email: youngmarco@example.com
+                                                fullName: Nguyen Van Loi
+                                                phone: '0909123456'
+                                                provider: local
+                                                isVerified: true
+                                                createdAt: '2025-12-29T14:15:22Z'
                 '401':
                     $ref: '#/components/responses/UnauthorizedError'
                 '500':
@@ -260,6 +332,13 @@ paths:
                                     type: string
                                 avatarUrl:
                                     type: string
+                        examples:
+                            UpdateProfile:
+                                summary: Update full name and phone
+                                value:
+                                    fullName: Thanh Loi
+                                    phone: '0987654321'
+                                    avatarUrl: 'https://example.com/new-avatar.jpg'
             responses:
                 '200':
                     description: Updated
@@ -275,6 +354,21 @@ paths:
                                         type: string
                                     data:
                                         $ref: '#/components/schemas/User'
+                            examples:
+                                UpdateSuccess:
+                                    summary: Profile updated successfully
+                                    value:
+                                        statusCode: 200
+                                        message: Profile updated successfully
+                                        data:
+                                            id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                                            email: youngmarco@example.com
+                                            fullName: Thanh Loi
+                                            phone: '0987654321'
+                                            provider: local
+                                            isVerified: true
+                                            avatarUrl: 'https://example.com/new-avatar.jpg'
+                                            createdAt: '2025-12-29T14:15:22Z'
                 '400':
                     $ref: '#/components/responses/BadRequestError'
                 '401':
@@ -306,6 +400,12 @@ paths:
                             required:
                                 - oldPassword
                                 - newPassword
+                        examples:
+                            ChangePass:
+                                summary: Change password request
+                                value:
+                                    oldPassword: oldStrongPassword123
+                                    newPassword: newStrongPassword456
             responses:
                 '200':
                     description: Password changed
@@ -319,6 +419,12 @@ paths:
                                         example: 200
                                     message:
                                         type: string
+                            examples:
+                                ChangeSuccess:
+                                    summary: Password changed successfully
+                                    value:
+                                        statusCode: 200
+                                        message: Password has been changed successfully
                 '400':
                     $ref: '#/components/responses/BadRequestError'
                 '401':
@@ -412,6 +518,11 @@ paths:
                                     format: email
                             required:
                                 - email
+                        examples:
+                            ForgotPassRequest:
+                                summary: Request reset link via email
+                                value:
+                                    email: youngmarco@example.com
             responses:
                 '200':
                     description: Reset email sent (if exists)
@@ -425,6 +536,12 @@ paths:
                                         example: 200
                                     message:
                                         type: string
+                            examples:
+                                EmailSent:
+                                    summary: Reset email sent
+                                    value:
+                                        statusCode: 200
+                                        message: 'If an account with that email exists, we have sent a password reset link.'
                 '400':
                     $ref: '#/components/responses/BadRequestError'
                 '429':
@@ -452,6 +569,12 @@ paths:
                             required:
                                 - token
                                 - newPassword
+                        examples:
+                            ResetPassSubmit:
+                                summary: Submit token and new password
+                                value:
+                                    token: reset-token-received-via-email-123
+                                    newPassword: newSecurePassword789
             responses:
                 '200':
                     description: Password reset successful
@@ -465,6 +588,12 @@ paths:
                                         example: 200
                                     message:
                                         type: string
+                            examples:
+                                ResetSuccess:
+                                    summary: Password reset successfully
+                                    value:
+                                        statusCode: 200
+                                        message: Password reset successfully. You can now login with your new password.
                 '400':
                     $ref: '#/components/responses/BadRequestError'
                 '500':
@@ -2468,8 +2597,10 @@ components:
                     type: string
                 phone:
                     type: string
+                    nullable: true
                 avatarUrl:
                     type: string
+                    nullable: true
                 status:
                     type: string
                     enum:
@@ -2503,6 +2634,7 @@ components:
                     example: ao-thun-m-tp-limited
                 shortDescription:
                     type: string
+                    nullable: true
                     example: Sản phẩm độc quyền...
                 productType:
                     type: string
@@ -2511,13 +2643,13 @@ components:
                     type: string
                     example: active
                 minPrice:
-                    type: number
+                    type: string
                     description: Giá thấp nhất (Decimal -> Number)
-                    example: 450000
+                    example: '450000'
                 maxPrice:
-                    type: number
+                    type: string
                     description: Giá cao nhất (Decimal -> Number)
-                    example: 550000
+                    example: '550000'
                 mediaGallery:
                     type: array
                     items:
@@ -2611,27 +2743,21 @@ components:
             properties:
                 id:
                     type: string
-                    description: ID duy nhất của nghệ sĩ
                     example: cm5ba...
                 stageName:
                     type: string
-                    description: Nghệ danh
                     example: Sơn Tùng M-TP
                 slug:
                     type: string
-                    description: Slug dùng cho URL
                     example: son-tung-m-tp
                 bio:
                     type: string
                     nullable: true
-                    description: Tiểu sử nghệ sĩ
                 avatarUrl:
                     type: string
                     nullable: true
-                    description: Đường dẫn ảnh đại diện
                 metadata:
                     type: object
-                    description: Dữ liệu bổ sung tùy ý (JSON)
                     example: {}
             required:
                 - id
@@ -2654,15 +2780,12 @@ components:
             properties:
                 id:
                     type: string
-                    description: ID của giỏ hàng
                     example: cart-uuid-123
                 userId:
                     type: string
-                    description: ID của người dùng sở hữu giỏ hàng
                     example: user-uuid-999
                 cartItems:
                     type: array
-                    description: Danh sách các sản phẩm trong giỏ hàng
                     items:
                         $ref: '#/components/schemas/CartItem'
             required:
@@ -2674,15 +2797,12 @@ components:
             properties:
                 id:
                     type: string
-                    description: ID của item trong giỏ hàng
                     example: item-uuid-001
                 cartId:
                     type: string
-                    description: ID của giỏ hàng
                     example: cart-uuid-123
                 quantity:
                     type: integer
-                    description: Số lượng sản phẩm
                     example: 2
                 product:
                     $ref: '#/components/schemas/ProductResponse'
@@ -2696,18 +2816,15 @@ components:
             properties:
                 items:
                     type: array
-                    description: Danh sách các sản phẩm trong giỏ hàng
                     minItems: 1
                     items:
                         $ref: '#/components/schemas/OrderItemRequest'
                 appliedVoucher:
                     type: string
                     nullable: true
-                    description: Mã giảm giá áp dụng (Optional)
                     example: TEST
                 shippingAddress:
                     type: string
-                    description: Địa chỉ giao hàng (dùng để tính phí ship)
                     example: '123 Đường Lê Lợi, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh'
             required:
                 - items
@@ -2717,12 +2834,10 @@ components:
             properties:
                 productVariantId:
                     type: string
-                    description: ID của biến thể sản phẩm
                     format: uuid
                     example: bfb374bc-1ab0-4174-b17b-d3ec848536c0
                 quantity:
                     type: integer
-                    description: Số lượng mua (phải lớn hơn hoặc bằng 1)
                     minimum: 1
                     example: 2
             required:
@@ -2733,30 +2848,23 @@ components:
             properties:
                 subtotal:
                     type: number
-                    description: Tổng tiền hàng chưa tính ship/giảm giá
                     format: double
                 shippingFee:
                     type: number
-                    description: Phí vận chuyển
                     format: double
                 discountAmount:
                     type: number
                     nullable: true
-                    description: Số tiền được giảm (Optional)
                     format: double
                 totalAmount:
                     type: number
-                    description: Tổng tiền thanh toán cuối cùng
                     format: double
                 appliedVoucher:
                     type: string
-                    description: Mã voucher đã áp dụng (nếu có)
                 shippingAddress:
                     type: string
-                    description: Địa chỉ giao hàng
                 orderItems:
                     type: array
-                    description: Danh sách các sản phẩm trong đơn hàng
                     items:
                         $ref: '#/components/schemas/OrderItem'
             required:
@@ -2771,39 +2879,29 @@ components:
             properties:
                 id:
                     type: string
-                    description: ID của order item
                     example: uuid-string-here
                 productId:
                     type: string
-                    description: ID của sản phẩm
                 productVariantId:
                     type: string
-                    description: ID của biến thể sản phẩm
                 productName:
                     type: string
-                    description: Tên sản phẩm
                 variantName:
                     type: string
-                    description: 'Tên biến thể (size, màu, v.v.)'
                 quantity:
                     type: integer
-                    description: Số lượng mua
                     example: 2
                 price:
                     type: number
-                    description: Giá bán tại thời điểm mua (đã convert từ Decimal)
                     format: double
                 originalPrice:
                     type: number
-                    description: Giá gốc trước khi giảm (đã convert từ Decimal)
                     format: double
                 discountPercentage:
                     type: number
-                    description: Phần trăm giảm giá (đã convert từ Decimal)
                     format: double
                 totalLinePrice:
                     type: number
-                    description: Tổng tiền cho dòng item này (price * quantity)
                     format: double
             required:
                 - id
@@ -2821,57 +2919,42 @@ components:
             properties:
                 id:
                     type: string
-                    description: ID của đơn hàng
                     example: uuid-string-here
                 email:
                     type: string
-                    description: Email người đặt
                     format: email
                 fullName:
                     type: string
-                    description: Họ tên đầy đủ người đặt
                 phone:
                     type: string
-                    description: Số điện thoại
                 status:
                     type: string
-                    description: 'Trạng thái đơn hàng (PENDING, PAID, SHIPPED, etc.)'
                 subtotal:
                     type: number
-                    description: Tổng tiền hàng chưa tính ship/giảm giá
                     format: double
                 shippingFee:
                     type: number
-                    description: Phí vận chuyển
                     format: double
                 discountAmount:
                     type: number
                     nullable: true
-                    description: Số tiền được giảm (Optional)
                     format: double
                 totalAmount:
                     type: number
-                    description: Tổng tiền thanh toán cuối cùng
                     format: double
                 appliedVoucher:
                     type: string
-                    description: Mã voucher đã áp dụng (nếu có)
                 paymentMethod:
                     type: string
-                    description: 'Phương thức thanh toán (COD, BANKING, etc.)'
                 shippingAddress:
                     type: string
-                    description: Địa chỉ giao hàng
                 note:
                     type: string
-                    description: Ghi chú của khách hàng
                 createdAt:
                     type: string
-                    description: Thời gian tạo đơn
                     format: date-time
                 orderItems:
                     type: array
-                    description: Danh sách các sản phẩm trong đơn hàng
                     items:
                         $ref: '#/components/schemas/OrderItem'
             required:
@@ -2894,32 +2977,26 @@ components:
             properties:
                 fullName:
                     type: string
-                    description: Họ tên người nhận hàng
                     example: Nguyễn Văn A
                 email:
                     type: string
-                    description: Email để nhận thông báo đơn hàng
                     format: email
                     example: nguyenvana@example.com
                 phone:
                     type: string
-                    description: Số điện thoại liên lạc
                     pattern: '^[0-9+]{9,15}$'
                     example: '0909123456'
                 items:
                     type: array
-                    description: Danh sách sản phẩm muốn mua
                     minItems: 1
                     items:
                         $ref: '#/components/schemas/OrderItemRequest'
                 appliedVoucher:
                     type: string
                     nullable: true
-                    description: Mã giảm giá (nếu có)
                     example: TEST
                 shippingAddress:
                     type: string
-                    description: Địa chỉ giao hàng chi tiết
                     example: '123 Đường Lê Lợi, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh'
                 paymentMethod:
                     type: string
@@ -2928,12 +3005,10 @@ components:
                         - COD
                         - BANK_TRANSFER
                         - ZALOPAY
-                    description: Phương thức thanh toán được chọn
                     example: MOMO
                 note:
                     type: string
                     nullable: true
-                    description: Ghi chú thêm từ khách hàng
                     example: Giao hàng trong giờ hành chính giúp mình nhé.
             required:
                 - fullName
