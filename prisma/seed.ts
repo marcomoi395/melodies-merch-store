@@ -1,10 +1,10 @@
 /* eslint-disable */
-import { PrismaClient } from 'generated/prisma/client';
+import { PrismaClient } from '../generated/prisma/client';
 import * as bcrypt from 'bcryptjs';
-import { PERMISSIONS_METADATA } from 'src/permissions/permissions';
 import { PrismaPg } from '@prisma/adapter-pg';
 import 'dotenv/config';
 import { readFile } from 'fs/promises';
+import path from 'path';
 
 const connectionString = `${process.env.DATABASE_URL}`;
 const adapter = new PrismaPg({ connectionString });
@@ -18,6 +18,60 @@ async function main() {
     await seedIamAndUsers(superAdminRole.id);
     await seed();
 }
+
+enum PermissionKey {
+    PRODUCT_VIEW = 'PRODUCT_VIEW',
+    PRODUCT_CREATE = 'PRODUCT_CREATE',
+    PRODUCT_UPDATE = 'PRODUCT_UPDATE',
+    PRODUCT_DELETE = 'PRODUCT_DELETE',
+
+    CATEGORY_MANAGE = 'CATEGORY_MANAGE',
+
+    BRAND_MANAGE = 'BRAND_MANAGE',
+
+    ORDER_VIEW = 'ORDER_VIEW',
+    ORDER_UPDATE_STATUS = 'ORDER_UPDATE_STATUS',
+    ORDER_EXPORT = 'ORDER_EXPORT',
+
+    PROMOTION_MANAGE = 'PROMOTION_MANAGE',
+
+    CONTENT_MANAGE = 'CONTENT_MANAGE',
+
+    CUSTOMER_VIEW = 'CUSTOMER_VIEW',
+    CUSTOMER_BAN = 'CUSTOMER_BAN',
+
+    STAFF_MANAGE = 'STAFF_MANAGE',
+    ROLE_MANAGE = 'ROLE_MANAGE',
+
+    REPORT_VIEW_REVENUE = 'REPORT_VIEW_REVENUE',
+    REPORT_VIEW_GENERAL = 'REPORT_VIEW_GENERAL',
+}
+
+const PERMISSIONS_METADATA = [
+    { name: PermissionKey.PRODUCT_VIEW, resource: 'PRODUCT', action: 'VIEW' },
+    { name: PermissionKey.PRODUCT_CREATE, resource: 'PRODUCT', action: 'CREATE' },
+    { name: PermissionKey.PRODUCT_UPDATE, resource: 'PRODUCT', action: 'UPDATE' },
+    { name: PermissionKey.PRODUCT_DELETE, resource: 'PRODUCT', action: 'DELETE' },
+
+    { name: PermissionKey.CATEGORY_MANAGE, resource: 'CATEGORY', action: 'MANAGE' },
+    { name: PermissionKey.BRAND_MANAGE, resource: 'BRAND', action: 'MANAGE' },
+
+    { name: PermissionKey.ORDER_VIEW, resource: 'ORDER', action: 'VIEW' },
+    { name: PermissionKey.ORDER_UPDATE_STATUS, resource: 'ORDER', action: 'UPDATE_STATUS' },
+    { name: PermissionKey.ORDER_EXPORT, resource: 'ORDER', action: 'EXPORT' },
+
+    { name: PermissionKey.PROMOTION_MANAGE, resource: 'PROMOTION', action: 'MANAGE' },
+    { name: PermissionKey.CONTENT_MANAGE, resource: 'CONTENT', action: 'MANAGE' },
+
+    { name: PermissionKey.CUSTOMER_VIEW, resource: 'CUSTOMER', action: 'VIEW' },
+    { name: PermissionKey.CUSTOMER_BAN, resource: 'CUSTOMER', action: 'BAN' },
+
+    { name: PermissionKey.STAFF_MANAGE, resource: 'SYSTEM', action: 'MANAGE_STAFF' },
+    { name: PermissionKey.ROLE_MANAGE, resource: 'SYSTEM', action: 'MANAGE_ROLE' },
+
+    { name: PermissionKey.REPORT_VIEW_REVENUE, resource: 'REPORT', action: 'VIEW_REVENUE' },
+    { name: PermissionKey.REPORT_VIEW_GENERAL, resource: 'REPORT', action: 'VIEW_GENERAL' },
+];
 
 async function cleanDatabase() {
     const deleteTables = [
@@ -108,7 +162,7 @@ async function getPermisisons() {
 async function seedIamAndUsers(superAdminRoleId: string) {
     const passwordHash = await bcrypt.hash('123456', 10);
 
-    const superAdmin = await prisma.user.create({
+    await prisma.user.create({
         data: {
             email: 'admin@gmail.com',
             passwordHash,
@@ -120,7 +174,7 @@ async function seedIamAndUsers(superAdminRoleId: string) {
         },
     });
 
-    const customerUser = await prisma.user.create({
+    await prisma.user.create({
         data: {
             email: 'client@gmail.com',
             passwordHash,
@@ -133,7 +187,8 @@ async function seedIamAndUsers(superAdminRoleId: string) {
 }
 
 async function seed() {
-    const jsonString = await readFile('./prisma/seed.json', 'utf8');
+    const filePath = path.join(__dirname, 'seed.json');
+    const jsonString = await readFile(filePath, 'utf8');
     const data = JSON.parse(jsonString);
     for (const cat of data.categories) {
         const parent = await prisma.category.upsert({
@@ -333,7 +388,9 @@ async function seed() {
             }
         }
 
-        if (orderItemsData.length === 0) continue;
+        if (orderItemsData.length === 0) {
+            continue;
+        }
 
         const shippingFee = 30000;
         let discountAmount = 0;
