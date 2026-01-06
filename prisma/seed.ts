@@ -12,7 +12,6 @@ const prisma = new PrismaClient({ adapter });
 
 async function main() {
     await cleanDatabase();
-
     await syncPermissions();
     const superAdminRole = await syncSuperAdminRole();
     await seedIamAndUsers(superAdminRole.id);
