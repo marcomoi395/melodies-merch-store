@@ -5,9 +5,12 @@ CREATE TABLE "users" (
     "password_hash" VARCHAR,
     "full_name" VARCHAR(100),
     "phone" VARCHAR(20),
+    "avatar_url" VARCHAR(255),
     "provider" VARCHAR(20) DEFAULT 'local',
     "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP,
+    "deleted_at" TIMESTAMP,
+    "status" VARCHAR(20) DEFAULT 'active',
     "is_verified" BOOLEAN DEFAULT false,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
@@ -18,6 +21,9 @@ CREATE TABLE "roles" (
     "id" UUID NOT NULL,
     "name" VARCHAR(50) NOT NULL,
     "description" TEXT,
+    "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP,
+    "deleted_at" TIMESTAMP,
 
     CONSTRAINT "roles_pkey" PRIMARY KEY ("id")
 );
@@ -82,9 +88,12 @@ CREATE TABLE "products" (
     "category_id" UUID,
     "product_type" VARCHAR(20) NOT NULL,
     "status" VARCHAR(20) DEFAULT 'draft',
+    "min_price" DECIMAL(12,2),
     "tracklist" JSONB,
     "media_gallery" JSONB,
     "deleted_at" TIMESTAMP,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "products_pkey" PRIMARY KEY ("id")
 );
@@ -106,17 +115,30 @@ CREATE TABLE "product_variants" (
     "original_price" DECIMAL(15,2) NOT NULL,
     "discount_percent" DECIMAL(15,2) DEFAULT 0,
     "stock_quantity" INTEGER DEFAULT 0,
-    "attributes" JSONB,
     "is_preorder" BOOLEAN DEFAULT false,
+    "deleted_at" TIMESTAMP,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "product_variants_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "variant_attributes" (
+    "id" UUID NOT NULL,
+    "variant_id" UUID NOT NULL,
+    "key" VARCHAR(50) NOT NULL,
+    "value" VARCHAR(100) NOT NULL,
+
+    CONSTRAINT "variant_attributes_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "carts" (
     "id" UUID NOT NULL,
     "user_id" UUID,
-    "created_at" TIMESTAMP,
+    "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "carts_pkey" PRIMARY KEY ("id")
 );
@@ -150,7 +172,8 @@ CREATE TABLE "orders" (
     "tracking_code" VARCHAR(50),
     "note" TEXT,
     "payment_method" VARCHAR(20),
-    "created_at" TIMESTAMP,
+    "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "orders_pkey" PRIMARY KEY ("id")
 );
@@ -176,6 +199,7 @@ CREATE TABLE "order_items" (
 CREATE TABLE "discounts" (
     "id" UUID NOT NULL,
     "code" VARCHAR(50),
+    "description" TEXT,
     "type" VARCHAR(20),
     "value" DECIMAL NOT NULL,
     "start_date" TIMESTAMP,
@@ -184,6 +208,9 @@ CREATE TABLE "discounts" (
     "used_count" INTEGER DEFAULT 0,
     "is_active" BOOLEAN DEFAULT true,
     "applies_to" VARCHAR(20) DEFAULT 'all',
+    "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+    "deleted_at" TIMESTAMP,
 
     CONSTRAINT "discounts_pkey" PRIMARY KEY ("id")
 );
@@ -209,6 +236,8 @@ CREATE TABLE "transactions" (
     "amount" DECIMAL,
     "status" VARCHAR,
     "raw_response" JSONB,
+    "created_at" TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "transactions_pkey" PRIMARY KEY ("id")
 );
@@ -222,6 +251,8 @@ CREATE TABLE "posts" (
     "author_id" UUID,
     "published_at" TIMESTAMP,
     "is_pulished" BOOLEAN,
+    "created_at" TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "posts_pkey" PRIMARY KEY ("id")
 );
@@ -237,7 +268,8 @@ CREATE TABLE "audit_logs" (
     "new_data" JSONB,
     "ip_address" VARCHAR(45),
     "user_agent" TEXT,
-    "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "audit_logs_pkey" PRIMARY KEY ("id")
 );
@@ -262,6 +294,9 @@ CREATE UNIQUE INDEX "products_slug_key" ON "products"("slug");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "product_variants_sku_key" ON "product_variants"("sku");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "carts_user_id_key" ON "carts"("user_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "cart_items_cart_id_product_id_product_variant_id_key" ON "cart_items"("cart_id", "product_id", "product_variant_id");
@@ -298,6 +333,9 @@ ALTER TABLE "product_artists" ADD CONSTRAINT "product_artists_artist_id_fkey" FO
 
 -- AddForeignKey
 ALTER TABLE "product_variants" ADD CONSTRAINT "product_variants_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "products"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "variant_attributes" ADD CONSTRAINT "variant_attributes_variant_id_fkey" FOREIGN KEY ("variant_id") REFERENCES "product_variants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "carts" ADD CONSTRAINT "carts_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
