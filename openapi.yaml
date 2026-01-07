@@ -6,10 +6,10 @@ info:
         API Documentation for Melodies - Ecommerce Artists Merch Platform.
     termsOfService: ''
 servers:
-    - url: 'https://melodies.studio/api'
-      description: Production Server
     - url: 'http://localhost:3000/api'
       description: Local Development Server
+    - url: 'https://melodies.studio/api'
+      description: Production Server
 paths:
     /auth/register:
         post:
@@ -83,6 +83,8 @@ paths:
             servers:
                 - url: 'http://localhost:3000/api'
                   description: Local Development Server
+                - url: 'https://melodies.studio/api'
+                  description: Production Server
     /auth/login:
         post:
             tags:
@@ -162,6 +164,8 @@ paths:
             servers:
                 - url: 'http://localhost:3000/api'
                   description: Local Development Server
+                - url: 'https://melodies.studio/api'
+                  description: Production Server
     /auth/logout:
         post:
             tags:
@@ -317,6 +321,8 @@ paths:
             servers:
                 - url: 'http://localhost:3000/api'
                   description: Local Development Server
+                - url: 'https://melodies.studio/api'
+                  description: Production Server
     /user/profile:
         patch:
             tags:
@@ -382,6 +388,8 @@ paths:
             servers:
                 - url: 'http://localhost:3000/api'
                   description: Local Development Server
+                - url: 'https://melodies.studio/api'
+                  description: Production Server
     /user/change-password:
         patch:
             tags:
@@ -438,6 +446,8 @@ paths:
             servers:
                 - url: 'http://localhost:3000/api'
                   description: Local Development Server
+                - url: 'https://melodies.studio/api'
+                  description: Production Server
     /user/request-verification-email:
         get:
             tags:
@@ -468,6 +478,8 @@ paths:
             servers:
                 - url: 'http://localhost:3000/api'
                   description: Local Development Server
+                - url: 'https://melodies.studio/api'
+                  description: Production Server
     /user/verify-account:
         post:
             tags:
@@ -504,6 +516,8 @@ paths:
             servers:
                 - url: 'http://localhost:3000/api'
                   description: Local Development Server
+                - url: 'https://melodies.studio/api'
+                  description: Production Server
     /user/forgot-password:
         post:
             tags:
@@ -553,6 +567,8 @@ paths:
             servers:
                 - url: 'http://localhost:3000/api'
                   description: Local Development Server
+                - url: 'https://melodies.studio/api'
+                  description: Production Server
     /user/reset-password:
         post:
             tags:
@@ -603,6 +619,8 @@ paths:
             servers:
                 - url: 'http://localhost:3000/api'
                   description: Local Development Server
+                - url: 'https://melodies.studio/api'
+                  description: Production Server
     /products:
         get:
             tags:
@@ -682,6 +700,8 @@ paths:
             servers:
                 - url: 'http://localhost:3000/api'
                   description: Local Development Server
+                - url: 'https://melodies.studio/api'
+                  description: Production Server
     '/products/{slug}':
         get:
             tags:
@@ -1106,6 +1126,8 @@ paths:
             servers:
                 - url: 'http://localhost:3000/api'
                   description: Local Development Server
+                - url: 'https://melodies.studio/api'
+                  description: Production Server
         post:
             tags:
                 - Orders
@@ -2484,12 +2506,8 @@ tags:
       description: 'Products, Artists, and Categories public view'
     - name: Cart
       description: Shopping cart management
-    - name: Checkout
-      description: Order placement and payment calculation
     - name: Orders
       description: User order history
-    - name: Admin Auth
-      description: Administrator authentication and secure access control
     - name: Admin Staff
       description: Staff account management and Role-Based Access Control (RBAC)
     - name: Admin Catalog
