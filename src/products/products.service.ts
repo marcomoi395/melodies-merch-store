@@ -652,7 +652,7 @@ export class ProductsService {
             return this.prisma.product.delete({ where: { id } });
         }
 
-        return this.prisma.product.update({
+        await this.prisma.product.update({
             where: { id },
             data: {
                 status: 'deleted',

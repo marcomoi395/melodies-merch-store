@@ -69,7 +69,7 @@ export class UpdateVariantDto {
 export class UpdateProductDto {
     @IsOptional()
     @IsString()
-    name: string;
+    name?: string;
 
     @IsOptional()
     @IsString()
@@ -81,13 +81,13 @@ export class UpdateProductDto {
 
     @IsOptional()
     @IsUUID()
-    categoryId: string;
+    categoryId?: string;
 
     @IsOptional()
     @IsEnum(ProductType, {
         message: `ProductType must be one of: ${Object.values(ProductType).join(', ')}`,
     })
-    productType: string;
+    productType?: string;
 
     @IsOptional()
     @IsArray()
@@ -103,5 +103,5 @@ export class UpdateProductDto {
     @IsArray()
     @ValidateNested({ each: true })
     @Type(() => UpdateVariantDto)
-    variants: UpdateVariantDto[];
+    variants?: UpdateVariantDto[];
 }

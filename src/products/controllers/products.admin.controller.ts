@@ -98,12 +98,11 @@ export class ProductsAdminController {
     @UseGuards(AuthGuard('jwt'), PermissionGuard)
     @RequiredPermission('PRODUCT', 'DELETE')
     async removeProductForAdmin(@Param() param: RemoveProductDto) {
-        const result = await this.productsService.removeProductForAdmin(param.id);
+        await this.productsService.removeProductForAdmin(param.id);
 
         return {
             statusCode: 200,
             message: 'Product removed successfully',
-            data: result,
         };
     }
 }
