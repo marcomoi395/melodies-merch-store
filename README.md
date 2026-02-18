@@ -4,8 +4,6 @@ This repository contains the backend source code for the **Melodies Merch Store*
 
 Built with a modern and scalable architecture, this robust backend provides a comprehensive set of APIs to support a full-featured frontend application. It includes everything from product and inventory management to secure order processing, along with a powerful admin panel for complete control over the store's operations.
 
-The live API is deployed and accessible at: **[melodies.studio/api](https://melodies.studio/api)**
-
 ## Key Features
 
 This backend is packed with features to ensure a smooth experience for both customers and administrators.
@@ -44,21 +42,21 @@ To get a local copy up and running, follow these simple steps.
 
 ### Installation & Running Locally
 
-1.  **Clone the repository:**
+1. **Clone the repository:**
 
     ```sh
     git clone https://github.com/marcomoi395/melodies-merch-store.git
     cd melodies-merch-store
     ```
 
-2.  **Install dependencies:**
+2. **Install dependencies:**
 
     ```sh
     npm install
     ```
 
-3.  **Set up your environment variables:**
-    Create a `.env` file in the root directory. You can use the template below:
+3. **Set up your environment variables:**
+   Create a `.env` file in the root directory. You can use the template below:
 
     ```
     # Database Configuration
@@ -82,9 +80,9 @@ To get a local copy up and running, follow these simple steps.
     MAIL_FROM="Melodies Store <no-reply@melodies.studio>"
     ```
 
-4.  **Running Locally (Development Mode)**
-    Make sure your local PostgreSQL and Redis services are running.
-    **Run Database Migrations:** Push the schema to your database and generate the Prisma Client:
+4. **Running Locally (Development Mode)**
+   Make sure your local PostgreSQL and Redis services are running.
+   **Run Database Migrations:** Push the schema to your database and generate the Prisma Client:
 
     ```bash
     npx prisma migrate dev
@@ -104,8 +102,8 @@ To get a local copy up and running, follow these simple steps.
 
     The application will be available at `http://localhost:3000`.
 
-5.  **Deployment (Production)**
-    This project is configured to be deployed using Docker Compose, which includes the API, Database, Redis, and an Nginx reverse proxy with SSL support.
+5. **Deployment (Production)**
+   This project is configured to be deployed using Docker Compose, which includes the API, Database, Redis, and an Nginx reverse proxy with SSL support.
 
     **Note:** The provided `docker-compose.yml` assumes you have SSL certificates mapped (e.g., via Let's Encrypt).
 
@@ -120,13 +118,3 @@ To get a local copy up and running, follow these simple steps.
     ```bash
     docker-compose ps
     ```
-
-## API Documentation
-
-Once the application is running, you can access the interactive Swagger UI to view all available endpoints, test them, and see the request/response models.
-
-- **Live Demo:** [https://melodies.studio/api](https://melodies.studio/api)
-
-- **Local Development:** [http://localhost:3000/api](https://www.google.com/search?q=http://localhost:3000/api&authuser=1)
-
-This documentation is automatically generated from the `openapi.yaml` file.
