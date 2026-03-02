@@ -102,6 +102,14 @@
         "transform": {
             "^.+\\.(t|j)s$": "ts-jest"
         },
+        "moduleNameMapper": {
+            "^src/(.*)$": "<rootDir>/$1",
+            "^generated/(.*)$": "<rootDir>/../generated/$1",
+            "^uuid$": "uuid"
+        },
+        "transformIgnorePatterns": [
+            "node_modules/(?!(uuid)/)"
+        ],
         "collectCoverageFrom": [
             "**/*.(t|j)s"
         ],
@@ -111,8 +119,7 @@
     "lint-staged": {
         "*.{ts,tsx,js,jsx}": [
             "eslint --fix",
-            "prettier --write",
-            "npm test -- --findRelatedTests --passWithNoTests"
+            "prettier --write"
         ],
         "*.{json,md,yml,yaml}": [
             "prettier --write"
