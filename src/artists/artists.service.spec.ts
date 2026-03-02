@@ -396,7 +396,7 @@ describe('ArtistsService', () => {
     describe('deleteArtistForAdmin', () => {
         it('should soft delete artist', async () => {
             mockPrismaService.artist.findUnique.mockResolvedValue(mockArtist);
-            mockPrismaService.orderItem = { findFirst: jest.fn().mockResolvedValue(null) };
+            mockPrismaService.orderItem.findFirst.mockResolvedValue(null);
             mockPrismaService.artist.update.mockResolvedValue({
                 ...mockArtist,
                 deletedAt: new Date(),
