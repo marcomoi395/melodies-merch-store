@@ -41,8 +41,9 @@ describe('OrderService', () => {
             findUnique: jest.fn(),
             update: jest.fn(),
         },
-        promotion: {
+        discount: {
             findUnique: jest.fn(),
+            update: jest.fn(),
         },
         cart: {
             delete: jest.fn(),

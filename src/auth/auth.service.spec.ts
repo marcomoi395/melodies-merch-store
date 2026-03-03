@@ -25,10 +25,18 @@ describe('AuthService', () => {
         updatedAt: new Date(),
     };
 
+    const mockPipeline = {
+        unlink: jest.fn(),
+        exec: jest.fn(),
+    };
+
     const mockRedis = {
         set: jest.fn(),
         get: jest.fn(),
         del: jest.fn(),
+        ttl: jest.fn(),
+        scanStream: jest.fn(),
+        pipeline: jest.fn().mockReturnValue(mockPipeline),
     };
 
     const mockPrismaService = {
@@ -252,6 +260,139 @@ describe('AuthService', () => {
 
             await expect(service.refreshTokens('invalid-refresh-token')).rejects.toThrow(
                 ForbiddenException,
+            );
+        });
+
+        it('should revoke all tokens and throw ForbiddenException if refresh token has been reused', async () => {
+            mockJwtService.verify.mockReturnValue({
+                sub: 'user_123',
+                email: 'test@example.com',
+                jti: 'token-id',
+            });
+            mockRedis.get.mockResolvedValue('current-valid-token');
+            mockRedis.scanStream.mockImplementation(() =>
+                (async function* () {
+                    yield [];
+                })(),
+            );
+
+            await expect(service.refreshTokens('used-old-token')).rejects.toThrow(
+                ForbiddenException,
+            );
+            await expect(service.refreshTokens('used-old-token')).rejects.toThrow('Access Denied');
+        });
+
+        it('should throw BadRequestException if token verification fails', async () => {
+            mockJwtService.verify.mockImplementation(() => {
+                throw new Error('jwt malformed');
+            });
+
+            await expect(service.refreshTokens('bad-token')).rejects.toThrow(BadRequestException);
+            await expect(service.refreshTokens('bad-token')).rejects.toThrow(
+                'Invalid refresh token',
+            );
+        });
+    });
+
+    describe('revokeAllTokens', () => {
+        it('should revoke all tokens for a user', async () => {
+            const keys = ['whitelist:user_123:token1', 'whitelist:user_123:token2'];
+            mockRedis.scanStream.mockImplementation(() =>
+                (async function* () {
+                    yield keys;
+                })(),
+            );
+            mockPipeline.exec.mockResolvedValue([]);
+
+            await service.revokeAllTokens('user_123');
+
+            expect(mockRedis.scanStream).toHaveBeenCalledWith({
+                match: 'whitelist:user_123:*',
+                count: 100,
+            });
+            expect(mockPipeline.unlink).toHaveBeenCalledTimes(2);
+            expect(mockPipeline.exec).toHaveBeenCalled();
+        });
+
+        it('should do nothing if no tokens found', async () => {
+            mockRedis.scanStream.mockImplementation(() =>
+                (async function* () {
+                    yield [];
+                })(),
+            );
+
+            await service.revokeAllTokens('user_123');
+
+            expect(mockPipeline.exec).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('requestPasswordReset', () => {
+        it('should throw BadRequestException if user does not exist', async () => {
+            mockUserService.getUser.mockResolvedValue(null);
+
+            await expect(service.requestPasswordReset('unknown@example.com')).rejects.toThrow(
+                BadRequestException,
+            );
+            await expect(service.requestPasswordReset('unknown@example.com')).rejects.toThrow(
+                'User with this email does not exist',
+            );
+        });
+
+        it('should send password reset email successfully', async () => {
+            mockUserService.getUser.mockResolvedValue(mockUser);
+            mockRedis.set
+                .mockResolvedValueOnce('OK') // rate-limit NX set succeeds
+                .mockResolvedValueOnce('OK'); // token storage
+            mockMailerService.sendMail.mockResolvedValue(true);
+
+            await service.requestPasswordReset('test@example.com');
+
+            expect(mockMailerService.sendMail).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    to: 'test@example.com',
+                }),
+            );
+        });
+
+        it('should throw BadRequestException if rate limit is exceeded', async () => {
+            mockUserService.getUser.mockResolvedValue(mockUser);
+            mockRedis.set.mockResolvedValue(null); // NX set fails – key already exists
+            mockRedis.ttl.mockResolvedValue(45);
+
+            await expect(service.requestPasswordReset('test@example.com')).rejects.toThrow(
+                BadRequestException,
+            );
+            await expect(service.requestPasswordReset('test@example.com')).rejects.toThrow(
+                '45 seconds',
+            );
+        });
+    });
+
+    describe('resetPassword', () => {
+        it('should reset password successfully', async () => {
+            mockRedis.get.mockResolvedValue('user_123');
+            mockRedis.del.mockResolvedValue(1);
+            mockPrismaService.user.update.mockResolvedValue(mockUser);
+
+            await service.resetPassword('valid-token', 'newPassword123');
+
+            expect(mockRedis.get).toHaveBeenCalledWith('reset_password:valid-token');
+            expect(mockRedis.del).toHaveBeenCalledWith('reset_password:valid-token');
+            expect(mockPrismaService.user.update).toHaveBeenCalledWith({
+                where: { id: 'user_123' },
+                data: { passwordHash: expect.any(String) },
+            });
+        });
+
+        it('should throw BadRequestException if token is invalid or expired', async () => {
+            mockRedis.get.mockResolvedValue(null);
+
+            await expect(service.resetPassword('invalid-token', 'newPassword123')).rejects.toThrow(
+                BadRequestException,
+            );
+            await expect(service.resetPassword('invalid-token', 'newPassword123')).rejects.toThrow(
+                'Invalid or expired password reset token',
             );
         });
     });
