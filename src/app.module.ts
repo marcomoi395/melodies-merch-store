@@ -16,6 +16,7 @@ import { PermissionsModule } from './permissions/permissions.module';
 import { PromotionModule } from './promotion/promotion.module';
 import { CartModule } from './cart/cart.module';
 import { OrderModule } from './order/order.module';
+import { join } from 'path';
 
 @Module({
     imports: [
@@ -47,7 +48,7 @@ import { OrderModule } from './order/order.module';
                     },
                 },
                 template: {
-                    dir: process.cwd() + '/src/shared/templates/',
+                    dir: join(__dirname, 'shared', 'templates'),
                     adapter: new HandlebarsAdapter(),
                     options: {
                         strict: true,

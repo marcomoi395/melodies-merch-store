@@ -5,7 +5,7 @@
     "compilerOptions": {
         "deleteOutDir": true,
         "assets": [
-            "**/*.hbs",
+            { "include": "**/*.hbs", "watch": true, "outDir": "dist/src" },
             {
                 "include": "../prisma/**/*.json",
                 "outDir": "dist/prisma",
