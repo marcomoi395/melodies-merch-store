@@ -27,7 +27,7 @@ This backend is packed with features to ensure a smooth experience for both cust
 - **Type-Safe Database Access:** Uses **Prisma** as a next-generation ORM for cleaner, more reliable database interactions.
 - **Efficient Session Management:** Leverages **Redis** for high-performance session and key management.
 - **Mail Service:** Handles transactional emails using SMTP configuration.
-- **API Documentation:** Includes an `openapi.yaml` file for automatic **Swagger UI** generation, making API exploration and integration seamless.
+- **API Documentation:** Includes an `openapi.yaml` file for automatic **Swagger UI** generation, making API exploration and integration seamless. A **Postman Collection** (`melodies-merch-platform.postman_collection.json.json`) is also provided for quick API testing and exploration.
 - **Containerized & Deployment-Ready:** Comes with a `Dockerfile` and `docker-compose.yml` for easy, consistent, and reproducible deployments.
 - **Optimized for Production:** Includes an **Nginx** configuration, ready to be used as a reverse proxy for enhanced performance and security.
 
