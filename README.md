@@ -2,6 +2,8 @@
 
 This repository contains the backend source code for the **Melodies Merch Store**, an e-commerce platform designed for selling physical music (like vinyls, CDs) and official artist merchandise.
 
+**Production URL:** [https://melodies.studio/api](https://melodies.studio/api)
+
 Built with a modern and scalable architecture, this robust backend provides a comprehensive set of APIs to support a full-featured frontend application. It includes everything from product and inventory management to secure order processing, along with a powerful admin panel for complete control over the store's operations.
 
 ## Key Features
@@ -27,7 +29,7 @@ This backend is packed with features to ensure a smooth experience for both cust
 - **Type-Safe Database Access:** Uses **Prisma** as a next-generation ORM for cleaner, more reliable database interactions.
 - **Efficient Session Management:** Leverages **Redis** for high-performance session and key management.
 - **Mail Service:** Handles transactional emails using SMTP configuration.
-- **API Documentation:** Includes an `openapi.yaml` file for automatic **Swagger UI** generation, making API exploration and integration seamless. A **Postman Collection** (`melodies-merch-platform.postman_collection.json.json`) is also provided for quick API testing and exploration.
+- **API Documentation:** Features an `openapi.yaml` for Swagger UI support and a Postman Collection for quick testing and exploration of the Melodies Merch Platform APIs.
 - **Containerized & Deployment-Ready:** Comes with a `Dockerfile` and `docker-compose.yml` for easy, consistent, and reproducible deployments.
 - **Optimized for Production:** Includes an **Nginx** configuration, ready to be used as a reverse proxy for enhanced performance and security.
 
@@ -72,6 +74,7 @@ To get a local copy up and running, follow these simple steps.
     # Redis Configuration
     REDIS_HOST=localhost
     REDIS_PORT=6379
+    REDIS_PASSWORD=password
     REDIS_DB=0
 
     # Mail Configuration (SMTP)
@@ -110,7 +113,7 @@ To get a local copy up and running, follow these simple steps.
     **Build and Run:**
 
     ```bash
-    docker-compose up -d
+    docker compose -f docker-compose.local.yml up -d
     ```
 
     **Check Containers:**
