@@ -11,6 +11,7 @@ import Redis from 'ioredis';
                 return new Redis({
                     host: configService.get<string>('REDIS_HOST'),
                     port: configService.get<number>('REDIS_PORT'),
+                    password: configService.get<string>('REDIS_PASSWORD'),
                     db: configService.get<number>('REDIS_DB', 0), // Default DB 0
                 });
             },
