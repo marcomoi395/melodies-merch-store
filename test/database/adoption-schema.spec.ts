@@ -11,4 +11,12 @@ describe('TypeORM adoption procedure', () => {
         expect(runbook).toContain('all 20 expected tables');
         expect(runbook).toContain('never reset or drop a shared or production database');
     });
+
+    it('documents isolated rehearsal and separate migration history', () => {
+        expect(runbook).toContain('isolated clone or disposable database');
+        expect(runbook).toContain('TypeORM migration history table');
+        expect(runbook).toContain(
+            'Verify representative rows and schema objects before and after baseline',
+        );
+    });
 });
