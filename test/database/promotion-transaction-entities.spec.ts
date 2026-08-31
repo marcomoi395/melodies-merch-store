@@ -58,4 +58,38 @@ describe('promotion and transaction entity metadata', () => {
             )?.options,
         ).toEqual(expect.objectContaining({ name: 'raw_response', type: 'jsonb', nullable: true }));
     });
+
+    it('preserves discount dates, amounts, and transaction mappings', () => {
+        const columns = getMetadataArgsStorage().columns;
+        const discountColumns = columns.filter((column) => column.target === DiscountEntity);
+        const transactionColumns = columns.filter((column) => column.target === TransactionEntity);
+
+        expect(discountColumns.find((column) => column.propertyName === 'value')?.options).toEqual(
+            expect.objectContaining({ type: 'decimal' }),
+        );
+        expect(
+            discountColumns.find((column) => column.propertyName === 'startDate')?.options,
+        ).toEqual(
+            expect.objectContaining({ name: 'start_date', type: 'timestamp', nullable: true }),
+        );
+        expect(transactionColumns).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    propertyName: 'gatewayTransactionId',
+                    options: expect.objectContaining({
+                        name: 'gateway_transaction_id',
+                        nullable: true,
+                    }),
+                }),
+                expect.objectContaining({
+                    propertyName: 'amount',
+                    options: expect.objectContaining({ type: 'decimal', nullable: true }),
+                }),
+                expect.objectContaining({
+                    propertyName: 'updatedAt',
+                    options: expect.objectContaining({ name: 'updated_at', precision: 3 }),
+                }),
+            ]),
+        );
+    });
 });
