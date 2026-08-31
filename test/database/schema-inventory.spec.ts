@@ -61,4 +61,23 @@ describe('schema inventory', () => {
             ]),
         );
     });
+    it('records UUID defaults and authoritative timestamp precision', () => {
+        const users = schemaInventory.find((table) => table.name === 'users');
+        const products = schemaInventory.find((table) => table.name === 'products');
+
+        expect(users?.columns.find((column) => column.name === 'id')?.prismaDefaultExpression).toBe(
+            'uuid()',
+        );
+        expect(products?.columns.find((column) => column.name === 'created_at')?.type).toBe(
+            'TIMESTAMP(3)',
+        );
+        expect(products?.columns.find((column) => column.name === 'updated_at')?.type).toBe(
+            'TIMESTAMP(3)',
+        );
+        expect(schemaDiscrepancies).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({ subject: 'UUID primary-key default' }),
+            ]),
+        );
+    });
 });

@@ -4,6 +4,7 @@ export interface SchemaColumnFixture {
     type: string;
     nullable: boolean;
     defaultExpression?: string;
+    prismaDefaultExpression?: string;
 }
 
 export interface SchemaDiscrepancyFixture {
@@ -29,11 +30,11 @@ export interface SchemaTableFixture {
     uniqueIndexes?: string[][];
     foreignKeys?: SchemaForeignKeyFixture[];
 }
-
 const uuid = (name: string, nullable = false): SchemaColumnFixture => ({
     name,
     type: 'UUID',
     nullable,
+    prismaDefaultExpression: name === 'id' ? 'uuid()' : undefined,
 });
 const varchar = (name: string, length?: number, nullable = false): SchemaColumnFixture => ({
     name,
@@ -49,7 +50,13 @@ const timestamp = (
     name: string,
     nullable: boolean,
     defaultExpression?: string,
-): SchemaColumnFixture => ({ name, type: 'TIMESTAMP', nullable, defaultExpression });
+    precision?: number,
+): SchemaColumnFixture => ({
+    name,
+    type: precision ? `TIMESTAMP(${precision})` : 'TIMESTAMP',
+    nullable,
+    defaultExpression,
+});
 const jsonb = (name: string, nullable = true): SchemaColumnFixture => ({
     name,
     type: 'JSONB',
@@ -188,8 +195,8 @@ export const schemaInventory: SchemaTableFixture[] = [
             jsonb('tracklist'),
             jsonb('media_gallery'),
             timestamp('deleted_at', true),
-            timestamp('created_at', false, 'CURRENT_TIMESTAMP'),
-            timestamp('updated_at', false),
+            timestamp('created_at', false, 'CURRENT_TIMESTAMP', 3),
+            timestamp('updated_at', false, undefined, 3),
         ],
         primaryKey: ['id'],
         uniqueIndexes: [['slug']],
@@ -216,8 +223,8 @@ export const schemaInventory: SchemaTableFixture[] = [
             integer('stock_quantity', true, '0'),
             boolean('is_preorder', true, 'false'),
             timestamp('deleted_at', true),
-            timestamp('created_at', false, 'CURRENT_TIMESTAMP'),
-            timestamp('updated_at', false),
+            timestamp('created_at', false, 'CURRENT_TIMESTAMP', 3),
+            timestamp('updated_at', false, undefined, 3),
         ],
         primaryKey: ['id'],
         uniqueIndexes: [['sku']],
@@ -278,7 +285,7 @@ export const schemaInventory: SchemaTableFixture[] = [
             text('note'),
             varchar('payment_method', 20, true),
             timestamp('created_at', true, 'CURRENT_TIMESTAMP'),
-            timestamp('updated_at', false),
+            timestamp('updated_at', false, undefined, 3),
         ],
         primaryKey: ['id'],
         foreignKeys: [fk(['user_id'], 'users', 'SET NULL')],
@@ -320,7 +327,7 @@ export const schemaInventory: SchemaTableFixture[] = [
             boolean('is_active', true, 'true'),
             varchar('applies_to', 20, true),
             timestamp('created_at', true, 'CURRENT_TIMESTAMP'),
-            timestamp('updated_at', false),
+            timestamp('updated_at', false, undefined, 3),
             timestamp('deleted_at', true),
         ],
         primaryKey: ['id'],
@@ -354,7 +361,7 @@ export const schemaInventory: SchemaTableFixture[] = [
             varchar('status', undefined, true),
             jsonb('raw_response'),
             timestamp('created_at', true),
-            timestamp('updated_at', false),
+            timestamp('updated_at', false, undefined, 3),
         ],
         primaryKey: ['id'],
         foreignKeys: [fk(['order_id'], 'orders', 'CASCADE')],
@@ -370,7 +377,7 @@ export const schemaInventory: SchemaTableFixture[] = [
             timestamp('published_at', true),
             boolean('is_pulished', true),
             timestamp('created_at', true),
-            timestamp('updated_at', false),
+            timestamp('updated_at', false, undefined, 3),
         ],
         primaryKey: ['id'],
         uniqueIndexes: [['slug']],
@@ -389,7 +396,7 @@ export const schemaInventory: SchemaTableFixture[] = [
             varchar('ip_address', 45, true),
             text('user_agent'),
             timestamp('created_at', true),
-            timestamp('updated_at', false),
+            timestamp('updated_at', false, undefined, 3),
         ],
         primaryKey: ['id'],
         foreignKeys: [fk(['actor_id'], 'users', 'SET NULL')],
@@ -430,7 +437,7 @@ export const schemaDiscrepancies: SchemaDiscrepancyFixture[] = [
         subject: 'timestamp precision',
         prisma: 'createdAt and updatedAt omit explicit precision',
         sql: 'created_at and updated_at use TIMESTAMP(3)',
-        resolution: 'Preserve TIMESTAMP(3) from the authoritative migration.',
+        resolution: 'Inventory records the SQL precision as authoritative for migration parity.',
     },
     {
         table: 'users',
@@ -439,6 +446,13 @@ export const schemaDiscrepancies: SchemaDiscrepancyFixture[] = [
         sql: 'updated_at has no database default',
         resolution:
             'Treat the migration as authoritative; update semantics remain application-owned.',
+    },
+    {
+        table: 'all tables with UUID ids',
+        subject: 'UUID primary-key default',
+        prisma: 'id fields declare @default(uuid())',
+        sql: 'The initial migration declares UUID ids without a database default',
+        resolution: 'Record the omission explicitly for the migration decision log.',
     },
     {
         table: 'posts',
