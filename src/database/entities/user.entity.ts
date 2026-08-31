@@ -1,4 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { CartEntity } from './cart.entity';
+import { OrderEntity } from './order.entity';
 import { UserRoleEntity } from './user-role.entity';
 
 @Entity({ name: 'users' })
@@ -46,4 +48,9 @@ export class UserEntity {
 
     @OneToMany(() => UserRoleEntity, (userRole) => userRole.user)
     userRoles: UserRoleEntity[];
+    @OneToMany(() => CartEntity, (cart) => cart.user)
+    carts: CartEntity[];
+
+    @OneToMany(() => OrderEntity, (order) => order.user)
+    orders: OrderEntity[];
 }
