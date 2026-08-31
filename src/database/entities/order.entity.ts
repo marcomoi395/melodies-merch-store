@@ -1,7 +1,8 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { UserEntity } from './user.entity';
+import { DiscountUsageEntity } from './discount-usage.entity';
 import { OrderItemEntity } from './order-item.entity';
-
+import { TransactionEntity } from './transaction.entity';
+import { UserEntity } from './user.entity';
 @Entity({ name: 'orders' })
 export class OrderEntity {
     @PrimaryGeneratedColumn('uuid') id: string;
@@ -49,4 +50,9 @@ export class OrderEntity {
     @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
     user: UserEntity | null;
     @OneToMany(() => OrderItemEntity, (item) => item.order) orderItems: OrderItemEntity[];
+    @OneToMany(() => DiscountUsageEntity, (usage) => usage.order)
+    discountUsages: DiscountUsageEntity[];
+
+    @OneToMany(() => TransactionEntity, (transaction) => transaction.order)
+    transactions: TransactionEntity[];
 }

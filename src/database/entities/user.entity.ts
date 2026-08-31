@@ -1,5 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { CartEntity } from './cart.entity';
+import { DiscountUsageEntity } from './discount-usage.entity';
 import { OrderEntity } from './order.entity';
 import { UserRoleEntity } from './user-role.entity';
 
@@ -53,4 +54,6 @@ export class UserEntity {
 
     @OneToMany(() => OrderEntity, (order) => order.user)
     orders: OrderEntity[];
+    @OneToMany(() => DiscountUsageEntity, (usage) => usage.user)
+    discountUsages: DiscountUsageEntity[];
 }
