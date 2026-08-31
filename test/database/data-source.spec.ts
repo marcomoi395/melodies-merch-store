@@ -1,5 +1,5 @@
 import { DataSource } from 'typeorm';
-import { createDataSourceOptions } from '../../src/database/data-source';
+import { createDataSourceOptions } from '../../src/database/database-options';
 
 describe('TypeORM DataSource configuration', () => {
     it('loads DATABASE_URL, disables synchronization, and registers migrations', () => {

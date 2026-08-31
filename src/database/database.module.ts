@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { createDataSourceOptions } from './data-source';
+import { createDataSourceOptions } from './database-options';
 
 const typeOrmImports =
     process.env.TYPEORM_ENABLED === 'false'
