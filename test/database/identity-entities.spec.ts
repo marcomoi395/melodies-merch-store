@@ -34,4 +34,35 @@ describe('identity entity metadata', () => {
             ),
         ).toBe(true);
     });
+
+    it('preserves identity column mappings and cascade actions', () => {
+        const columns = getMetadataArgsStorage().columns;
+        const userColumns = columns.filter((column) => column.target === UserEntity);
+
+        expect(userColumns).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    propertyName: 'passwordHash',
+                    options: expect.objectContaining({ name: 'password_hash', nullable: true }),
+                }),
+                expect.objectContaining({
+                    propertyName: 'fullName',
+                    options: expect.objectContaining({ name: 'full_name', nullable: true }),
+                }),
+                expect.objectContaining({
+                    propertyName: 'isVerified',
+                    options: expect.objectContaining({ name: 'is_verified', default: false }),
+                }),
+            ]),
+        );
+
+        const foreignKeys = getMetadataArgsStorage()
+            .relations.filter(
+                (relation) =>
+                    relation.target === UserRoleEntity || relation.target === RolePermissionEntity,
+            )
+            .map((relation) => relation.options.onDelete);
+
+        expect(foreignKeys).toEqual(['CASCADE', 'CASCADE', 'CASCADE', 'CASCADE']);
+    });
 });
