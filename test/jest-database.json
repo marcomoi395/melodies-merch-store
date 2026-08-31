@@ -17,5 +17,6 @@
         "^test/(.*)$": "<rootDir>/test/$1",
         "^uuid$": "uuid"
     },
-    "transformIgnorePatterns": ["node_modules/(?!(uuid)/)"]
+    "transformIgnorePatterns": ["node_modules/(?!(uuid)/)"],
+    "setupFiles": ["<rootDir>/test/database/setup.ts"]
 }
