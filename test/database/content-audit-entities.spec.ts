@@ -39,4 +39,23 @@ describe('content and audit entity metadata', () => {
             ]),
         );
     });
+
+    it('preserves content and audit column types and timestamp precision', () => {
+        const columns = getMetadataArgsStorage().columns;
+        const post = columns.filter((column) => column.target === PostEntity);
+        const audit = columns.filter((column) => column.target === AuditLogEntity);
+
+        expect(post.find((column) => column.propertyName === 'title')?.options).toEqual(
+            expect.objectContaining({ type: 'varchar', length: 255 }),
+        );
+        expect(post.find((column) => column.propertyName === 'publishedAt')?.options).toEqual(
+            expect.objectContaining({ name: 'published_at', type: 'timestamp', nullable: true }),
+        );
+        expect(audit.find((column) => column.propertyName === 'newData')?.options).toEqual(
+            expect.objectContaining({ name: 'new_data', type: 'jsonb', nullable: true }),
+        );
+        expect(audit.find((column) => column.propertyName === 'updatedAt')?.options).toEqual(
+            expect.objectContaining({ name: 'updated_at', type: 'timestamp', precision: 3 }),
+        );
+    });
 });
