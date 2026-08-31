@@ -20,4 +20,45 @@ describe('artist and category entity metadata', () => {
             )?.options.onDelete,
         ).toBe('SET NULL');
     });
+    it('preserves exact catalog columns and constraints', () => {
+        const columns = getMetadataArgsStorage().columns;
+        const artistColumns = columns
+            .filter((column) => column.target === ArtistEntity)
+            .map((column) => ({
+                propertyName: column.propertyName,
+                name: column.options.name ?? column.propertyName,
+            }));
+        const categoryColumns = columns
+            .filter((column) => column.target === CategoryEntity)
+            .map((column) => ({
+                propertyName: column.propertyName,
+                name: column.options.name ?? column.propertyName,
+            }));
+
+        expect(artistColumns).toEqual(
+            expect.arrayContaining([
+                { propertyName: 'stageName', name: 'stage_name' },
+                { propertyName: 'slug', name: 'slug' },
+                { propertyName: 'avatarUrl', name: 'avatar_url' },
+                { propertyName: 'metadata', name: 'metadata' },
+                { propertyName: 'deletedAt', name: 'deleted_at' },
+            ]),
+        );
+        expect(categoryColumns).toEqual(
+            expect.arrayContaining([
+                { propertyName: 'parentId', name: 'parent_id' },
+                { propertyName: 'slug', name: 'slug' },
+            ]),
+        );
+        expect(
+            columns.find(
+                (column) => column.target === ArtistEntity && column.propertyName === 'slug',
+            )?.options.unique,
+        ).toBe(true);
+        expect(
+            columns.find(
+                (column) => column.target === CategoryEntity && column.propertyName === 'slug',
+            )?.options.unique,
+        ).toBe(true);
+    });
 });
