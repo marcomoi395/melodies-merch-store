@@ -261,6 +261,13 @@ npm run test:e2e
 
 **Estimated complexity:** Small
 
+## Final verification handoff
+
+- TypeORM foundation coverage is complete through schema inventory, shared DataSource configuration, isolated database tests, all 20 entity metadata slices, initial migration, adoption runbook, Nest integration, and migration/schema-parity e2e coverage.
+- `npm run build`, `npm test`, `npm test -- --coverage`, and `npm run test:e2e` were executed. They remain blocked by the pre-existing missing generated Prisma client under `generated/prisma/`, which causes Prisma imports and dependent feature tests to fail.
+- Existing feature services/controllers intentionally remain Prisma-backed. A later phase must run Prisma generation successfully, then rewrite those services/controllers to TypeORM repositories before removing Prisma dependencies.
+- PostgreSQL-backed migration, parity, and adoption rehearsal tests are gated on `TEST_DATABASE_URL` and must be run against a disposable isolated database/schema in CI or local rehearsal.
+
 ## Safe Parallelization
 
 - Tasks 3 and 4a may run in parallel after Task 2b.
