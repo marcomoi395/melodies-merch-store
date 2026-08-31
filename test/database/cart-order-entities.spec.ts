@@ -61,4 +61,54 @@ describe('cart and order entity metadata', () => {
             ]),
         );
     });
+
+    it('preserves cart defaults and order monetary columns', () => {
+        const columns = getMetadataArgsStorage().columns;
+        const cartColumns = columns.filter((column) => column.target === CartEntity);
+        const orderColumns = columns.filter((column) => column.target === OrderEntity);
+        const orderItemColumns = columns.filter((column) => column.target === OrderItemEntity);
+
+        expect(cartColumns.find((column) => column.propertyName === 'createdAt')?.options).toEqual(
+            expect.objectContaining({
+                name: 'created_at',
+                nullable: true,
+                default: expect.any(Function),
+            }),
+        );
+        expect(cartColumns.find((column) => column.propertyName === 'userId')?.options).toEqual(
+            expect.objectContaining({
+                name: 'user_id',
+                type: 'uuid',
+                nullable: true,
+                unique: true,
+            }),
+        );
+        expect(orderColumns.find((column) => column.propertyName === 'status')?.options).toEqual(
+            expect.objectContaining({ length: 20, nullable: true, default: 'PENDING' }),
+        );
+        expect(orderColumns.find((column) => column.propertyName === 'currency')?.options).toEqual(
+            expect.objectContaining({
+                type: 'varchar',
+                length: 20,
+                nullable: true,
+                default: 'VND',
+            }),
+        );
+        expect(orderItemColumns).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    propertyName: 'productName',
+                    options: expect.objectContaining({ name: 'product_name' }),
+                }),
+                expect.objectContaining({
+                    propertyName: 'variantName',
+                    options: expect.objectContaining({ name: 'variant_name' }),
+                }),
+                expect.objectContaining({
+                    propertyName: 'totalLinePrice',
+                    options: expect.objectContaining({ name: 'total_line_price', type: 'decimal' }),
+                }),
+            ]),
+        );
+    });
 });
