@@ -61,4 +61,20 @@ describe('artist and category entity metadata', () => {
             )?.options.unique,
         ).toBe(true);
     });
+
+    it('preserves catalog nullability and defaults', () => {
+        const columns = getMetadataArgsStorage().columns;
+        const artistColumns = columns.filter((column) => column.target === ArtistEntity);
+        const categoryColumns = columns.filter((column) => column.target === CategoryEntity);
+
+        expect(artistColumns.find((column) => column.propertyName === 'status')?.options).toEqual(
+            expect.objectContaining({ nullable: true, default: 'active' }),
+        );
+        expect(artistColumns.find((column) => column.propertyName === 'metadata')?.options).toEqual(
+            expect.objectContaining({ type: 'jsonb', nullable: true }),
+        );
+        expect(
+            categoryColumns.find((column) => column.propertyName === 'parentId')?.options,
+        ).toEqual(expect.objectContaining({ name: 'parent_id', type: 'uuid', nullable: true }));
+    });
 });
