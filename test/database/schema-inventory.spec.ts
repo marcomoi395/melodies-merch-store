@@ -61,18 +61,33 @@ describe('schema inventory', () => {
             ]),
         );
     });
-    it('records UUID defaults and authoritative timestamp precision', () => {
+    it('records UUID defaults and every authoritative timestamp precision', () => {
         const users = schemaInventory.find((table) => table.name === 'users');
-        const products = schemaInventory.find((table) => table.name === 'products');
+        const expectedTimestampPrecision: Record<string, string[]> = {
+            carts: ['updated_at'],
+            discounts: ['updated_at'],
+            orders: ['updated_at'],
+            posts: ['updated_at'],
+            products: ['created_at', 'updated_at'],
+            product_variants: ['created_at', 'updated_at'],
+            transactions: ['updated_at'],
+            audit_logs: ['updated_at'],
+        };
 
         expect(users?.columns.find((column) => column.name === 'id')?.prismaDefaultExpression).toBe(
             'uuid()',
         );
-        expect(products?.columns.find((column) => column.name === 'created_at')?.type).toBe(
-            'TIMESTAMP(3)',
-        );
-        expect(products?.columns.find((column) => column.name === 'updated_at')?.type).toBe(
-            'TIMESTAMP(3)',
+        for (const [tableName, columnNames] of Object.entries(expectedTimestampPrecision)) {
+            const table = schemaInventory.find((candidate) => candidate.name === tableName);
+
+            for (const columnName of columnNames) {
+                expect(table?.columns.find((column) => column.name === columnName)?.type).toBe(
+                    'TIMESTAMP(3)',
+                );
+            }
+        }
+        expect(users?.columns.find((column) => column.name === 'updated_at')?.type).toBe(
+            'TIMESTAMP',
         );
         expect(schemaDiscrepancies).toEqual(
             expect.arrayContaining([

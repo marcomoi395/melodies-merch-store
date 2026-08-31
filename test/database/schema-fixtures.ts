@@ -242,7 +242,7 @@ export const schemaInventory: SchemaTableFixture[] = [
             uuid('id'),
             uuid('user_id', true),
             timestamp('created_at', true, 'CURRENT_TIMESTAMP'),
-            timestamp('updated_at', false),
+            timestamp('updated_at', false, undefined, 3),
         ],
         primaryKey: ['id'],
         uniqueIndexes: [['user_id']],
