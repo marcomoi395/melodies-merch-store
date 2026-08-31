@@ -39,10 +39,32 @@ describe('initial TypeORM migration', () => {
         expect(migrationSource.match(/ADD CONSTRAINT/g)).toHaveLength(24);
     });
 
-    it('defines reversible migration methods', () => {
-        expect(migrationSource).toMatch(/async up\(queryRunner: QueryRunner\)/);
-        expect(migrationSource).toMatch(/async down\(queryRunner: QueryRunner\)/);
-        expect(migrationSource).toContain('DROP TABLE IF EXISTS "users" CASCADE');
-        expect(migrationSource).toContain('DROP TABLE IF EXISTS "audit_logs" CASCADE');
+    it('drops every authoritative table during rollback', () => {
+        const tables = [
+            'users',
+            'roles',
+            'permissions',
+            'user_roles',
+            'role_permissions',
+            'artists',
+            'categories',
+            'products',
+            'product_artists',
+            'product_variants',
+            'variant_attributes',
+            'carts',
+            'cart_items',
+            'orders',
+            'order_items',
+            'discounts',
+            'discount_usages',
+            'transactions',
+            'posts',
+            'audit_logs',
+        ];
+
+        for (const table of tables) {
+            expect(migrationSource).toContain(`DROP TABLE IF EXISTS "${table}" CASCADE`);
+        }
     });
 });
