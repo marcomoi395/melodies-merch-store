@@ -70,4 +70,53 @@ describe('product entity metadata', () => {
             ]),
         );
     });
+
+    it('preserves product JSONB, uniqueness, and variant mappings', () => {
+        const columns = getMetadataArgsStorage().columns;
+        const productColumns = columns.filter((column) => column.target === ProductEntity);
+        const variantColumns = columns.filter((column) => column.target === ProductVariantEntity);
+        const attributeColumns = columns.filter(
+            (column) => column.target === VariantAttributeEntity,
+        );
+
+        expect(productColumns).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    propertyName: 'tracklist',
+                    options: expect.objectContaining({ type: 'jsonb', nullable: true }),
+                }),
+                expect.objectContaining({
+                    propertyName: 'mediaGallery',
+                    options: expect.objectContaining({
+                        name: 'media_gallery',
+                        type: 'jsonb',
+                        nullable: true,
+                    }),
+                }),
+                expect.objectContaining({
+                    propertyName: 'productType',
+                    options: expect.objectContaining({ name: 'product_type', length: 20 }),
+                }),
+            ]),
+        );
+        expect(variantColumns.find((column) => column.propertyName === 'sku')?.options).toEqual(
+            expect.objectContaining({ unique: true, length: 50 }),
+        );
+        expect(attributeColumns).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    propertyName: 'variantId',
+                    options: expect.objectContaining({ name: 'variant_id', type: 'uuid' }),
+                }),
+                expect.objectContaining({
+                    propertyName: 'key',
+                    options: expect.objectContaining({ length: 50 }),
+                }),
+                expect.objectContaining({
+                    propertyName: 'value',
+                    options: expect.objectContaining({ length: 100 }),
+                }),
+            ]),
+        );
+    });
 });
