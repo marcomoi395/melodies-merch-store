@@ -95,4 +95,32 @@ describe('schema inventory', () => {
             ]),
         );
     });
+    it('covers every Prisma camelCase property with a mapped column', () => {
+        expect(Object.keys(propertyColumnMappings).sort()).toEqual(
+            [
+                'artists',
+                'audit_logs',
+                'cart_items',
+                'carts',
+                'categories',
+                'discount_usages',
+                'discounts',
+                'orders',
+                'order_items',
+                'posts',
+                'product_artists',
+                'product_variants',
+                'products',
+                'roles',
+                'transactions',
+                'users',
+                'variant_attributes',
+            ].sort(),
+        );
+        expect(propertyColumnMappings.orders.shippingAddress).toBe('shipping_address');
+        expect(propertyColumnMappings.transactions.gatewayTransactionId).toBe(
+            'gateway_transaction_id',
+        );
+        expect(propertyColumnMappings.audit_logs.ipAddress).toBe('ip_address');
+    });
 });
