@@ -8,7 +8,11 @@ describeDatabase('TypeORM migration PostgreSQL e2e', () => {
     let dataSource: DataSource;
 
     beforeAll(async () => {
-        dataSource = new DataSource(createDataSourceOptions({ DATABASE_URL: databaseUrl }));
+        dataSource = new DataSource(
+            createDataSourceOptions({
+                DATABASE_URL: process.env.DATABASE_URL,
+            }),
+        );
         await dataSource.initialize();
         await dataSource.runMigrations();
     });
