@@ -1,7 +1,9 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { AuditLogEntity } from './audit-log.entity';
 import { CartEntity } from './cart.entity';
 import { DiscountUsageEntity } from './discount-usage.entity';
 import { OrderEntity } from './order.entity';
+import { PostEntity } from './post.entity';
 import { UserRoleEntity } from './user-role.entity';
 
 @Entity({ name: 'users' })
@@ -56,4 +58,9 @@ export class UserEntity {
     orders: OrderEntity[];
     @OneToMany(() => DiscountUsageEntity, (usage) => usage.user)
     discountUsages: DiscountUsageEntity[];
+    @OneToMany(() => PostEntity, (post) => post.author)
+    posts: PostEntity[];
+
+    @OneToMany(() => AuditLogEntity, (auditLog) => auditLog.actor)
+    auditLogs: AuditLogEntity[];
 }
