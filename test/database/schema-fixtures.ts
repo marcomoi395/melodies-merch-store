@@ -413,8 +413,10 @@ export const propertyColumnMappings: Record<string, Record<string, string>> = {
         isVerified: 'is_verified',
     },
     roles: { createdAt: 'created_at', updatedAt: 'updated_at', deletedAt: 'deleted_at' },
-    artists: { stageName: 'stage_name', avatarUrl: 'avatar_url', deletedAt: 'deleted_at' },
+    user_roles: { userId: 'user_id', roleId: 'role_id' },
+    role_permissions: { roleId: 'role_id', permissionId: 'permission_id' },
     categories: { parentId: 'parent_id' },
+    artists: { stageName: 'stage_name', avatarUrl: 'avatar_url', deletedAt: 'deleted_at' },
     products: {
         shortDescription: 'short_description',
         categoryId: 'category_id',

@@ -111,12 +111,16 @@ describe('schema inventory', () => {
                 'product_artists',
                 'product_variants',
                 'products',
+                'role_permissions',
                 'roles',
                 'transactions',
+                'user_roles',
                 'users',
                 'variant_attributes',
             ].sort(),
         );
+        expect(propertyColumnMappings.user_roles.userId).toBe('user_id');
+        expect(propertyColumnMappings.role_permissions.permissionId).toBe('permission_id');
         expect(propertyColumnMappings.orders.shippingAddress).toBe('shipping_address');
         expect(propertyColumnMappings.transactions.gatewayTransactionId).toBe(
             'gateway_transaction_id',
