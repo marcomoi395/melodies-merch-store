@@ -22,11 +22,19 @@ describeDatabase('TypeORM migration PostgreSQL e2e', () => {
         await dataSource.destroy();
     });
 
-    it('creates all 20 tables and supports idempotent reruns', async () => {
+    it('creates all 20 tables, reruns idempotently, and rolls back cleanly', async () => {
         const tables = await dataSource.query(
-            `SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename NOT LIKE 'typeorm_%'`,
+            `SELECT tablename FROM pg_tables WHERE schemaname = current_schema() AND tablename NOT LIKE 'typeorm_%'`,
         );
         expect(tables).toHaveLength(20);
         await expect(dataSource.runMigrations()).resolves.toEqual([]);
+
+        await dataSource.undoLastMigration();
+        const rolledBackTables = await dataSource.query(
+            `SELECT tablename FROM pg_tables WHERE schemaname = current_schema() AND tablename NOT LIKE 'typeorm_%'`,
+        );
+        expect(rolledBackTables).toHaveLength(0);
+
+        await dataSource.runMigrations();
     });
 });
