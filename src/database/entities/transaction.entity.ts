@@ -1,4 +1,11 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+    Column,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn,
+} from 'typeorm';
 import { OrderEntity } from './order.entity';
 
 @Entity({ name: 'transactions' })
@@ -16,7 +23,7 @@ export class TransactionEntity {
         unknown
     > | null;
     @Column({ name: 'created_at', type: 'timestamp', nullable: true }) createdAt: Date | null;
-    @Column({ name: 'updated_at', type: 'timestamp', precision: 3 }) updatedAt: Date;
+    @UpdateDateColumn({ name: 'updated_at', type: 'timestamp', precision: 3 }) updatedAt: Date;
     @ManyToOne(() => OrderEntity, (order) => order.transactions, {
         nullable: true,
         onDelete: 'CASCADE',

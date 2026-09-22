@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { DiscountUsageEntity } from './discount-usage.entity';
 
 @Entity({ name: 'discounts' })
@@ -26,7 +26,7 @@ export class DiscountEntity {
         default: () => 'CURRENT_TIMESTAMP',
     })
     createdAt: Date | null;
-    @Column({ name: 'updated_at', type: 'timestamp', precision: 3 }) updatedAt: Date;
+    @UpdateDateColumn({ name: 'updated_at', type: 'timestamp', precision: 3 }) updatedAt: Date;
     @Column({ name: 'deleted_at', type: 'timestamp', nullable: true }) deletedAt: Date | null;
     @OneToMany(() => DiscountUsageEntity, (usage) => usage.discount)
     discountUsages: DiscountUsageEntity[];

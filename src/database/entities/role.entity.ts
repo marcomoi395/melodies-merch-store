@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { UserRoleEntity } from './user-role.entity';
 import { RolePermissionEntity } from './role-permission.entity';
 
@@ -21,7 +21,7 @@ export class RoleEntity {
     })
     createdAt: Date | null;
 
-    @Column({ name: 'updated_at', type: 'timestamp', nullable: true })
+    @UpdateDateColumn({ name: 'updated_at', type: 'timestamp', nullable: true })
     updatedAt: Date | null;
 
     @Column({ name: 'deleted_at', type: 'timestamp', nullable: true })
