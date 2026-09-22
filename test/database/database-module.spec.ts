@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DatabaseModule } from '../../src/database/database.module';
-import { getIsolatedDatabaseUrl } from './database-test-url';
+import { getIsolatedDatabaseTarget } from './database-test-url';
 
 describe('DatabaseModule', () => {
     it('configures TypeORM from the shared DataSource options', () => {
@@ -35,12 +35,24 @@ describe('Database test lifecycle configuration', () => {
 });
 
 describe('Database test URL helper', () => {
-    it('adds the isolated schema to TEST_DATABASE_URL', () => {
+    it('selects an isolated schema through an explicit TypeORM option', () => {
         expect(
-            getIsolatedDatabaseUrl({
+            getIsolatedDatabaseTarget({
                 TEST_DATABASE_URL: 'postgresql://localhost/melodies_test',
-                DATABASE_SCHEMA: 'run_123',
+                DATABASE_SCHEMA: 'test_run_123',
             }),
-        ).toBe('postgresql://localhost/melodies_test?schema=run_123');
+        ).toEqual({
+            url: 'postgresql://localhost/melodies_test',
+            schema: 'test_run_123',
+        });
+    });
+
+    it('rejects a shared-schema database test target', () => {
+        expect(() =>
+            getIsolatedDatabaseTarget({
+                TEST_DATABASE_URL: 'postgresql://localhost/melodies_test',
+                DATABASE_SCHEMA: 'public',
+            }),
+        ).toThrow('DATABASE_SCHEMA');
     });
 });
