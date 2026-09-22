@@ -1,18 +1,18 @@
 services:
-    api:
-        build: .
-        container_name: nestjs_api
-        env_file:
-            - .env
-        environment:
-            DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
-            REDIS_HOST: redis
-            REDIS_PASSWORD: ${REDIS_PASSWORD}
-        depends_on:
-            - db
-            - redis
-        networks:
-            - app-network
+    # api:
+    #     build: .
+    #     container_name: nestjs_api
+    #     env_file:
+    #         - .env
+    #     environment:
+    #         DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
+    #         REDIS_HOST: redis
+    #         REDIS_PASSWORD: ${REDIS_PASSWORD}
+    #     depends_on:
+    #         - db
+    #         - redis
+    #     networks:
+    #         - app-network
     db:
         image: postgres:16-alpine
         container_name: nestjs_postgres
@@ -22,31 +22,36 @@ services:
             POSTGRES_DB: ${POSTGRES_DB}
         volumes:
             - postgres_data:/var/lib/postgresql/data
+        ports:
+            - '5432:5432'
         networks:
             - app-network
 
     redis:
         image: redis:alpine
         command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+        ports:
+            # Avoid the existing passwordless host Redis on 6379.
+            - '6380:6379'
         volumes:
             - ./redis_data:/data
         networks:
             - app-network
 
-    nginx:
-        image: nginx:alpine
-        container_name: nestjs_nginx
-        ports:
-            - '80:80'
-            - '443:443'
-        volumes:
-            - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
-            - /etc/letsencrypt:/etc/letsencrypt:ro
-        depends_on:
-            - api
-        networks:
-            - app-network
-
+    # nginx:
+    #     image: nginx:alpine
+    #     container_name: nestjs_nginx
+    #     ports:
+    #         - '80:80'
+    #         - '443:443'
+    #     volumes:
+    #         - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    #         - /etc/letsencrypt:/etc/letsencrypt:ro
+    #     depends_on:
+    #         - api
+    #     networks:
+    #         - app-network
+    #
 volumes:
     postgres_data:
 
