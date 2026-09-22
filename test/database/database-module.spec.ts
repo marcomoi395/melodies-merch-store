@@ -55,4 +55,23 @@ describe('Database test URL helper', () => {
             }),
         ).toThrow('DATABASE_SCHEMA');
     });
+
+    it('rejects a normal application database target', () => {
+        expect(() =>
+            getIsolatedDatabaseTarget({
+                TEST_DATABASE_URL: 'postgresql://localhost/melodies',
+                DATABASE_SCHEMA: 'test_run_123',
+            }),
+        ).toThrow('dedicated test database');
+    });
+
+    it('allows an explicitly allowlisted dedicated database', () => {
+        expect(
+            getIsolatedDatabaseTarget({
+                TEST_DATABASE_URL: 'postgresql://localhost/ci_database',
+                TEST_DATABASE_NAME_ALLOWLIST: 'ci_database',
+                DATABASE_SCHEMA: 'test_run_123',
+            }).url,
+        ).toBe('postgresql://localhost/ci_database');
+    });
 });

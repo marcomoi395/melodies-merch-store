@@ -78,8 +78,11 @@ const expectedType = (
     }
 };
 
-const action = (value: string): 'CASCADE' | 'SET NULL' =>
-    ({ c: 'CASCADE', n: 'SET NULL' })[value] as 'CASCADE' | 'SET NULL';
+const foreignKeyAction = (actionCode: string): 'CASCADE' | 'SET NULL' => {
+    if (actionCode === 'c') return 'CASCADE';
+    if (actionCode === 'n') return 'SET NULL';
+    throw new Error(`Unsupported PostgreSQL foreign-key action: ${actionCode}`);
+};
 
 export async function expectSchemaParity(dataSource: DataSource): Promise<void> {
     const schema = dataSource.options.schema as string;
@@ -126,15 +129,15 @@ export async function expectSchemaParity(dataSource: DataSource): Promise<void> 
     );
 
     const uniqueIndexes = await dataSource.query<{ table_name: string; columns: string[] }[]>(
-        `SELECT tableName.table_name, array_agg(attribute.attname ORDER BY key.ordinality)::text[] AS columns
+        `SELECT tableName.relname AS table_name, array_agg(attribute.attname ORDER BY key.ordinality)::text[] AS columns
          FROM pg_index index
          JOIN pg_class tableName ON tableName.oid = index.indrelid
          JOIN pg_namespace namespace ON namespace.oid = tableName.relnamespace
          JOIN unnest(index.indkey) WITH ORDINALITY AS key(attribute_number, ordinality) ON true
          JOIN pg_attribute attribute ON attribute.attrelid = tableName.oid AND attribute.attnum = key.attribute_number
          WHERE namespace.nspname = $1 AND index.indisunique AND NOT index.indisprimary
-         GROUP BY tableName.table_name, index.indexrelid
-         ORDER BY tableName.table_name, columns`,
+         GROUP BY tableName.relname, index.indexrelid
+         ORDER BY tableName.relname, columns`,
         [schema],
     );
     expect(uniqueIndexes).toEqual(
@@ -163,17 +166,17 @@ export async function expectSchemaParity(dataSource: DataSource): Promise<void> 
                 array_agg(sourceAttribute.attname ORDER BY sourceKey.ordinality)::text[] AS columns,
                 target.relname AS referenced_table,
                 array_agg(targetAttribute.attname ORDER BY targetKey.ordinality)::text[] AS referenced_columns,
-                constraint.confdeltype AS delete_action, constraint.confupdtype AS update_action
-         FROM pg_constraint constraint
-         JOIN pg_class source ON source.oid = constraint.conrelid
+                foreignKeyConstraint.confdeltype AS delete_action, foreignKeyConstraint.confupdtype AS update_action
+         FROM pg_constraint foreignKeyConstraint
+         JOIN pg_class source ON source.oid = foreignKeyConstraint.conrelid
          JOIN pg_namespace namespace ON namespace.oid = source.relnamespace
-         JOIN pg_class target ON target.oid = constraint.confrelid
-         JOIN unnest(constraint.conkey) WITH ORDINALITY AS sourceKey(attribute_number, ordinality) ON true
-         JOIN unnest(constraint.confkey) WITH ORDINALITY AS targetKey(attribute_number, ordinality) ON targetKey.ordinality = sourceKey.ordinality
+         JOIN pg_class target ON target.oid = foreignKeyConstraint.confrelid
+         JOIN unnest(foreignKeyConstraint.conkey) WITH ORDINALITY AS sourceKey(attribute_number, ordinality) ON true
+         JOIN unnest(foreignKeyConstraint.confkey) WITH ORDINALITY AS targetKey(attribute_number, ordinality) ON targetKey.ordinality = sourceKey.ordinality
          JOIN pg_attribute sourceAttribute ON sourceAttribute.attrelid = source.oid AND sourceAttribute.attnum = sourceKey.attribute_number
          JOIN pg_attribute targetAttribute ON targetAttribute.attrelid = target.oid AND targetAttribute.attnum = targetKey.attribute_number
-         WHERE namespace.nspname = $1 AND constraint.contype = 'f'
-         GROUP BY source.relname, target.relname, constraint.oid
+         WHERE namespace.nspname = $1 AND foreignKeyConstraint.contype = 'f'
+         GROUP BY source.relname, target.relname, foreignKeyConstraint.oid
          ORDER BY source.relname, columns`,
         [schema],
     );
@@ -196,8 +199,8 @@ export async function expectSchemaParity(dataSource: DataSource): Promise<void> 
     expect(
         foreignKeys.map((key) => ({
             ...key,
-            delete_action: action(key.delete_action),
-            update_action: action(key.update_action),
+            delete_action: foreignKeyAction(key.delete_action),
+            update_action: foreignKeyAction(key.update_action),
         })),
     ).toEqual(expectedForeignKeys);
 }

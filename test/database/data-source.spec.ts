@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
 import { DataSource } from 'typeorm';
 import { AppDataSource } from '../../src/database/data-source';
 import {
@@ -39,6 +40,26 @@ describe('TypeORM DataSource configuration', () => {
 
     it('fails when DATABASE_URL is missing', () => {
         expect(() => createDataSourceOptions({})).toThrow('DATABASE_URL');
+    });
+
+    it('returns non-zero from the documented CLI command when configuration is missing', () => {
+        const result = spawnSync(
+            process.execPath,
+            [
+                require.resolve('typeorm/cli-ts-node-commonjs.js'),
+                'migration:run',
+                '-d',
+                'src/database/data-source.ts',
+            ],
+            {
+                cwd: process.cwd(),
+                encoding: 'utf8',
+                env: { ...process.env, DATABASE_URL: '' },
+            },
+        );
+
+        expect(result.status).not.toBe(0);
+        expect(`${result.stdout}${result.stderr}`).toContain('DATABASE_URL is required');
     });
 
     it('exports a TypeORM DataSource instance', () => {

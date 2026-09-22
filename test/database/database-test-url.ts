@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 
 const isolatedSchemaPattern = /^test_[a-zA-Z0-9_]+$/;
+const dedicatedDatabasePattern = /(^test_|_test$)/;
 
 export interface IsolatedDatabaseTarget {
     url: string;
@@ -16,6 +17,18 @@ export function getIsolatedDatabaseTarget(
     }
 
     const url = new URL(testDatabaseUrl);
+    const databaseName = url.pathname.slice(1);
+    const allowedDatabases = environment.TEST_DATABASE_NAME_ALLOWLIST?.split(',').map((name) =>
+        name.trim(),
+    );
+    if (
+        !dedicatedDatabasePattern.test(databaseName) &&
+        !allowedDatabases?.includes(databaseName)
+    ) {
+        throw new Error(
+            'TEST_DATABASE_URL must target a dedicated test database (test_* or *_test), or be listed in TEST_DATABASE_NAME_ALLOWLIST',
+        );
+    }
     const schema =
         environment.DATABASE_SCHEMA ?? `test_${process.pid}_${randomUUID().replaceAll('-', '')}`;
 

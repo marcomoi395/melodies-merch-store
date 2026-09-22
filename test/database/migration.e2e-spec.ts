@@ -1,53 +1,55 @@
 import { DataSource } from 'typeorm';
-import { Client } from 'pg';
 import { randomUUID } from 'node:crypto';
 import { createDataSourceOptions } from '../../src/database/data-source';
 import { TYPEORM_MIGRATIONS_TABLE } from '../../src/database/database-options';
 import { expectSchemaParity } from './schema-parity';
+import { createSchema, dropSchema } from './postgres-lifecycle';
+import { CategoryEntity } from '../../src/database/entities/category.entity';
+import { ProductEntity } from '../../src/database/entities/product.entity';
 
 const databaseUrl = process.env.TEST_DATABASE_URL;
 const describeDatabase = databaseUrl ? describe : describe.skip;
 
 describeDatabase('TypeORM migration PostgreSQL e2e', () => {
-    let dataSource: DataSource;
+    let dataSource: DataSource | undefined;
     let schema: string;
     let databaseUrl: string;
 
     beforeAll(async () => {
         databaseUrl = process.env.TEST_DATABASE_URL!;
         schema = `test_migration_${randomUUID().replaceAll('-', '')}`;
-        const client = new Client({ connectionString: databaseUrl });
-        await client.connect();
-        await client.query(`CREATE SCHEMA "${schema}"`);
-        await client.end();
-        dataSource = new DataSource(
-            createDataSourceOptions({
-                DATABASE_URL: databaseUrl,
-                DATABASE_SCHEMA: schema,
-            }),
-        );
-        await dataSource.initialize();
-        await dataSource.runMigrations();
+        try {
+            await createSchema(databaseUrl, schema);
+            dataSource = new DataSource(
+                createDataSourceOptions({
+                    DATABASE_URL: databaseUrl,
+                    DATABASE_SCHEMA: schema,
+                }),
+            );
+            await dataSource.initialize();
+            await dataSource.runMigrations();
+        } catch (error) {
+            if (dataSource?.isInitialized) await dataSource.destroy();
+            await dropSchema(databaseUrl, schema);
+            throw error;
+        }
     });
 
     afterAll(async () => {
-        await dataSource?.destroy();
-        const client = new Client({ connectionString: databaseUrl });
-        await client.connect();
-        await client.query(`DROP SCHEMA IF EXISTS "${schema}" CASCADE`);
-        await client.end();
+        if (dataSource?.isInitialized) await dataSource.destroy();
+        if (databaseUrl && schema) await dropSchema(databaseUrl, schema);
     });
 
     it('migrates a clean schema with complete parity, writes, actions, idempotency, and rollback', async () => {
-        const tables = await dataSource.query(
+        const tables = await dataSource!.query(
             `SELECT tablename FROM pg_tables WHERE schemaname = $1 AND tablename <> $2`,
             [schema, TYPEORM_MIGRATIONS_TABLE],
         );
         expect(tables).toHaveLength(20);
-        await expect(dataSource.runMigrations()).resolves.toEqual([]);
-        await expectSchemaParity(dataSource);
+        await expect(dataSource!.runMigrations()).resolves.toEqual([]);
+        await expectSchemaParity(dataSource!);
 
-        await dataSource.query(`
+        await dataSource!.query(`
             INSERT INTO users (id, email) VALUES ('00000000-0000-0000-0000-000000000001', 'user@example.test');
             INSERT INTO roles (id, name) VALUES ('00000000-0000-0000-0000-000000000002', 'admin');
             INSERT INTO permissions (id, name) VALUES ('00000000-0000-0000-0000-000000000003', 'catalog:read');
@@ -71,51 +73,67 @@ describeDatabase('TypeORM migration PostgreSQL e2e', () => {
             INSERT INTO audit_logs (id, actor_id, action, resource, updated_at) VALUES ('00000000-0000-0000-0000-000000000018', '00000000-0000-0000-0000-000000000001', 'CREATE', 'product', CURRENT_TIMESTAMP);
         `);
         await expect(
-            dataSource.query(
+            dataSource!.query(
                 `DELETE FROM categories WHERE id = '00000000-0000-0000-0000-000000000005'`,
             ),
         ).resolves.toBeDefined();
         await expect(
-            dataSource.query(
+            dataSource!.query(
                 `DELETE FROM products WHERE id = '00000000-0000-0000-0000-000000000007'`,
             ),
         ).resolves.toBeDefined();
         await expect(
-            dataSource.query(`DELETE FROM users WHERE id = '00000000-0000-0000-0000-000000000001'`),
+            dataSource!.query(`DELETE FROM users WHERE id = '00000000-0000-0000-0000-000000000001'`),
         ).resolves.toBeDefined();
         expect(
-            await dataSource.query(
+            await dataSource!.query(
                 `SELECT parent_id FROM categories WHERE id = '00000000-0000-0000-0000-000000000006'`,
             ),
         ).toEqual([{ parent_id: null }]);
         expect(
-            await dataSource.query(
+            await dataSource!.query(
                 `SELECT user_id FROM orders WHERE id = '00000000-0000-0000-0000-000000000012'`,
             ),
         ).toEqual([{ user_id: null }]);
         expect(
-            await dataSource.query(
+            await dataSource!.query(
                 `SELECT product_id, product_variant_id FROM order_items WHERE id = '00000000-0000-0000-0000-000000000013'`,
             ),
         ).toEqual([{ product_id: null, product_variant_id: null }]);
-        expect(await dataSource.query(`SELECT count(*)::int AS count FROM cart_items`)).toEqual([
+        expect(await dataSource!.query(`SELECT count(*)::int AS count FROM cart_items`)).toEqual([
             { count: 0 },
         ]);
         expect(
-            await dataSource.query(
+            await dataSource!.query(
                 `SELECT author_id FROM posts WHERE id = '00000000-0000-0000-0000-000000000017'`,
             ),
         ).toEqual([{ author_id: null }]);
 
-        await dataSource.query(`CREATE TABLE migration_sentinel (id INTEGER PRIMARY KEY)`);
+        const timestampCategory = await dataSource!.getRepository(CategoryEntity).save({
+            name: 'Timestamp category',
+        });
+        const productRepository = dataSource!.getRepository(ProductEntity);
+        const timestampProduct = await productRepository.save({
+            name: 'Timestamp product',
+            categoryId: timestampCategory.id,
+            productType: 'PHYSICAL',
+        });
+        const insertedProduct = timestampProduct;
+        const insertedUpdatedAt = insertedProduct.updatedAt;
+        await new Promise((resolve) => setTimeout(resolve, 5));
+        timestampProduct.name = 'Updated timestamp product';
+        const updatedTimestampProduct = await productRepository.save(timestampProduct);
+        expect(updatedTimestampProduct.updatedAt.getTime()).toBeGreaterThan(insertedUpdatedAt.getTime());
 
-        await dataSource.undoLastMigration();
-        const rolledBackTables = await dataSource.query(
+        await dataSource!.query(`CREATE TABLE migration_sentinel (id INTEGER PRIMARY KEY)`);
+
+        await dataSource!.undoLastMigration();
+        const rolledBackTables = await dataSource!.query(
             `SELECT tablename FROM pg_tables WHERE schemaname = $1 AND tablename <> $2`,
             [schema, TYPEORM_MIGRATIONS_TABLE],
         );
         expect(rolledBackTables).toEqual([{ tablename: 'migration_sentinel' }]);
 
-        await dataSource.runMigrations();
+        await dataSource!.runMigrations();
     });
 });
