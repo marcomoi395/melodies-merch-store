@@ -5,7 +5,7 @@ Database-backed tests must never use the shared application database.
 ## Local runs
 
 1. Start a disposable PostgreSQL instance (for example, the repository's local PostgreSQL container).
-2. Set `TEST_DATABASE_URL` to that disposable database, such as `postgresql://user:password@localhost:5432/melodies_test`.
+2. Set `TEST_DATABASE_URL` to that disposable database. Its database name must start with `test_` or end with `_test`, such as `postgresql://user:password@localhost:5432/melodies_test`. For a differently named CI database, explicitly set `TEST_DATABASE_NAME_ALLOWLIST` to its name.
 3. Optionally set `DATABASE_SCHEMA` to a unique `test_`-prefixed schema name. If omitted, the test setup generates one.
 4. Run `npm run test:database`.
 5. Drop the disposable database or schema after the run.
