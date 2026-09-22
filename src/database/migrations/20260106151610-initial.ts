@@ -39,7 +39,7 @@ ALTER TABLE "user_roles" ADD CONSTRAINT "user_roles_user_id_fkey" FOREIGN KEY ("
     }
 
     private async useConfiguredSchema(queryRunner: QueryRunner): Promise<void> {
-        const schema = queryRunner.connection.options.schema;
+        const schema = (queryRunner.connection.options as { schema?: unknown }).schema;
         if (typeof schema === 'string') {
             await queryRunner.query(`SET search_path TO "${schema.replaceAll('"', '""')}"`);
         }

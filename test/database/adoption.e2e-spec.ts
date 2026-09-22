@@ -78,7 +78,7 @@ describeDatabase('TypeORM adoption rehearsal PostgreSQL e2e', () => {
         ).toEqual([{ table: null }]);
         expect(await representativeRows(dataSource!, schema)).toEqual(before);
 
-        await expect(dataSource!.runMigrations({ fake: true })).resolves.toHaveLength(1);
+        await expect(dataSource!.runMigrations({ fake: true })).resolves.toEqual([]);
         expect(await dataSource!.runMigrations()).toEqual([]);
         expect(
             await dataSource!.query(`SELECT name FROM "${schema}"."${TYPEORM_MIGRATIONS_TABLE}"`),

@@ -110,10 +110,12 @@ describeDatabase('TypeORM migration PostgreSQL e2e', () => {
         ).toEqual([{ author_id: null }]);
 
         const timestampCategory = await dataSource!.getRepository(CategoryEntity).save({
+            id: randomUUID(),
             name: 'Timestamp category',
         });
         const productRepository = dataSource!.getRepository(ProductEntity);
         const timestampProduct = await productRepository.save({
+            id: randomUUID(),
             name: 'Timestamp product',
             categoryId: timestampCategory.id,
             productType: 'PHYSICAL',

@@ -22,6 +22,9 @@ describe('TypeORM DataSource configuration', () => {
         expect(options.migrations).toEqual(
             expect.arrayContaining([expect.stringContaining('migrations')]),
         );
+        expect(options.subscribers).toEqual(
+            expect.arrayContaining([expect.stringContaining('subscribers')]),
+        );
     });
 
     it('uses the shared options for the exported CLI DataSource', () => {

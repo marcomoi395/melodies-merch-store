@@ -20,6 +20,7 @@ export function createDataSourceOptions(
         schema: environment.DATABASE_SCHEMA,
         entities: [__dirname + '/entities/**/*{.ts,.js}'],
         migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
+        subscribers: [__dirname + '/subscribers/**/*{.ts,.js}'],
         migrationsTableName: TYPEORM_MIGRATIONS_TABLE,
         synchronize: false,
     };
