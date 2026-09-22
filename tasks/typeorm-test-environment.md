@@ -6,11 +6,11 @@ Database-backed tests must never use the shared application database.
 
 1. Start a disposable PostgreSQL instance (for example, the repository's local PostgreSQL container).
 2. Set `TEST_DATABASE_URL` to that disposable database, such as `postgresql://user:password@localhost:5432/melodies_test`.
-3. Optionally set `DATABASE_SCHEMA` to a unique schema name. If omitted, the test setup uses `test_<process id>`.
+3. Optionally set `DATABASE_SCHEMA` to a unique `test_`-prefixed schema name. If omitted, the test setup generates one.
 4. Run `npm run test:database`.
 5. Drop the disposable database or schema after the run.
 
-The database Jest setup derives `DATABASE_URL` from `TEST_DATABASE_URL`, adds the isolated schema query parameter, and enables TypeORM. Migration tests run against that URL and undo their migration during teardown.
+The database Jest setup derives `DATABASE_URL` from `TEST_DATABASE_URL`, passes the isolated schema through TypeORM's PostgreSQL schema option, and enables TypeORM. Each migration/adoption test owns an additional schema and removes it during teardown.
 
 ## CI runs
 
