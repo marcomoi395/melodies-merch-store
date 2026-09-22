@@ -1,4 +1,12 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+    Column,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    OneToMany,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn,
+} from 'typeorm';
 import { DiscountUsageEntity } from './discount-usage.entity';
 import { OrderItemEntity } from './order-item.entity';
 import { TransactionEntity } from './transaction.entity';
@@ -41,7 +49,7 @@ export class OrderEntity {
         default: () => 'CURRENT_TIMESTAMP',
     })
     createdAt: Date | null;
-    @Column({ name: 'updated_at', type: 'timestamp', precision: 3 }) updatedAt: Date;
+    @UpdateDateColumn({ name: 'updated_at', type: 'timestamp', precision: 3 }) updatedAt: Date;
     @ManyToOne(() => UserEntity, (user) => user.orders, {
         nullable: true,
         onDelete: 'SET NULL',

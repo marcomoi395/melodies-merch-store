@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { AuditLogEntity } from './audit-log.entity';
 import { CartEntity } from './cart.entity';
 import { DiscountUsageEntity } from './discount-usage.entity';
@@ -37,7 +37,7 @@ export class UserEntity {
     })
     createdAt: Date | null;
 
-    @Column({ name: 'updated_at', type: 'timestamp', nullable: true })
+    @UpdateDateColumn({ name: 'updated_at', type: 'timestamp', nullable: true })
     updatedAt: Date | null;
 
     @Column({ name: 'deleted_at', type: 'timestamp', nullable: true })

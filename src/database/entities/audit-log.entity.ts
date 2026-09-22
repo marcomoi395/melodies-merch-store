@@ -1,4 +1,11 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+    Column,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn,
+} from 'typeorm';
 import { UserEntity } from './user.entity';
 
 @Entity({ name: 'audit_logs' })
@@ -21,7 +28,7 @@ export class AuditLogEntity {
         | null;
     @Column({ name: 'user_agent', type: 'text', nullable: true }) userAgent: string | null;
     @Column({ name: 'created_at', type: 'timestamp', nullable: true }) createdAt: Date | null;
-    @Column({ name: 'updated_at', type: 'timestamp', precision: 3 }) updatedAt: Date;
+    @UpdateDateColumn({ name: 'updated_at', type: 'timestamp', precision: 3 }) updatedAt: Date;
     @ManyToOne(() => UserEntity, (user) => user.auditLogs, {
         nullable: true,
         onDelete: 'SET NULL',

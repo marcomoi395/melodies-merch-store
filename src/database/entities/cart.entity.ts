@@ -1,4 +1,12 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+    Column,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    OneToMany,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn,
+} from 'typeorm';
 import { UserEntity } from './user.entity';
 import { CartItemEntity } from './cart-item.entity';
 
@@ -13,7 +21,7 @@ export class CartEntity {
         default: () => 'CURRENT_TIMESTAMP',
     })
     createdAt: Date | null;
-    @Column({ name: 'updated_at', type: 'timestamp', precision: 3 }) updatedAt: Date;
+    @UpdateDateColumn({ name: 'updated_at', type: 'timestamp', precision: 3 }) updatedAt: Date;
     @ManyToOne(() => UserEntity, (user) => user.carts, {
         nullable: true,
         onDelete: 'CASCADE',

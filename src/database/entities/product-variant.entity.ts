@@ -1,4 +1,12 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, JoinColumn } from 'typeorm';
+import {
+    Column,
+    Entity,
+    ManyToOne,
+    OneToMany,
+    PrimaryGeneratedColumn,
+    JoinColumn,
+    UpdateDateColumn,
+} from 'typeorm';
 import { ProductEntity } from './product.entity';
 import { VariantAttributeEntity } from './variant-attribute.entity';
 
@@ -33,7 +41,7 @@ export class ProductVariantEntity {
         default: () => 'CURRENT_TIMESTAMP',
     })
     createdAt: Date;
-    @Column({ name: 'updated_at', type: 'timestamp', precision: 3 }) updatedAt: Date;
+    @UpdateDateColumn({ name: 'updated_at', type: 'timestamp', precision: 3 }) updatedAt: Date;
     @ManyToOne(() => ProductEntity, (product) => product.productVariants, {
         nullable: true,
         onDelete: 'CASCADE',
