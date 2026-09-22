@@ -1,16 +1,22 @@
 import { readFileSync } from 'node:fs';
 import { DataSource } from 'typeorm';
 import { AppDataSource } from '../../src/database/data-source';
-import { createDataSourceOptions } from '../../src/database/database-options';
+import {
+    createDataSourceOptions,
+    TYPEORM_MIGRATIONS_TABLE,
+} from '../../src/database/database-options';
 
 describe('TypeORM DataSource configuration', () => {
     it('loads DATABASE_URL, disables synchronization, and registers migrations', () => {
         const options = createDataSourceOptions({
             DATABASE_URL: 'postgresql://localhost/melodies',
+            DATABASE_SCHEMA: 'test_data_source',
         });
 
         expect(options.type).toBe('postgres');
         expect(options.url).toBe('postgresql://localhost/melodies');
+        expect(options.schema).toBe('test_data_source');
+        expect(options.migrationsTableName).toBe(TYPEORM_MIGRATIONS_TABLE);
         expect(options.synchronize).toBe(false);
         expect(options.migrations).toEqual(
             expect.arrayContaining([expect.stringContaining('migrations')]),

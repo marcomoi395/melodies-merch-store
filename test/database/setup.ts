@@ -1,9 +1,8 @@
-import { getIsolatedDatabaseUrl } from './database-test-url';
+import { getIsolatedDatabaseTarget } from './database-test-url';
 
-const databaseSchema = process.env.DATABASE_SCHEMA ?? `test_${process.pid}`;
-process.env.DATABASE_SCHEMA = databaseSchema;
-process.env.DATABASE_URL = getIsolatedDatabaseUrl({
-    ...process.env,
-    DATABASE_SCHEMA: databaseSchema,
-});
+if (process.env.TEST_DATABASE_URL) {
+    const target = getIsolatedDatabaseTarget(process.env);
+    process.env.DATABASE_SCHEMA = target.schema;
+    process.env.DATABASE_URL = target.url;
+}
 process.env.TYPEORM_ENABLED ??= 'true';

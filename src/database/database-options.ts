@@ -1,7 +1,10 @@
 import { DataSourceOptions } from 'typeorm';
 
+export const TYPEORM_MIGRATIONS_TABLE = 'typeorm_migrations';
+
 export interface DatabaseEnvironment {
     DATABASE_URL?: string;
+    DATABASE_SCHEMA?: string;
 }
 
 export function createDataSourceOptions(
@@ -14,8 +17,10 @@ export function createDataSourceOptions(
     return {
         type: 'postgres',
         url: environment.DATABASE_URL,
+        schema: environment.DATABASE_SCHEMA,
         entities: [__dirname + '/entities/**/*{.ts,.js}'],
         migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
+        migrationsTableName: TYPEORM_MIGRATIONS_TABLE,
         synchronize: false,
     };
 }

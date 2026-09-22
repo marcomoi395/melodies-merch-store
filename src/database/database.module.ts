@@ -13,6 +13,7 @@ const typeOrmImports =
                   useFactory: (configService: ConfigService) =>
                       createDataSourceOptions({
                           DATABASE_URL: configService.get<string>('DATABASE_URL'),
+                          DATABASE_SCHEMA: configService.get<string>('DATABASE_SCHEMA'),
                       }),
               }),
           ];

@@ -1,9 +1,35 @@
-export function getIsolatedDatabaseUrl(environment: NodeJS.ProcessEnv = process.env): string {
-    const baseUrl = new URL(
-        environment.TEST_DATABASE_URL ?? 'postgresql://localhost/melodies_test',
-    );
-    const schema = environment.DATABASE_SCHEMA ?? `test_${process.pid}`;
+import { randomUUID } from 'node:crypto';
 
-    baseUrl.searchParams.set('schema', schema);
-    return baseUrl.toString();
+const isolatedSchemaPattern = /^test_[a-zA-Z0-9_]+$/;
+
+export interface IsolatedDatabaseTarget {
+    url: string;
+    schema: string;
+}
+
+export function getIsolatedDatabaseTarget(
+    environment: NodeJS.ProcessEnv = process.env,
+): IsolatedDatabaseTarget {
+    const testDatabaseUrl = environment.TEST_DATABASE_URL;
+    if (!testDatabaseUrl) {
+        throw new Error('TEST_DATABASE_URL is required for database tests');
+    }
+
+    const url = new URL(testDatabaseUrl);
+    const schema =
+        environment.DATABASE_SCHEMA ?? `test_${process.pid}_${randomUUID().replaceAll('-', '')}`;
+
+    if (!isolatedSchemaPattern.test(schema)) {
+        throw new Error(
+            'DATABASE_SCHEMA must start with "test_" and use only letters, numbers, or underscores',
+        );
+    }
+
+    // TypeORM uses its schema option; a URL query parameter is not schema isolation.
+    url.searchParams.delete('schema');
+    return { url: url.toString(), schema };
+}
+
+export function getIsolatedDatabaseUrl(environment: NodeJS.ProcessEnv = process.env): string {
+    return getIsolatedDatabaseTarget(environment).url;
 }
