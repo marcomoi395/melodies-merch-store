@@ -4,6 +4,7 @@ export class Initial20260106151610 implements MigrationInterface {
     name = 'Initial20260106151610';
 
     public async up(queryRunner: QueryRunner): Promise<void> {
+        await this.useConfiguredSchema(queryRunner);
         await queryRunner.query(`
 CREATE TABLE "users" ("id" UUID NOT NULL,"email" VARCHAR(255) NOT NULL,"password_hash" VARCHAR,"full_name" VARCHAR(100),"phone" VARCHAR(20),"avatar_url" VARCHAR(255),"provider" VARCHAR(20) DEFAULT 'local',"created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"updated_at" TIMESTAMP,"deleted_at" TIMESTAMP,"status" VARCHAR(20) DEFAULT 'active',"is_verified" BOOLEAN DEFAULT false,CONSTRAINT "users_pkey" PRIMARY KEY ("id"));
 CREATE TABLE "roles" ("id" UUID NOT NULL,"name" VARCHAR(50) NOT NULL,"description" TEXT,"created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"updated_at" TIMESTAMP,"deleted_at" TIMESTAMP,CONSTRAINT "roles_pkey" PRIMARY KEY ("id"));
@@ -31,8 +32,16 @@ ALTER TABLE "user_roles" ADD CONSTRAINT "user_roles_user_id_fkey" FOREIGN KEY ("
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
+        await this.useConfiguredSchema(queryRunner);
         await queryRunner.query(
             `DROP TABLE IF EXISTS "audit_logs" CASCADE; DROP TABLE IF EXISTS "posts" CASCADE; DROP TABLE IF EXISTS "transactions" CASCADE; DROP TABLE IF EXISTS "discount_usages" CASCADE; DROP TABLE IF EXISTS "discounts" CASCADE; DROP TABLE IF EXISTS "order_items" CASCADE; DROP TABLE IF EXISTS "orders" CASCADE; DROP TABLE IF EXISTS "cart_items" CASCADE; DROP TABLE IF EXISTS "carts" CASCADE; DROP TABLE IF EXISTS "variant_attributes" CASCADE; DROP TABLE IF EXISTS "product_variants" CASCADE; DROP TABLE IF EXISTS "product_artists" CASCADE; DROP TABLE IF EXISTS "products" CASCADE; DROP TABLE IF EXISTS "categories" CASCADE; DROP TABLE IF EXISTS "artists" CASCADE; DROP TABLE IF EXISTS "role_permissions" CASCADE; DROP TABLE IF EXISTS "user_roles" CASCADE; DROP TABLE IF EXISTS "permissions" CASCADE; DROP TABLE IF EXISTS "roles" CASCADE; DROP TABLE IF EXISTS "users" CASCADE;`,
         );
+    }
+
+    private async useConfiguredSchema(queryRunner: QueryRunner): Promise<void> {
+        const schema = queryRunner.connection.options.schema;
+        if (typeof schema === 'string') {
+            await queryRunner.query(`SET search_path TO "${schema.replaceAll('"', '""')}"`);
+        }
     }
 }
