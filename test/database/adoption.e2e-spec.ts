@@ -9,10 +9,7 @@ import { createSchema, dropSchema, inSchema } from './postgres-lifecycle';
 
 const databaseUrl = process.env.TEST_DATABASE_URL;
 const describeDatabase = databaseUrl ? describe : describe.skip;
-const prismaMigration = readFileSync(
-    join(__dirname, '../../prisma/migrations/20260106151610_init_db/migration.sql'),
-    'utf8',
-);
+const legacySchema = readFileSync(join(__dirname, 'legacy-schema.sql'), 'utf8');
 
 interface RepresentativeRows {
     users: unknown[];
@@ -59,7 +56,7 @@ describeDatabase('TypeORM adoption rehearsal PostgreSQL e2e', () => {
         try {
             await createSchema(isolatedDatabaseUrl, schema);
             await inSchema(isolatedDatabaseUrl, schema, async (client) => {
-                await client.query(prismaMigration);
+                await client.query(legacySchema);
                 await client.query(
                     `INSERT INTO users (id, email) VALUES ('00000000-0000-0000-0000-000000000001', 'existing@example.test');
                      INSERT INTO categories (id, name) VALUES ('00000000-0000-0000-0000-000000000002', 'Existing category');
@@ -92,7 +89,7 @@ describeDatabase('TypeORM adoption rehearsal PostgreSQL e2e', () => {
         }
     });
 
-    it('preflights Prisma schema read-only, then fake-baselines TypeORM without changing rows', async () => {
+    it('preflights the legacy schema read-only, then fake-baselines TypeORM without changing rows', async () => {
         const before = await representativeRows(dataSource!, schema);
 
         expect(
@@ -118,7 +115,7 @@ describeDatabase('TypeORM adoption rehearsal PostgreSQL e2e', () => {
         try {
             await createSchema(isolatedDatabaseUrl, driftSchema);
             await inSchema(isolatedDatabaseUrl, driftSchema, async (client) => {
-                await client.query(prismaMigration);
+                await client.query(legacySchema);
                 await client.query(`ALTER TABLE users DROP COLUMN email`);
             });
         } catch (error) {

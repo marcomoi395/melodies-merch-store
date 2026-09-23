@@ -4,15 +4,14 @@ import { join } from 'node:path';
 const appModuleSource = readFileSync(join(__dirname, '../../src/app.module.ts'), 'utf8');
 
 describe('Nest database integration wiring', () => {
-    it('registers TypeORM alongside the existing Prisma module', () => {
+    it('registers the shared TypeORM module', () => {
         expect(appModuleSource).toContain(
             "import { DatabaseModule } from './database/database.module';",
         );
-        expect(appModuleSource).toContain("import { PrismaModule } from './prisma/prisma.module';");
-        expect(appModuleSource).toMatch(/imports:\s*\[[\s\S]*DatabaseModule,[\s\S]*PrismaModule,/);
+        expect(appModuleSource).toMatch(/imports:\s*\[[\s\S]*DatabaseModule,/);
     });
 
-    it('keeps TypeORM synchronization disabled and preserves the opt-out switch', () => {
+    it('keeps TypeORM synchronization disabled', () => {
         const databaseModuleSource = readFileSync(
             join(__dirname, '../../src/database/database.module.ts'),
             'utf8',
@@ -22,12 +21,7 @@ describe('Nest database integration wiring', () => {
             'utf8',
         );
 
-        expect(databaseModuleSource).toContain("process.env.TYPEORM_ENABLED === 'false'");
         expect(optionsSource).toContain('synchronize: false');
         expect(databaseModuleSource).toContain('createDataSourceOptions');
-    });
-    it('keeps feature modules independent from TypeORM repositories', () => {
-        expect(appModuleSource).toContain("import { PrismaModule } from './prisma/prisma.module';");
-        expect(appModuleSource).not.toContain('TypeOrmModule.forFeature');
     });
 });

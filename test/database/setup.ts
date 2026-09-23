@@ -5,4 +5,3 @@ if (process.env.TEST_DATABASE_URL) {
     process.env.DATABASE_SCHEMA = target.schema;
     process.env.DATABASE_URL = target.url;
 }
-process.env.TYPEORM_ENABLED ??= 'true';

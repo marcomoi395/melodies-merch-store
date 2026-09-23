@@ -17,13 +17,15 @@ describe('DatabaseModule', () => {
 });
 
 describe('Database test lifecycle configuration', () => {
-    it('enables TypeORM for the database Jest command', () => {
+    it('uses direct Jest commands for every suite', () => {
         const packageJson = JSON.parse(readFileSync('package.json', 'utf8')) as {
             scripts: Record<string, string>;
         };
 
-        expect(packageJson.scripts['test:database']).toContain('TYPEORM_ENABLED=true');
-        expect(packageJson.scripts['test:e2e']).toContain('TYPEORM_ENABLED=false');
+        expect(packageJson.scripts['test:database']).toBe(
+            'jest --config ./test/jest-database.json',
+        );
+        expect(packageJson.scripts['test:e2e']).toBe('jest --config ./test/jest-e2e.json');
     });
 
     it('uses an isolated database URL for database tests', () => {
