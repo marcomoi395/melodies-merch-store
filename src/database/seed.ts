@@ -186,6 +186,7 @@ async function seedCatalog(manager: EntityManager, data: SeedData): Promise<void
     await manager.getRepository(DiscountEntity).upsert(
         data.discounts.map((discount) => ({
             ...discount,
+            value: String(discount.value),
             startDate: new Date(discount.startDate),
             endDate: new Date(discount.endDate),
             isActive: true,
@@ -377,7 +378,7 @@ async function seedOrders(manager: EntityManager, data: SeedData): Promise<void>
                 phone: orderData.shippingAddress.phone ?? user.phone,
                 status: orderData.status ?? 'PENDING',
                 paymentMethod: orderData.paymentMethod ?? 'COD',
-                shippingAddress: orderData.shippingAddress,
+                shippingAddress: orderData.shippingAddress as any,
                 note: orderData.note ?? null,
                 subtotal: String(subtotal),
                 shippingFee: String(shippingFee),

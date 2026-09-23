@@ -5,7 +5,7 @@ import { NotFoundException } from '@nestjs/common';
 
 describe.skip('ProductsService', () => {
     let service: ProductsService;
-    let prisma: any;
+    let typeorm: any;
     let _categoryService: CategoryService;
 
     const mockProduct = {
@@ -63,7 +63,7 @@ describe.skip('ProductsService', () => {
         }).compile();
 
         service = module.get<ProductsService>(ProductsService);
-        prisma = module.get<any>('TypeOrmRepository');
+        typeorm = module.get<any>('TypeOrmRepository');
         _categoryService = module.get<CategoryService>(CategoryService);
 
         jest.clearAllMocks();
@@ -159,7 +159,7 @@ describe.skip('ProductsService', () => {
         mockTypeOrmRepository.product.delete.mockResolvedValue({ id: 'prod_1' } as any);
 
         await service.removeProductForAdmin('prod_1');
-        expect(prisma.product.delete).toHaveBeenCalled();
+        expect(typeorm.product.delete).toHaveBeenCalled();
     });
 
     it('should throw NotFoundException if product to remove is not found', async () => {

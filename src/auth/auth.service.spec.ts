@@ -9,7 +9,7 @@ import * as bcrypt from 'bcryptjs';
 
 describe.skip('AuthService', () => {
     let service: AuthService;
-    let _prisma: any;
+    let _typeorm: any;
     let _userService: UserService;
     let _jwtService: JwtService;
     let _redis: any;
@@ -87,7 +87,7 @@ describe.skip('AuthService', () => {
         }).compile();
 
         service = module.get<AuthService>(AuthService);
-        _prisma = module.get<any>('TypeOrmRepository');
+        _typeorm = module.get<any>('TypeOrmRepository');
         _userService = module.get<UserService>(UserService);
         _jwtService = module.get<JwtService>(JwtService);
         _redis = module.get('REDIS_CLIENT');

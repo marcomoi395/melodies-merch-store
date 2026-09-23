@@ -26,7 +26,7 @@ export enum PermissionKey {
     REPORT_VIEW_GENERAL = 'REPORT_VIEW_GENERAL',
 }
 
-// Define interface for seeding data matching the Prisma Schema
+// Defines the seed data permission shape.
 interface PermissionMetadata {
     name: PermissionKey;
     resource: string;

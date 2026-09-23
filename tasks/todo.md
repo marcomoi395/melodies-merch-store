@@ -2,20 +2,20 @@
 
 > Status: superseded. Use `.scratch/typeorm-foundation-repair/` for the resolved source of truth; this checklist is retained only as historical context.
 
-This checklist covers the first phase of the eventual full Prisma replacement. Existing feature services/controllers remain Prisma-backed until a later rewrite phase.
+This checklist covers the first phase of the eventual full TypeORM replacement. Existing feature services/controllers remain TypeORM-backed until a later rewrite phase.
 
 ## Pre-Implementation Decision Gate
 
 - [x] Obtain explicit user approval for `SPEC.md` and this plan before Task 1.
-- [x] Retain Prisma migration history and use a separate TypeORM migration history after explicit baseline/adoption.
+- [x] Retain TypeORM migration history and use a separate TypeORM migration history after explicit baseline/adoption.
 - [x] Use a dedicated PostgreSQL database or schema per local/CI run, with teardown after each run; never use the shared application database.
 - [x] Use `<Model>Entity` naming, such as `UserEntity`.
 
 ## Phase 1: Foundation and Contracts
 
 - [x] **Task 1: Establish schema parity inventory**
-  - Acceptance: Inventory all 20 tables; capture columns, types, defaults, keys, indexes, mapped names, `is_pulished`, foreign-key actions, property mappings, and documented Prisma/SQL discrepancies.
-  - Verify: Focused schema inventory Jest test passes. Full suite/build are currently blocked by the repository's pre-existing missing generated Prisma client.
+  - Acceptance: Inventory all 20 tables; capture columns, types, defaults, keys, indexes, mapped names, `is_pulished`, foreign-key actions, property mappings, and documented TypeORM/SQL discrepancies.
+  - Verify: Focused schema inventory Jest test passes. Full suite/build are currently blocked by the repository's pre-existing missing generated TypeORM client.
   - Dependencies: Approval gate
   - Complexity: Small
 
@@ -26,8 +26,8 @@ This checklist covers the first phase of the eventual full Prisma replacement. E
   - Complexity: Medium
 
 - [ ] **Task 2b: Configure database test discovery and lifecycle**
-  - Acceptance: Discover `test/database/*.spec.ts`; document PostgreSQL provisioning/isolation/cleanup; isolate legacy Prisma-mocked e2e from TypeORM and allow real migration e2e DataSource.
-  - Verify: Focused database Jest command and existing Prisma-mocked e2e test.
+  - Acceptance: Discover `test/database/*.spec.ts`; document PostgreSQL provisioning/isolation/cleanup; isolate legacy TypeORM-mocked e2e from TypeORM and allow real migration e2e DataSource.
+  - Verify: Focused database Jest command and existing TypeORM-mocked e2e test.
   - Dependencies: Approval gate, Decision gate, Task 2
   - Complexity: Medium
 
@@ -88,14 +88,14 @@ This checklist covers the first phase of the eventual full Prisma replacement. E
 
 - [ ] **Task 8: Document and rehearse existing-database adoption**
   - Acceptance: Non-destructive baseline procedure follows the history decision, checks drift, and preserves data/schema.
-  - Verify: Isolated Prisma-database clone rehearsal.
+  - Verify: Isolated TypeORM-database clone rehearsal.
   - Dependencies: Approval gate, Decision gate, Tasks 1, 2, 2b, 7
   - Complexity: Medium
 
 ## Phase 4: Nest Integration and Verification
 
 - [ ] **Task 9: Integrate TypeORM into Nest without feature rewrites**
-  - Acceptance: Shared configuration powers one Nest integration; existing Prisma services compile; mocked e2e explicitly isolates TypeORM; synchronization disabled.
+  - Acceptance: Shared configuration powers one Nest integration; existing TypeORM services compile; mocked e2e explicitly isolates TypeORM; synchronization disabled.
   - Verify: Build, AppModule tests, startup check, legacy mocked e2e.
   - Dependencies: Approval gate, Decision gate, Tasks 2, 2b, 7
   - Complexity: Medium
@@ -111,7 +111,7 @@ This checklist covers the first phase of the eventual full Prisma replacement. E
 - [ ] Clean migration, adoption rehearsal, Nest startup, and mocked/real e2e paths pass.
 
 - [ ] **Task 11: Run final project verification and record handoff**
-  - Acceptance: Build, standard tests, coverage, and e2e pass; later Prisma service rewrite is documented.
+  - Acceptance: Build, standard tests, coverage, and e2e pass; later TypeORM service rewrite is documented.
   - Verify: `npm run build`; `npm test`; `npm test -- --coverage`; `npm run test:e2e`.
   - Dependencies: Approval gate, Decision gate, Tasks 3, 4a, 4b, 5a, 5b, 6, 8, 9, 10
   - Complexity: Small

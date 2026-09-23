@@ -4,7 +4,7 @@ import { NotFoundException } from '@nestjs/common';
 
 describe.skip('PermissionsService', () => {
     let service: PermissionsService;
-    let prisma: any;
+    let typeorm: any;
 
     const mockPermissions = [
         {
@@ -53,7 +53,7 @@ describe.skip('PermissionsService', () => {
         }).compile();
 
         service = module.get<PermissionsService>(PermissionsService);
-        prisma = module.get<any>('TypeOrmRepository');
+        typeorm = module.get<any>('TypeOrmRepository');
 
         jest.clearAllMocks();
     });
@@ -64,7 +64,7 @@ describe.skip('PermissionsService', () => {
 
             const result = await service.getPermisisons();
 
-            expect(prisma.permission.findMany).toHaveBeenCalledWith({
+            expect(typeorm.permission.findMany).toHaveBeenCalledWith({
                 orderBy: { resource: 'asc' },
             });
             expect(result).toEqual(mockPermissions);

@@ -4,7 +4,7 @@ import { NotFoundException, BadRequestException } from '@nestjs/common';
 
 describe.skip('CartService', () => {
     let service: CartService;
-    let prisma: any;
+    let typeorm: any;
 
     const mockCart = {
         id: 'cart_123',
@@ -51,7 +51,7 @@ describe.skip('CartService', () => {
         }).compile();
 
         service = module.get<CartService>(CartService);
-        prisma = module.get<any>('TypeOrmRepository');
+        typeorm = module.get<any>('TypeOrmRepository');
 
         jest.clearAllMocks();
     });
@@ -71,7 +71,7 @@ describe.skip('CartService', () => {
 
             const result = await service.getCart('user_123');
 
-            expect(prisma.cart.findFirst).toHaveBeenCalledWith(
+            expect(typeorm.cart.findFirst).toHaveBeenCalledWith(
                 expect.objectContaining({
                     where: { userId: 'user_123' },
                 }),
@@ -85,8 +85,8 @@ describe.skip('CartService', () => {
 
             const result = await service.getCart('user_123');
 
-            expect(prisma.cart.findFirst).toHaveBeenCalled();
-            expect(prisma.cart.create).toHaveBeenCalledWith({
+            expect(typeorm.cart.findFirst).toHaveBeenCalled();
+            expect(typeorm.cart.create).toHaveBeenCalledWith({
                 data: { userId: 'user_123' },
             });
             expect(result).toEqual(mockCart);
@@ -123,7 +123,7 @@ describe.skip('CartService', () => {
 
             const result = await service.addItemToCart('user_123', addToCartDto);
 
-            expect(prisma.$transaction).toHaveBeenCalled();
+            expect(typeorm.$transaction).toHaveBeenCalled();
             expect(result).toEqual(mockCartWithItems);
         });
 
@@ -194,7 +194,7 @@ describe.skip('CartService', () => {
 
             const result = await service.updateCartItemQuantity('user_123', 'item_123', 5);
 
-            expect(prisma.$transaction).toHaveBeenCalled();
+            expect(typeorm.$transaction).toHaveBeenCalled();
             expect(result).toEqual(mockCartWithItems);
         });
 
@@ -267,7 +267,7 @@ describe.skip('CartService', () => {
 
             const result = await service.removeCartItem('user_123', 'item_123');
 
-            expect(prisma.cartItem.findFirst).toHaveBeenCalledWith(
+            expect(typeorm.cartItem.findFirst).toHaveBeenCalledWith(
                 expect.objectContaining({
                     where: expect.objectContaining({
                         id: 'item_123',
@@ -275,7 +275,7 @@ describe.skip('CartService', () => {
                     }),
                 }),
             );
-            expect(prisma.cartItem.delete).toHaveBeenCalledWith({
+            expect(typeorm.cartItem.delete).toHaveBeenCalledWith({
                 where: { id: 'item_123' },
             });
             expect(result).toEqual(mockCartWithItems);

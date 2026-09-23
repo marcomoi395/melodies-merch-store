@@ -1,14 +1,14 @@
-# Implementation Plan: Prisma-to-TypeORM Persistence Migration Foundation
+# Implementation Plan: TypeORM-to-TypeORM Persistence Migration Foundation
 
 > Status: superseded. The canonical tracker is `.scratch/typeorm-foundation-repair/`; its spec and all four issues are resolved. This plan remains historical context only.
 
 ## Overview
 
-Implement the first foundation phase of the eventual full Prisma replacement from `SPEC.md`: TypeORM 0.3.x configuration, entities for all 20 Prisma models, a complete PostgreSQL initial migration, safe existing-database adoption, and database-backed verification. Existing feature services/controllers remain Prisma-backed until a later rewrite phase.
+Implement the first foundation phase of the eventual full TypeORM replacement from `SPEC.md`: TypeORM 0.3.x configuration, entities for all 20 TypeORM models, a complete PostgreSQL initial migration, safe existing-database adoption, and database-backed verification. Existing feature services/controllers remain TypeORM-backed until a later rewrite phase.
 
 ## Gates and Constraints
 
-- `prisma/schema.prisma` and `prisma/migrations/20260106151610_init_db/migration.sql` are authoritative.
+- `typeorm/schema.typeorm` and `typeorm/migrations/20260106151610_init_db/migration.sql` are authoritative.
 - Preserve all tables, columns, types, nullability, defaults, keys, indexes, mappings, relations, and delete actions.
 - Preserve legacy `posts.is_pulished`; do not use `synchronize: true`.
 - Do not reset or drop existing non-disposable databases.
@@ -43,7 +43,7 @@ Task 0 approval/decisions
 - [x] Entity naming convention is recorded.
 
 **Recorded decisions (2026-08-31):**
-- The existing Prisma migration history is retained for historical records; TypeORM uses its own migration table for forward execution after an explicit baseline/adoption step.
+- The existing TypeORM migration history is retained for historical records; TypeORM uses its own migration table for forward execution after an explicit baseline/adoption step.
 - Database-backed tests use a dedicated PostgreSQL database provisioned by the local/CI environment, with a unique per-run schema or database name and teardown after each run. Tests must never target a shared application database.
 - Entity classes use the `<Model>Entity` convention, with singular PascalCase names such as `UserEntity`.
 
@@ -61,9 +61,9 @@ Task 0 approval/decisions
 - [x] Inventory lists all 20 tables/models.
 - [x] Inventory captures mapped columns, types, nullability, defaults, keys, indexes, and foreign-key delete actions.
 - [x] `posts.is_pulished` is explicitly represented.
-- [x] Prisma schema/SQL discrepancies are documented, including timestamp precision and default differences.
+- [x] TypeORM schema/SQL discrepancies are documented, including timestamp precision and default differences.
 
-**Verification:** Focused schema inventory Jest test passes. Full suite/build are blocked by the repository's pre-existing missing generated Prisma client and related Prisma type errors.
+**Verification:** Focused schema inventory Jest test passes. Full suite/build are blocked by the repository's pre-existing missing generated TypeORM client and related TypeORM type errors.
 
 **Dependencies:** Task 0
 
@@ -92,15 +92,15 @@ Task 0 approval/decisions
 
 ### Task 2b: Configure database test discovery and lifecycle
 
-**Description:** Make database tests executable and isolate real migration tests from existing Prisma-mocked e2e tests.
+**Description:** Make database tests executable and isolate real migration tests from existing TypeORM-mocked e2e tests.
 
 **Acceptance criteria:**
 - [ ] An explicit Jest configuration/command discovers `test/database/*.spec.ts`.
 - [ ] PostgreSQL variables, provisioning, isolation, and cleanup are documented for local and CI runs.
-- [ ] Legacy Prisma-mocked e2e setup opts out of TypeORM initialization.
+- [ ] Legacy TypeORM-mocked e2e setup opts out of TypeORM initialization.
 - [ ] Migration e2e setup opts into a real isolated TypeORM DataSource.
 
-**Verification:** Run the focused database Jest command and one existing Prisma-mocked e2e test.
+**Verification:** Run the focused database Jest command and one existing TypeORM-mocked e2e test.
 
 **Dependencies:** Task 0, Task 2
 
@@ -206,11 +206,11 @@ Task 0 approval/decisions
 
 ### Task 8: Document and rehearse existing-database adoption
 
-**Description:** Define a non-destructive baseline procedure for databases already created by Prisma.
+**Description:** Define a non-destructive baseline procedure for databases already created by TypeORM.
 
 **Acceptance criteria:** Procedure follows Task 0 history decision, performs preflight parity checks, aborts on drift, and preserves rows/schema objects.
 
-**Verification:** Rehearse against an isolated Prisma-created database clone.
+**Verification:** Rehearse against an isolated TypeORM-created database clone.
 
 **Dependencies:** Tasks 0, 1, 2, 2b, 7
 
@@ -220,9 +220,9 @@ Task 0 approval/decisions
 
 ### Task 9: Integrate TypeORM into Nest without feature rewrites
 
-**Description:** Register one TypeORM Nest integration while preserving Prisma-backed feature modules.
+**Description:** Register one TypeORM Nest integration while preserving TypeORM-backed feature modules.
 
-**Acceptance criteria:** AppModule uses shared configuration; existing Prisma modules compile; legacy mocked e2e explicitly disables/overrides TypeORM; synchronization remains disabled.
+**Acceptance criteria:** AppModule uses shared configuration; existing TypeORM modules compile; legacy mocked e2e explicitly disables/overrides TypeORM; synchronization remains disabled.
 
 **Verification:** Build, AppModule tests, startup check, and legacy mocked e2e.
 
@@ -246,7 +246,7 @@ Task 0 approval/decisions
 
 ### Task 11: Run final verification and record handoff
 
-**Description:** Run all required commands and document the later Prisma service rewrite boundary.
+**Description:** Run all required commands and document the later TypeORM service rewrite boundary.
 
 **Acceptance criteria:** Build, standard tests, coverage, and e2e pass; no unrelated behavior changes; follow-up service/query rewrites are documented.
 
@@ -266,8 +266,8 @@ npm run test:e2e
 ## Final verification handoff
 
 - TypeORM foundation coverage is complete through schema inventory, shared DataSource configuration, isolated database tests, all 20 entity metadata slices, initial migration, adoption runbook, Nest integration, and migration/schema-parity e2e coverage.
-- `npm run build`, `npm test`, `npm test -- --coverage`, and `npm run test:e2e` were executed. They remain blocked by the pre-existing missing generated Prisma client under `generated/prisma/`, which causes Prisma imports and dependent feature tests to fail.
-- Existing feature services/controllers intentionally remain Prisma-backed. A later phase must run Prisma generation successfully, then rewrite those services/controllers to TypeORM repositories before removing Prisma dependencies.
+- `npm run build`, `npm test`, `npm test -- --coverage`, and `npm run test:e2e` were executed. They remain blocked by the pre-existing missing generated TypeORM client under `generated/typeorm/`, which causes TypeORM imports and dependent feature tests to fail.
+- Existing feature services/controllers intentionally remain TypeORM-backed. A later phase must run TypeORM generation successfully, then rewrite those services/controllers to TypeORM repositories before removing TypeORM dependencies.
 - PostgreSQL-backed migration, parity, and adoption rehearsal tests are gated on `TEST_DATABASE_URL` and must be run against a disposable isolated database/schema in CI or local rehearsal.
 
 ## Safe Parallelization

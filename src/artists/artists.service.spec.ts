@@ -5,7 +5,7 @@ const TypeOrm: any = {};
 
 describe.skip('ArtistsService', () => {
     let service: ArtistsService;
-    let prisma: any;
+    let typeorm: any;
 
     const mockArtist = {
         id: 'artist_123',
@@ -44,7 +44,7 @@ describe.skip('ArtistsService', () => {
         }).compile();
 
         service = module.get<ArtistsService>(ArtistsService);
-        prisma = module.get<any>('TypeOrmRepository');
+        typeorm = module.get<any>('TypeOrmRepository');
 
         jest.clearAllMocks();
     });
@@ -57,8 +57,8 @@ describe.skip('ArtistsService', () => {
 
             const result = await service.getArtists({ page: 1, limit: 10 });
 
-            expect(prisma.artist.count).toHaveBeenCalled();
-            expect(prisma.artist.findMany).toHaveBeenCalledWith({
+            expect(typeorm.artist.count).toHaveBeenCalled();
+            expect(typeorm.artist.findMany).toHaveBeenCalledWith({
                 where: { deletedAt: null },
                 take: 10,
                 skip: 0,
@@ -90,7 +90,7 @@ describe.skip('ArtistsService', () => {
 
             const result = await service.getArtists({});
 
-            expect(prisma.artist.findMany).toHaveBeenCalledWith({
+            expect(typeorm.artist.findMany).toHaveBeenCalledWith({
                 where: { deletedAt: null },
                 take: 20,
                 skip: 0,
@@ -105,7 +105,7 @@ describe.skip('ArtistsService', () => {
 
             await service.getArtists({ page: 2, limit: 10 });
 
-            expect(prisma.artist.findMany).toHaveBeenCalledWith({
+            expect(typeorm.artist.findMany).toHaveBeenCalledWith({
                 where: { deletedAt: null },
                 take: 10,
                 skip: 10,
@@ -143,7 +143,7 @@ describe.skip('ArtistsService', () => {
 
             const result = await service.getArtistDetail('test-artist');
 
-            expect(prisma.artist.findUnique).toHaveBeenCalledWith(
+            expect(typeorm.artist.findUnique).toHaveBeenCalledWith(
                 expect.objectContaining({
                     where: { slug: 'test-artist', deletedAt: null },
                 }),
@@ -262,7 +262,7 @@ describe.skip('ArtistsService', () => {
 
             const result = await service.createArtistForAdmin(createDto);
 
-            expect(prisma.artist.create).toHaveBeenCalledWith({
+            expect(typeorm.artist.create).toHaveBeenCalledWith({
                 data: expect.objectContaining({
                     stageName: createDto.stageName,
                     slug: expect.any(String),
@@ -277,7 +277,7 @@ describe.skip('ArtistsService', () => {
                 stageName: 'Existing Artist',
             };
 
-            const error = new TypeOrm.PrismaClientKnownRequestError('Unique constraint failed', {
+            const error = new TypeOrm.TypeORMClientKnownRequestError('Unique constraint failed', {
                 code: 'P2002',
                 clientVersion: '5.0.0',
                 meta: { target: ['slug'] },
@@ -300,7 +300,7 @@ describe.skip('ArtistsService', () => {
 
             await service.createArtistForAdmin(createDto);
 
-            expect(prisma.artist.create).toHaveBeenCalledWith({
+            expect(typeorm.artist.create).toHaveBeenCalledWith({
                 data: expect.objectContaining({ slug: 'my-new-artist' }),
             });
         });
@@ -331,7 +331,7 @@ describe.skip('ArtistsService', () => {
 
             const result = await service.updateArtistForAdmin('artist_123', updateDto);
 
-            expect(prisma.artist.update).toHaveBeenCalledWith({
+            expect(typeorm.artist.update).toHaveBeenCalledWith({
                 where: { id: 'artist_123' },
                 data: expect.objectContaining({
                     stageName: updateDto.stageName,
@@ -342,7 +342,7 @@ describe.skip('ArtistsService', () => {
         });
 
         it('should throw NotFoundException if artist not found', async () => {
-            const error = new TypeOrm.PrismaClientKnownRequestError('Record not found', {
+            const error = new TypeOrm.TypeORMClientKnownRequestError('Record not found', {
                 code: 'P2025',
                 clientVersion: '5.0.0',
             });
@@ -354,7 +354,7 @@ describe.skip('ArtistsService', () => {
         });
 
         it('should throw ConflictException if slug already exists (P2002)', async () => {
-            const error = new TypeOrm.PrismaClientKnownRequestError('Unique constraint failed', {
+            const error = new TypeOrm.TypeORMClientKnownRequestError('Unique constraint failed', {
                 code: 'P2002',
                 clientVersion: '5.0.0',
                 meta: { target: ['slug'] },
@@ -376,13 +376,13 @@ describe.skip('ArtistsService', () => {
 
             await service.updateArtistForAdmin('artist_123', updateDto);
 
-            expect(prisma.artist.update).toHaveBeenCalledWith({
+            expect(typeorm.artist.update).toHaveBeenCalledWith({
                 where: { id: 'artist_123' },
                 data: expect.not.objectContaining({ slug: expect.anything() }),
             });
         });
 
-        it('should rethrow non-prisma errors', async () => {
+        it('should rethrow non-typeorm errors', async () => {
             const error = new Error('Unexpected error');
             mockTypeOrmRepository.artist.update.mockRejectedValue(error);
 
@@ -403,7 +403,7 @@ describe.skip('ArtistsService', () => {
 
             await service.deleteArtistForAdmin('artist_123');
 
-            expect(prisma.artist.findUnique).toHaveBeenCalledWith({
+            expect(typeorm.artist.findUnique).toHaveBeenCalledWith({
                 where: { id: 'artist_123' },
             });
         });
@@ -428,11 +428,11 @@ describe.skip('ArtistsService', () => {
 
             await service.deleteArtistForAdmin('artist_123');
 
-            expect(prisma.artist.update).toHaveBeenCalledWith({
+            expect(typeorm.artist.update).toHaveBeenCalledWith({
                 where: { id: 'artist_123' },
                 data: expect.objectContaining({ status: 'deleted' }),
             });
-            expect(prisma.artist.delete).not.toHaveBeenCalled();
+            expect(typeorm.artist.delete).not.toHaveBeenCalled();
         });
 
         it('should hard delete artist when not used in orders', async () => {
@@ -442,8 +442,8 @@ describe.skip('ArtistsService', () => {
 
             await service.deleteArtistForAdmin('artist_123');
 
-            expect(prisma.artist.delete).toHaveBeenCalledWith({ where: { id: 'artist_123' } });
-            expect(prisma.artist.update).not.toHaveBeenCalled();
+            expect(typeorm.artist.delete).toHaveBeenCalledWith({ where: { id: 'artist_123' } });
+            expect(typeorm.artist.update).not.toHaveBeenCalled();
         });
     });
 });

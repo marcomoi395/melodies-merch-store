@@ -4,7 +4,7 @@ import { BadRequestException } from '@nestjs/common';
 
 describe.skip('OrderService', () => {
     let service: OrderService;
-    let prisma: any;
+    let typeorm: any;
 
     const mockOrder = {
         id: 'order_123',
@@ -65,7 +65,7 @@ describe.skip('OrderService', () => {
         }).compile();
 
         service = module.get<OrderService>(OrderService);
-        prisma = module.get<any>('TypeOrmRepository');
+        typeorm = module.get<any>('TypeOrmRepository');
 
         jest.clearAllMocks();
     });
@@ -82,7 +82,7 @@ describe.skip('OrderService', () => {
 
             const result = await service.getOrdersByUserId('user_123', { page: 1, limit: 20 });
 
-            expect(prisma.order.findMany).toHaveBeenCalledWith(
+            expect(typeorm.order.findMany).toHaveBeenCalledWith(
                 expect.objectContaining({
                     where: { userId: 'user_123' },
                     take: 20,
@@ -103,7 +103,7 @@ describe.skip('OrderService', () => {
                 status: 'pending',
             });
 
-            expect(prisma.order.findMany).toHaveBeenCalledWith(
+            expect(typeorm.order.findMany).toHaveBeenCalledWith(
                 expect.objectContaining({
                     where: expect.objectContaining({
                         userId: 'user_123',
@@ -127,7 +127,7 @@ describe.skip('OrderService', () => {
                 endDate,
             });
 
-            expect(prisma.order.findMany).toHaveBeenCalledWith(
+            expect(typeorm.order.findMany).toHaveBeenCalledWith(
                 expect.objectContaining({
                     where: expect.objectContaining({
                         userId: 'user_123',
@@ -152,7 +152,7 @@ describe.skip('OrderService', () => {
 
             const result = await service.getOrderById('order_123');
 
-            expect(prisma.order.findUnique).toHaveBeenCalledWith({
+            expect(typeorm.order.findUnique).toHaveBeenCalledWith({
                 where: { id: 'order_123' },
                 include: { orderItems: true },
             });
@@ -220,7 +220,7 @@ describe.skip('OrderService', () => {
 
             const result = await service.getOrdersForAdmin({ page: 1, limit: 20 });
 
-            expect(prisma.order.findMany).toHaveBeenCalled();
+            expect(typeorm.order.findMany).toHaveBeenCalled();
             expect(result.data).toEqual(mockOrders);
             expect(result.meta.total).toBe(1);
         });
@@ -237,7 +237,7 @@ describe.skip('OrderService', () => {
 
             const result = await service.getOrderDetailForAdmin('order_123');
 
-            expect(prisma.order.findUnique).toHaveBeenCalledWith(
+            expect(typeorm.order.findUnique).toHaveBeenCalledWith(
                 expect.objectContaining({
                     where: { id: 'order_123' },
                 }),
@@ -265,7 +265,7 @@ describe.skip('OrderService', () => {
 
             const result = await service.changeOrderStatusForAdmin('order_123', 'shipped');
 
-            expect(prisma.order.update).toHaveBeenCalledWith({
+            expect(typeorm.order.update).toHaveBeenCalledWith({
                 where: { id: 'order_123' },
                 data: { status: 'shipped' },
             });

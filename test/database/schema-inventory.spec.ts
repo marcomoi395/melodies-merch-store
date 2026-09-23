@@ -1,7 +1,7 @@
 import { propertyColumnMappings, schemaDiscrepancies, schemaInventory } from './schema-fixtures';
 
 describe('schema inventory', () => {
-    it('captures all Prisma models and mapped tables', () => {
+    it('captures all entity models and mapped tables', () => {
         expect(schemaInventory).toHaveLength(20);
         expect(schemaInventory.map((table) => table.name)).toEqual([
             'users',
@@ -52,7 +52,7 @@ describe('schema inventory', () => {
         });
     });
 
-    it('documents property-to-column mappings and Prisma-SQL discrepancies', () => {
+    it('documents property-to-column mappings and SQL discrepancies', () => {
         expect(propertyColumnMappings.posts.isPublished).toBe('is_pulished');
         expect(schemaDiscrepancies).toEqual(
             expect.arrayContaining([
@@ -74,9 +74,9 @@ describe('schema inventory', () => {
             audit_logs: ['updated_at'],
         };
 
-        expect(users?.columns.find((column) => column.name === 'id')?.prismaDefaultExpression).toBe(
-            'uuid()',
-        );
+        expect(
+            users?.columns.find((column) => column.name === 'id')?.applicationDefaultExpression,
+        ).toBe('uuid()');
         for (const [tableName, columnNames] of Object.entries(expectedTimestampPrecision)) {
             const table = schemaInventory.find((candidate) => candidate.name === tableName);
 
@@ -95,7 +95,7 @@ describe('schema inventory', () => {
             ]),
         );
     });
-    it('covers every Prisma camelCase property with a mapped column', () => {
+    it('covers every entity camelCase property with a mapped column', () => {
         expect(Object.keys(propertyColumnMappings).sort()).toEqual(
             [
                 'artists',

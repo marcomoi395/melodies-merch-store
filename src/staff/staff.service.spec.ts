@@ -4,7 +4,7 @@ import { ConflictException, BadRequestException, NotFoundException } from '@nest
 
 describe.skip('StaffService', () => {
     let service: StaffService;
-    let prisma: any;
+    let typeorm: any;
 
     const mockStaff = {
         id: 'staff_123',
@@ -58,7 +58,7 @@ describe.skip('StaffService', () => {
         }).compile();
 
         service = module.get<StaffService>(StaffService);
-        prisma = module.get<any>('TypeOrmRepository');
+        typeorm = module.get<any>('TypeOrmRepository');
 
         jest.clearAllMocks();
     });
@@ -70,7 +70,7 @@ describe.skip('StaffService', () => {
 
             const result = await service.getAllStaff();
 
-            expect(prisma.user.findMany).toHaveBeenCalledWith({
+            expect(typeorm.user.findMany).toHaveBeenCalledWith({
                 where: {
                     status: { not: 'deleted' },
                     userRoles: { some: {} },
@@ -121,11 +121,11 @@ describe.skip('StaffService', () => {
 
             const result = await service.registerStaffForAdmin(registerDto);
 
-            expect(prisma.user.findUnique).toHaveBeenCalledWith({
+            expect(typeorm.user.findUnique).toHaveBeenCalledWith({
                 where: { email: registerDto.email },
             });
-            expect(prisma.role.findMany).toHaveBeenCalled();
-            expect(prisma.user.create).toHaveBeenCalled();
+            expect(typeorm.role.findMany).toHaveBeenCalled();
+            expect(typeorm.user.create).toHaveBeenCalled();
             expect(result).toBeDefined();
         });
 
@@ -180,10 +180,10 @@ describe.skip('StaffService', () => {
 
             const result = await service.updateStaffForAdmin('staff_123', updateDto);
 
-            expect(prisma.user.findUnique).toHaveBeenCalledWith({
+            expect(typeorm.user.findUnique).toHaveBeenCalledWith({
                 where: { id: 'staff_123', deletedAt: null },
             });
-            expect(prisma.user.update).toHaveBeenCalled();
+            expect(typeorm.user.update).toHaveBeenCalled();
             expect(result).toBeDefined();
         });
 
@@ -206,10 +206,10 @@ describe.skip('StaffService', () => {
 
             await service.deleteAccountForAdmin('staff_123');
 
-            expect(prisma.user.findUnique).toHaveBeenCalledWith({
+            expect(typeorm.user.findUnique).toHaveBeenCalledWith({
                 where: { id: 'staff_123', deletedAt: null },
             });
-            expect(prisma.user.update).toHaveBeenCalledWith({
+            expect(typeorm.user.update).toHaveBeenCalledWith({
                 where: { id: 'staff_123' },
                 data: {
                     status: 'deleted',

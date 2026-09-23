@@ -12,9 +12,9 @@ Invoke a template by name (e.g. "Service Test", "Admin Controller Test", "Public
 
 ```ts
 let service: XxxService;
-let prisma: PrismaService;
+let typeorm: TypeORMService;
 
-const mockPrismaService = {
+const mockTypeORMService = {
     modelName: {
         findMany: jest.fn(),
         findUnique: jest.fn(),
@@ -30,11 +30,11 @@ const mockPrismaService = {
 
 beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-        providers: [XxxService, { provide: PrismaService, useValue: mockPrismaService }],
+        providers: [XxxService, { provide: TypeORMService, useValue: mockTypeORMService }],
     }).compile();
 
     service = module.get<XxxService>(XxxService);
-    prisma = module.get<PrismaService>(PrismaService);
+    typeorm = module.get<TypeORMService>(TypeORMService);
 
     jest.clearAllMocks();
 });
@@ -43,7 +43,7 @@ beforeEach(async () => {
 ### `mockModel` shape
 
 - Include full raw DB fields: `id`, core fields, `createdAt`, `updatedAt`, `deletedAt: null`
-- No DTO-level transformations; this represents raw Prisma return values.
+- No DTO-level transformations; this represents raw TypeORM return values.
 
 ### Paginated List Tests (`getXxx({ page, limit })`)
 
@@ -69,12 +69,12 @@ beforeEach(async () => {
 
 ### Create Tests
 
-1. **Happy path** — assert `prisma.model.create` called with `expect.objectContaining({ data: expect.objectContaining({ field, slug: expect.any(String) }) })`, assert result fields
+1. **Happy path** — assert `typeorm.model.create` called with `expect.objectContaining({ data: expect.objectContaining({ field, slug: expect.any(String) }) })`, assert result fields
 2. **Slug generation** — assert `create` called with `expect.objectContaining({ data: expect.objectContaining({ slug: 'generated-slug' }) })`
 3. **P2002 → ConflictException**:
 
     ```ts
-    new Prisma.PrismaClientKnownRequestError('Unique constraint failed', {
+    new TypeORM.TypeORMClientKnownRequestError('Unique constraint failed', {
         code: 'P2002',
         clientVersion: '5.0.0',
         meta: { target: ['slug'] },
@@ -86,10 +86,10 @@ beforeEach(async () => {
 ### Update Tests
 
 1. **Happy path** — assert `update` called with `{ where: { id }, data: expect.objectContaining({...}) }`, assert result
-2. **P2025 → NotFoundException**: `new Prisma.PrismaClientKnownRequestError('...', { code: 'P2025', clientVersion: '5.0.0' })`
+2. **P2025 → NotFoundException**: `new TypeORM.TypeORMClientKnownRequestError('...', { code: 'P2025', clientVersion: '5.0.0' })`
 3. **P2002 → ConflictException** (same shape as create, P2002)
 4. **Slug not updated when stageName absent** — assert `update` called with `expect.not.objectContaining({ slug: expect.anything() })`
-5. **Non-Prisma error rethrow** — `new Error('...')` → assert original message thrown
+5. **Non-TypeORM error rethrow** — `new Error('...')` → assert original message thrown
 
 ### Delete Tests (soft/hard)
 
@@ -98,9 +98,9 @@ beforeEach(async () => {
 3. **Hard delete when not in orders** — `relatedModel.findFirst` returns `null` → `delete` called with `{ where: { id } }`, `update` NOT called
 4. **Basic happy path** — assert `findUnique` called with `{ where: { id } }` (smoke test)
 
-### Prisma Mock Reset Rule
+### TypeORM Mock Reset Rule
 
-- **Never reassign** a mock property object inline inside a test (e.g. `mockPrismaService.orderItem = {...}`).
+- **Never reassign** a mock property object inline inside a test (e.g. `mockTypeORMService.orderItem = {...}`).
 - Always use `.mockResolvedValue()` / `.mockRejectedValue()` on the existing `jest.fn()` reference.
 - `jest.clearAllMocks()` in `beforeEach` handles cleanup.
 

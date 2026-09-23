@@ -10,7 +10,7 @@ import { RoleEntity } from '../../src/database/entities/role.entity';
 import { TransactionEntity } from '../../src/database/entities/transaction.entity';
 import { UserEntity } from '../../src/database/entities/user.entity';
 
-describe('Prisma update timestamp entity metadata', () => {
+describe('TypeORM update timestamp entity metadata', () => {
     it.each([
         [UserEntity, true, undefined],
         [RoleEntity, true, undefined],
@@ -22,7 +22,7 @@ describe('Prisma update timestamp entity metadata', () => {
         [TransactionEntity, false, 3],
         [PostEntity, false, 3],
         [AuditLogEntity, false, 3],
-    ])('%p keeps Prisma @updatedAt semantics', (entity, nullable, precision) => {
+    ])('%p keeps application update timestamp semantics', (entity, nullable, precision) => {
         const column = getMetadataArgsStorage().columns.find(
             (candidate) => candidate.target === entity && candidate.propertyName === 'updatedAt',
         );

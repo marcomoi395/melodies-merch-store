@@ -7,7 +7,7 @@ import * as bcrypt from 'bcryptjs';
 
 describe.skip('UserService', () => {
     let service: UserService;
-    let prisma: any;
+    let typeorm: any;
     let mailer: MailerService;
     let redis: any;
 
@@ -69,7 +69,7 @@ describe.skip('UserService', () => {
         }).compile();
 
         service = module.get<UserService>(UserService);
-        prisma = module.get<any>('TypeOrmRepository');
+        typeorm = module.get<any>('TypeOrmRepository');
         mailer = module.get<MailerService>(MailerService);
         redis = module.get('REDIS_CLIENT');
 
@@ -94,7 +94,7 @@ describe.skip('UserService', () => {
 
             const result = await service.getUserWithRole('test@example.com');
 
-            expect(prisma.user.findUnique).toHaveBeenCalledWith({
+            expect(typeorm.user.findUnique).toHaveBeenCalledWith({
                 where: { email: 'test@example.com' },
                 include: {
                     userRoles: {
@@ -120,7 +120,7 @@ describe.skip('UserService', () => {
 
             const result = await service.getUser('test@example.com');
 
-            expect(prisma.user.findUnique).toHaveBeenCalledWith({
+            expect(typeorm.user.findUnique).toHaveBeenCalledWith({
                 where: { email: 'test@example.com' },
             });
             expect(result).toEqual(mockUser);
@@ -141,7 +141,7 @@ describe.skip('UserService', () => {
 
             const result = await service.getUserProfile('user_123');
 
-            expect(prisma.user.findUnique).toHaveBeenCalledWith({
+            expect(typeorm.user.findUnique).toHaveBeenCalledWith({
                 where: { id: 'user_123' },
             });
             expect(result).toBeDefined();
@@ -173,8 +173,8 @@ describe.skip('UserService', () => {
 
             const result = await service.updateProfileInfo('user_123', updateDto);
 
-            expect(prisma.user.findUnique).toHaveBeenCalledWith({ where: { id: 'user_123' } });
-            expect(prisma.user.update).toHaveBeenCalledWith({
+            expect(typeorm.user.findUnique).toHaveBeenCalledWith({ where: { id: 'user_123' } });
+            expect(typeorm.user.update).toHaveBeenCalledWith({
                 where: { id: 'user_123' },
                 data: updateDto,
             });
@@ -206,8 +206,8 @@ describe.skip('UserService', () => {
 
             await service.changePassword('user_123', changePasswordDto);
 
-            expect(prisma.user.findUnique).toHaveBeenCalledWith({ where: { id: 'user_123' } });
-            expect(prisma.user.update).toHaveBeenCalledWith({
+            expect(typeorm.user.findUnique).toHaveBeenCalledWith({ where: { id: 'user_123' } });
+            expect(typeorm.user.update).toHaveBeenCalledWith({
                 where: { id: 'user_123' },
                 data: { passwordHash: expect.any(String) },
             });
@@ -314,7 +314,7 @@ describe.skip('UserService', () => {
 
             expect(redis.get).toHaveBeenCalledWith('verify-account:valid-token');
             expect(redis.del).toHaveBeenCalled();
-            expect(prisma.user.update).toHaveBeenCalledWith({
+            expect(typeorm.user.update).toHaveBeenCalledWith({
                 where: { id: 'user_123' },
                 data: { isVerified: true },
             });

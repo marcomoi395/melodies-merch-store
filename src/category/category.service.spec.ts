@@ -5,7 +5,7 @@ const TypeOrm: any = {};
 
 describe.skip('CategoryService', () => {
     let service: CategoryService;
-    let prisma: any;
+    let typeorm: any;
 
     const mockCategory = {
         id: 'cat_123',
@@ -46,7 +46,7 @@ describe.skip('CategoryService', () => {
         }).compile();
 
         service = module.get<CategoryService>(CategoryService);
-        prisma = module.get<any>('TypeOrmRepository');
+        typeorm = module.get<any>('TypeOrmRepository');
 
         jest.clearAllMocks();
     });
@@ -90,7 +90,7 @@ describe.skip('CategoryService', () => {
 
             const result = await service.getCategoryTree();
 
-            expect(prisma.category.findMany).toHaveBeenCalled();
+            expect(typeorm.category.findMany).toHaveBeenCalled();
             expect(result).toEqual(mockCategories);
         });
     });
@@ -120,7 +120,7 @@ describe.skip('CategoryService', () => {
                 'test-category',
             );
 
-            expect(prisma.product.findMany).toHaveBeenCalledWith(
+            expect(typeorm.product.findMany).toHaveBeenCalledWith(
                 expect.objectContaining({
                     where: expect.objectContaining({
                         category: { slug: 'test-category' },
@@ -146,7 +146,7 @@ describe.skip('CategoryService', () => {
 
             const result = await service.createCategory(createDto);
 
-            expect(prisma.category.create).toHaveBeenCalledWith({
+            expect(typeorm.category.create).toHaveBeenCalledWith({
                 data: expect.objectContaining({
                     name: createDto.name,
                     slug: expect.any(String),
@@ -160,7 +160,7 @@ describe.skip('CategoryService', () => {
                 name: 'Existing Category',
             };
 
-            const error = new TypeOrm.PrismaClientKnownRequestError('Unique constraint failed', {
+            const error = new TypeOrm.TypeORMClientKnownRequestError('Unique constraint failed', {
                 code: 'P2002',
                 clientVersion: '5.0.0',
                 meta: { target: ['slug'] },
@@ -184,7 +184,7 @@ describe.skip('CategoryService', () => {
 
             const result = await service.updateCategory('cat_123', updateDto);
 
-            expect(prisma.category.update).toHaveBeenCalledWith({
+            expect(typeorm.category.update).toHaveBeenCalledWith({
                 where: { id: 'cat_123' },
                 data: expect.objectContaining({
                     name: updateDto.name,
@@ -194,7 +194,7 @@ describe.skip('CategoryService', () => {
         });
 
         it('should throw NotFoundException if category not found', async () => {
-            const error = new TypeOrm.PrismaClientKnownRequestError('Record not found', {
+            const error = new TypeOrm.TypeORMClientKnownRequestError('Record not found', {
                 code: 'P2025',
                 clientVersion: '5.0.0',
             });
@@ -213,17 +213,17 @@ describe.skip('CategoryService', () => {
 
             await service.deleteCategoryForAdmin('cat_123');
 
-            expect(prisma.category.count).toHaveBeenCalledWith({
+            expect(typeorm.category.count).toHaveBeenCalledWith({
                 where: { parentId: 'cat_123' },
             });
-            expect(prisma.category.delete).toHaveBeenCalledWith({
+            expect(typeorm.category.delete).toHaveBeenCalledWith({
                 where: { id: 'cat_123' },
             });
         });
 
         it('should throw NotFoundException if category not found', async () => {
             mockTypeOrmRepository.category.count.mockResolvedValue(0);
-            const error = new TypeOrm.PrismaClientKnownRequestError('Record not found', {
+            const error = new TypeOrm.TypeORMClientKnownRequestError('Record not found', {
                 code: 'P2025',
                 clientVersion: '5.0.0',
             });

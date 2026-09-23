@@ -4,7 +4,7 @@ import { ConflictException, NotFoundException, BadRequestException } from '@nest
 
 describe.skip('RolesService', () => {
     let service: RolesService;
-    let prisma: any;
+    let typeorm: any;
 
     const mockRole = {
         id: 'role_1',
@@ -51,7 +51,7 @@ describe.skip('RolesService', () => {
         }).compile();
 
         service = module.get<RolesService>(RolesService);
-        prisma = module.get<any>('TypeOrmRepository');
+        typeorm = module.get<any>('TypeOrmRepository');
 
         jest.clearAllMocks();
     });
@@ -63,7 +63,7 @@ describe.skip('RolesService', () => {
 
             const result = await service.getRoles();
 
-            expect(prisma.role.findMany).toHaveBeenCalledWith({
+            expect(typeorm.role.findMany).toHaveBeenCalledWith({
                 where: { deletedAt: null },
                 include: {
                     rolePermissions: {
@@ -93,11 +93,11 @@ describe.skip('RolesService', () => {
 
             const result = await service.createNewRoleForAdmin(createDto);
 
-            expect(prisma.role.findUnique).toHaveBeenCalledWith({
+            expect(typeorm.role.findUnique).toHaveBeenCalledWith({
                 where: { name: createDto.name },
             });
-            expect(prisma.permission.findMany).toHaveBeenCalled();
-            expect(prisma.role.create).toHaveBeenCalled();
+            expect(typeorm.permission.findMany).toHaveBeenCalled();
+            expect(typeorm.role.create).toHaveBeenCalled();
             expect(result).toBeDefined();
         });
 
@@ -149,8 +149,8 @@ describe.skip('RolesService', () => {
 
             const result = await service.updateRoleForAdmin('role_1', updateDto);
 
-            expect(prisma.role.findUnique).toHaveBeenCalledWith({ where: { id: 'role_1' } });
-            expect(prisma.role.update).toHaveBeenCalled();
+            expect(typeorm.role.findUnique).toHaveBeenCalledWith({ where: { id: 'role_1' } });
+            expect(typeorm.role.update).toHaveBeenCalled();
             expect(result).toBeDefined();
         });
 
@@ -192,7 +192,7 @@ describe.skip('RolesService', () => {
 
             await service.deleteRoleForAdmin('role_1');
 
-            expect(prisma.role.findFirst).toHaveBeenCalledWith({
+            expect(typeorm.role.findFirst).toHaveBeenCalledWith({
                 where: { id: 'role_1', deletedAt: null },
             });
         });

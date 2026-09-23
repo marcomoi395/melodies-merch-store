@@ -4,13 +4,13 @@ export interface SchemaColumnFixture {
     type: string;
     nullable: boolean;
     defaultExpression?: string;
-    prismaDefaultExpression?: string;
+    applicationDefaultExpression?: string;
 }
 
 export interface SchemaDiscrepancyFixture {
     table: string;
     subject: string;
-    prisma: string;
+    application: string;
     sql: string;
     resolution: string;
 }
@@ -34,7 +34,7 @@ const uuid = (name: string, nullable = false): SchemaColumnFixture => ({
     name,
     type: 'UUID',
     nullable,
-    prismaDefaultExpression: name === 'id' ? 'uuid()' : undefined,
+    applicationDefaultExpression: name === 'id' ? 'uuid()' : undefined,
 });
 const varchar = (
     name: string,
@@ -522,14 +522,14 @@ export const schemaDiscrepancies: SchemaDiscrepancyFixture[] = [
     {
         table: 'products',
         subject: 'timestamp precision',
-        prisma: 'createdAt and updatedAt omit explicit precision',
+        application: 'createdAt and updatedAt omit explicit precision',
         sql: 'created_at and updated_at use TIMESTAMP(3)',
         resolution: 'Inventory records the SQL precision as authoritative for migration parity.',
     },
     {
         table: 'users',
         subject: 'updated_at default',
-        prisma: '@updatedAt is application-managed',
+        application: '@updatedAt is application-managed',
         sql: 'updated_at has no database default',
         resolution:
             'Treat the migration as authoritative; update semantics remain application-owned.',
@@ -537,14 +537,14 @@ export const schemaDiscrepancies: SchemaDiscrepancyFixture[] = [
     {
         table: 'all tables with UUID ids',
         subject: 'UUID primary-key default',
-        prisma: 'id fields declare @default(uuid())',
+        application: 'id fields declare @default(uuid())',
         sql: 'The initial migration declares UUID ids without a database default',
         resolution: 'Record the omission explicitly for the migration decision log.',
     },
     {
         table: 'posts',
         subject: 'legacy column spelling',
-        prisma: 'isPublished maps to is_pulished',
+        application: 'isPublished maps to is_pulished',
         sql: 'Physical column is is_pulished',
         resolution: 'Retain the legacy spelling in all future entity and migration metadata.',
     },

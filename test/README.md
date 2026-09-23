@@ -38,7 +38,7 @@ test/
 ├── helpers/           # Test utilities
 │   └── test-helpers.ts
 ├── mocks/            # Mock objects
-│   └── prisma.mock.ts
+│   └── typeorm.mock.ts
 ├── jest-e2e.json     # E2E test configuration
 └── README.md         # This file
 ```
@@ -47,36 +47,36 @@ test/
 
 ### Service Tests
 
-Services contain business logic and interact with PrismaService. Mock all dependencies.
+Services contain business logic and interact with TypeORMService. Mock all dependencies.
 
 ```typescript
 import { Test, TestingModule } from '@nestjs/testing';
 import { ModuleService } from './module.service';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { mockPrismaService, resetPrismaMocks } from 'test/mocks/prisma.mock';
+import { TypeORMService } from 'src/typeorm/typeorm.service';
+import { mockTypeORMService, resetTypeORMMocks } from 'test/mocks/typeorm.mock';
 
 describe('ModuleService', () => {
     let service: ModuleService;
-    let prisma: typeof mockPrismaService;
+    let typeorm: typeof mockTypeORMService;
 
     beforeEach(async () => {
-        resetPrismaMocks();
+        resetTypeORMMocks();
 
         const module: TestingModule = await Test.createTestingModule({
-            providers: [ModuleService, { provide: PrismaService, useValue: mockPrismaService }],
+            providers: [ModuleService, { provide: TypeORMService, useValue: mockTypeORMService }],
         }).compile();
 
         service = module.get<ModuleService>(ModuleService);
-        prisma = module.get(PrismaService);
+        typeorm = module.get(TypeORMService);
     });
 
     it('should perform CRUD operation', async () => {
         const mockData = { id: '1', name: 'Test' };
-        prisma.model.findUnique.mockResolvedValue(mockData);
+        typeorm.model.findUnique.mockResolvedValue(mockData);
 
         const result = await service.findById('1');
 
-        expect(prisma.model.findUnique).toHaveBeenCalledWith({ where: { id: '1' } });
+        expect(typeorm.model.findUnique).toHaveBeenCalledWith({ where: { id: '1' } });
         expect(result).toEqual(mockData);
     });
 });
@@ -220,11 +220,11 @@ const product = ProductFactory.create({ name: 'Custom Product' });
 Pre-configured mock objects:
 
 ```typescript
-import { mockPrismaService, resetPrismaMocks } from 'test/mocks/prisma.mock';
+import { mockTypeORMService, resetTypeORMMocks } from 'test/mocks/typeorm.mock';
 
 // Use in tests
 beforeEach(() => {
-    resetPrismaMocks();
+    resetTypeORMMocks();
 });
 ```
 
@@ -233,13 +233,13 @@ beforeEach(() => {
 ### General
 
 1. **Test Isolation**: Each test should be independent and not rely on other tests
-2. **Reset Mocks**: Always reset mocks between tests with `resetPrismaMocks()` or `jest.clearAllMocks()`
+2. **Reset Mocks**: Always reset mocks between tests with `resetTypeORMMocks()` or `jest.clearAllMocks()`
 3. **Descriptive Names**: Use clear, descriptive test names that explain what is being tested
 4. **Arrange-Act-Assert**: Structure tests with setup, execution, and verification phases
 
 ### Unit Tests
 
-1. **Mock External Dependencies**: Mock PrismaService, external APIs, and other services
+1. **Mock External Dependencies**: Mock TypeORMService, external APIs, and other services
 2. **Test Business Logic**: Focus on testing business rules and edge cases
 3. **Verify Method Calls**: Use `expect(mock).toHaveBeenCalledWith(...)` to verify interactions
 4. **Test Error Cases**: Always test error scenarios (NotFoundException, ValidationError, etc.)
@@ -274,11 +274,11 @@ All API endpoints return standardized responses:
 
 ### Testing Decimal Fields
 
-Prisma returns Decimal objects. Use `@DecimalToNumber()` decorator in response DTOs:
+TypeORM returns Decimal objects. Use `@DecimalToNumber()` decorator in response DTOs:
 
 ```typescript
 it('should convert Decimal to number', () => {
-    const product = { price: new Prisma.Decimal(99.99) };
+    const product = { price: new TypeORM.Decimal(99.99) };
     const dto = plainToInstance(ProductResponseDto, product, {
         excludeExtraneousValues: true,
     });
@@ -290,10 +290,10 @@ it('should convert Decimal to number', () => {
 
 ```typescript
 it('should return paginated results', async () => {
-    prisma.model.findMany.mockResolvedValue([
+    typeorm.model.findMany.mockResolvedValue([
         /* items */
     ]);
-    prisma.model.count.mockResolvedValue(25);
+    typeorm.model.count.mockResolvedValue(25);
 
     const result = await service.findAll({ page: 2, limit: 10 });
 
@@ -310,11 +310,11 @@ it('should return paginated results', async () => {
 
 ```typescript
 it('should execute in transaction', async () => {
-    prisma.$transaction.mockImplementation((fn) => fn(prisma));
+    typeorm.$transaction.mockImplementation((fn) => fn(typeorm));
 
     await service.methodWithTransaction();
 
-    expect(prisma.$transaction).toHaveBeenCalled();
+    expect(typeorm.$transaction).toHaveBeenCalled();
 });
 ```
 

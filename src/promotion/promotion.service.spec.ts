@@ -5,7 +5,7 @@ import { DiscountType } from './dto/create-promotion.dto';
 
 describe.skip('PromotionService', () => {
     let service: PromotionService;
-    let prisma: any;
+    let typeorm: any;
 
     const mockPromotion = {
         id: 'promo_123',
@@ -40,7 +40,7 @@ describe.skip('PromotionService', () => {
         }).compile();
 
         service = module.get<PromotionService>(PromotionService);
-        prisma = module.get<any>('TypeOrmRepository');
+        typeorm = module.get<any>('TypeOrmRepository');
 
         jest.clearAllMocks();
     });
@@ -56,7 +56,7 @@ describe.skip('PromotionService', () => {
 
             const result = await service.getAllPromotionCodes();
 
-            expect(prisma.discount.findMany).toHaveBeenCalled();
+            expect(typeorm.discount.findMany).toHaveBeenCalled();
             expect(result).toEqual(mockPromotions);
         });
     });
@@ -79,10 +79,10 @@ describe.skip('PromotionService', () => {
 
             const result = await service.createNewPromotionCode(createDto);
 
-            expect(prisma.discount.findUnique).toHaveBeenCalledWith({
+            expect(typeorm.discount.findUnique).toHaveBeenCalledWith({
                 where: { code: createDto.code },
             });
-            expect(prisma.discount.create).toHaveBeenCalled();
+            expect(typeorm.discount.create).toHaveBeenCalled();
             expect(result.code).toBe(createDto.code);
         });
 
@@ -129,10 +129,10 @@ describe.skip('PromotionService', () => {
 
             const result = await service.updatePromotionCode('promo_123', updateDto);
 
-            expect(prisma.discount.findUnique).toHaveBeenCalledWith({
+            expect(typeorm.discount.findUnique).toHaveBeenCalledWith({
                 where: { id: 'promo_123' },
             });
-            expect(prisma.discount.update).toHaveBeenCalled();
+            expect(typeorm.discount.update).toHaveBeenCalled();
             expect(result.value).toBe(20);
         });
 
@@ -165,10 +165,10 @@ describe.skip('PromotionService', () => {
 
             const result = await service.removePromotionCode('promo_123');
 
-            expect(prisma.discount.findUnique).toHaveBeenCalledWith({
+            expect(typeorm.discount.findUnique).toHaveBeenCalledWith({
                 where: { id: 'promo_123' },
             });
-            expect(prisma.discount.delete).toHaveBeenCalledWith({
+            expect(typeorm.discount.delete).toHaveBeenCalledWith({
                 where: { id: 'promo_123' },
             });
             expect(result).toEqual(mockPromotion);

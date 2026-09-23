@@ -1,6 +1,6 @@
 # Copilot Instructions - Melodies Merch Store Backend
 
-This is a NestJS backend for an e-commerce platform selling music products and merchandise, using Prisma ORM with PostgreSQL and Redis for session management.
+This is a NestJS backend for an e-commerce platform selling music products and merchandise, using TypeORM ORM with PostgreSQL and Redis for session management.
 
 ## Build, Test, and Lint Commands
 
@@ -9,9 +9,9 @@ This is a NestJS backend for an e-commerce platform selling music products and m
 npm install
 
 # Database setup (after configuring .env)
-npx prisma migrate dev          # Run migrations
-npx prisma db seed              # Seed initial data (Super Admin, Categories)
-npx prisma generate             # Generate Prisma Client (output: generated/prisma/)
+npx typeorm migrate dev          # Run migrations
+npx typeorm db seed              # Seed initial data (Super Admin, Categories)
+npx typeorm generate             # Generate TypeORM Client (output: generated/typeorm/)
 
 # Development
 npm run start:dev               # Watch mode on port 3000
@@ -62,7 +62,7 @@ src/[feature]/
 ### Core Modules
 
 - **auth/** - JWT & local authentication strategies, session management
-- **prisma/** - PrismaService (extends PrismaClient with PrismaPg adapter)
+- **typeorm/** - TypeORMService (extends TypeORMClient with TypeORMPg adapter)
 - **redis/** - RedisService for session storage
 - **permissions/** - RBAC system with PermissionGuard
 - **roles/** - Role management
@@ -96,7 +96,7 @@ Use `plainToInstance(ResponseDto, data, { excludeExtraneousValues: true })` to t
 **Response DTOs** (output transformation):
 
 - Use `class-transformer` decorators: `@Expose()`, `@Transform()`, `@Type()`
-- Custom decorator `@DecimalToNumber()` converts Prisma Decimal to number
+- Custom decorator `@DecimalToNumber()` converts TypeORM Decimal to number
 - Support nested transformations with `@Type(() => NestedDto)`
 - Include constructors accepting partial objects
 
@@ -111,7 +111,7 @@ export class ProductResponseDto {
 
     @Expose()
     @DecimalToNumber()
-    price: number; // Prisma Decimal → number
+    price: number; // TypeORM Decimal → number
 }
 ```
 
@@ -134,12 +134,12 @@ async getProducts() { }
 
 **Optional Auth:** Use `OptionalJwtAuthGuard` (in `src/shared/guards/`) to allow unauthenticated access while still populating `req.user` if token exists.
 
-### Prisma Integration
+### TypeORM Integration
 
-- **Generated Client Location:** `generated/prisma/` (not default `node_modules/.prisma/`)
-- **Import Path:** `import { PrismaClient } from '../generated/prisma/client'`
-- **PrismaService:** Uses `PrismaPg` adapter, injects ConfigService for DATABASE_URL
-- **Seeding:** `prisma/seed.ts` populates Super Admin, permissions, and base data from `seed.json`
+- **Generated Client Location:** `generated/typeorm/` (not default `node_modules/.typeorm/`)
+- **Import Path:** `import { TypeORMClient } from '../generated/typeorm/client'`
+- **TypeORMService:** Uses `TypeORMPg` adapter, injects ConfigService for DATABASE_URL
+- **Seeding:** `typeorm/seed.ts` populates Super Admin, permissions, and base data from `seed.json`
 
 ### Shared Utilities
 
@@ -166,7 +166,7 @@ App validates env vars with Joi schema in `app.module.ts` on startup.
 - Unit tests: `src/**/*.spec.ts` (Jest with ts-jest)
 - E2E tests: `test/**/*.e2e-spec.ts`
 - Module name mapping: `src/...` and `generated/...` paths configured in `package.json` jest config
-- Prisma mocking: Use dependency injection to replace PrismaService in test modules
+- TypeORM mocking: Use dependency injection to replace TypeORMService in test modules
 
 ## API Documentation
 
@@ -183,19 +183,19 @@ App validates env vars with Joi schema in `app.module.ts` on startup.
 3. Create `controllers/[feature].public.controller.ts` and `controllers/[feature].admin.controller.ts`
 4. Create DTOs in `dto/` (create, update, get, response)
 5. Add guards to admin controller: `@UseGuards(AuthGuard('jwt'), PermissionGuard)`
-6. Add permissions in `prisma/seed.ts` (PermissionKey enum)
+6. Add permissions in `typeorm/seed.ts` (PermissionKey enum)
 7. Import module in `app.module.ts`
 
 ### Adding New Permissions
 
-1. Add enum entry in `prisma/seed.ts` (PermissionKey)
+1. Add enum entry in `typeorm/seed.ts` (PermissionKey)
 2. Add to `PERMISSIONS` array in seed file
-3. Run `npx prisma db seed` to sync to database
+3. Run `npx typeorm db seed` to sync to database
 4. Use `@RequiredPermission(resource, action)` on controller endpoints
 
 ### Database Schema Changes
 
-1. Modify `prisma/schema.prisma`
-2. Create migration: `npx prisma migrate dev --name [description]`
-3. Generate client: `npx prisma generate`
-4. Update seed data if needed: Edit `prisma/seed.ts` or `prisma/seed.json`
+1. Modify `typeorm/schema.typeorm`
+2. Create migration: `npx typeorm migrate dev --name [description]`
+3. Generate client: `npx typeorm generate`
+4. Update seed data if needed: Edit `typeorm/seed.ts` or `typeorm/seed.json`

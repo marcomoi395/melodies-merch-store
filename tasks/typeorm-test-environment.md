@@ -20,4 +20,4 @@ The migration e2e tests are skipped when `TEST_DATABASE_URL` is absent, so unit 
 
 ## Legacy mocked e2e tests
 
-Run legacy Prisma-mocked e2e tests with `npm run test:e2e`. This command sets `TYPEORM_ENABLED=false`, preventing TypeORM initialization while the Prisma and Redis providers are mocked.
+Run legacy TypeORM-mocked e2e tests with `npm run test:e2e`. This command sets `TYPEORM_ENABLED=false`, preventing TypeORM initialization while the TypeORM and Redis providers are mocked.
