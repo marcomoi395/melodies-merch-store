@@ -8,19 +8,17 @@ Retain the existing Prisma migration history for historical records. TypeORM use
 
 ## Preflight
 
-1. Set `DATABASE_URL` to the existing database. Never use a production URL for rehearsal.
+1. Set `DATABASE_URL` to the existing database and `SHADOW_DATABASE_URL` to a separate disposable PostgreSQL database. For a non-public target schema, the command selects the same schema name in the shadow database. Never use a production URL for rehearsal or shadowing.
 2. Take a verified PostgreSQL backup and record the current Prisma migration status.
-3. Compare the live schema to the authoritative Prisma initial migration and its complete schema inventory.
-4. Confirm all 20 expected tables, columns, nullability, defaults, precision, unique indexes, primary keys, foreign keys, and delete actions match.
-5. Confirm the legacy `posts.is_pulished` column exists exactly with that spelling.
-6. Abort on any drift. Resolve drift in a separately approved migration; do not alter the TypeORM initial migration to hide it.
+3. Run `npm run migration:adopt`. It compares the target schema with the authoritative Prisma migrations, including all 20 expected tables, columns, defaults, indexes, foreign keys, and the legacy `posts.is_pulished` spelling.
+4. Abort on any drift. The command does not write TypeORM migration history unless this preflight passes. Resolve drift in a separately approved migration; do not alter the TypeORM initial migration to hide it.
 
 ## Baseline
 
-After a clean preflight, fake-record `Initial20260106151610` in TypeORM's own migration history table. Do not execute its `up()` method against the existing schema:
+After its clean preflight, `migration:adopt` fake-records only `Initial20260106151610` in TypeORM's own migration history table. Do not execute its `up()` method against the existing schema:
 
 ```bash
-npm run typeorm migration:run -- -d src/database/data-source.ts --fake
+npm run migration:adopt
 ```
 
 Record the baseline timestamp, database identifier, schema comparison result, and operator in the deployment log.

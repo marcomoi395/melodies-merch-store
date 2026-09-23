@@ -11,8 +11,8 @@
 ## Verification record
 
 - `npm run build` generates the still-required Prisma client first, then builds the Nest application.
-- `npm run test:database` verifies PostgreSQL behavior only when `TEST_DATABASE_URL` points to a disposable database; without it, database e2e suites are skipped and remain unverified.
-- The database suite covers clean migration, full catalog parity, fake baseline from the authoritative Prisma migration, drift rejection before baseline history, data preservation, idempotency, and rollback.
+- `npm run test:database` verifies PostgreSQL behavior only when `TEST_DATABASE_URL` points to a disposable database; adoption coverage additionally needs a separate disposable `TEST_SHADOW_DATABASE_URL`. Without the required URLs, database e2e suites are skipped or fail and remain unverified.
+- The database suite covers TypeORM CLI migration success/failure, clean migration, full catalog parity, preflight-enforced fake baseline from the authoritative Prisma migration, drift rejection before baseline history, data preservation, idempotency, and rollback that preserves dependent external objects.
 - Unit and legacy Prisma-mocked e2e verification remain required before a phase handoff.
 
 ## Remaining Prisma boundary

@@ -105,10 +105,8 @@ To get a local copy up and running, follow these simple steps.
 
     The application will be available at `http://localhost:3000`.
 
-5. **Deployment (Production)**
-   This project is configured to be deployed using Docker Compose, which includes the API, Database, Redis, and an Nginx reverse proxy with SSL support.
-
-    **Note:** The provided `docker-compose.yml` assumes you have SSL certificates mapped (e.g., via Let's Encrypt).
+5. **Local dependencies**
+   `docker-compose.local.yml` currently starts PostgreSQL on port `5432` and Redis on port `6380`. Start the API locally with `npm run start:dev`; its API and Nginx service definitions are intentionally commented out.
 
     **Build and Run:**
 

@@ -21,6 +21,7 @@
         "test:e2e": "TYPEORM_ENABLED=false jest --config ./test/jest-e2e.json",
         "test:database": "TYPEORM_ENABLED=true jest --config ./test/jest-database.json",
         "typeorm": "typeorm-ts-node-commonjs",
+        "migration:adopt": "tsx src/database/adopt.ts",
         "prepare": "husky"
     },
     "dependencies": {

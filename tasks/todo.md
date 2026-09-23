@@ -1,5 +1,7 @@
 # TypeORM Migration Foundation Checklist
 
+> Status: superseded. Use `.scratch/typeorm-foundation-repair/` for the resolved source of truth; this checklist is retained only as historical context.
+
 This checklist covers the first phase of the eventual full Prisma replacement. Existing feature services/controllers remain Prisma-backed until a later rewrite phase.
 
 ## Pre-Implementation Decision Gate
@@ -118,4 +120,3 @@ This checklist covers the first phase of the eventual full Prisma replacement. E
 
 - [ ] All `SPEC.md` success criteria met.
 - [ ] Plan and implementation reviewed for handoff.
-

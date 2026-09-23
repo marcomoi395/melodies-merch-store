@@ -1,10 +1,10 @@
 import { randomUUID } from 'node:crypto';
+import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { DataSource } from 'typeorm';
 import { createDataSourceOptions } from '../../src/database/data-source';
 import { TYPEORM_MIGRATIONS_TABLE } from '../../src/database/database-options';
-import { expectSchemaParity } from './schema-parity';
 import { createSchema, dropSchema, inSchema } from './postgres-lifecycle';
 
 const databaseUrl = process.env.TEST_DATABASE_URL;
@@ -20,7 +20,26 @@ interface RepresentativeRows {
     products: unknown[];
 }
 
-async function representativeRows(dataSource: DataSource, schema: string): Promise<RepresentativeRows> {
+function runAdoptionCli(databaseUrl: string, schema: string) {
+    if (!process.env.TEST_SHADOW_DATABASE_URL) {
+        throw new Error('TEST_SHADOW_DATABASE_URL is required for adoption tests');
+    }
+    return spawnSync(process.platform === 'win32' ? 'npm.cmd' : 'npm', ['run', 'migration:adopt'], {
+        cwd: process.cwd(),
+        encoding: 'utf8',
+        env: {
+            ...process.env,
+            DATABASE_URL: databaseUrl,
+            DATABASE_SCHEMA: schema,
+            SHADOW_DATABASE_URL: process.env.TEST_SHADOW_DATABASE_URL,
+        },
+    });
+}
+
+async function representativeRows(
+    dataSource: DataSource,
+    schema: string,
+): Promise<RepresentativeRows> {
     const [users, categories, products] = await Promise.all([
         dataSource.query(`SELECT id, email FROM "${schema}".users ORDER BY id`),
         dataSource.query(`SELECT id, name FROM "${schema}".categories ORDER BY id`),
@@ -62,14 +81,19 @@ describeDatabase('TypeORM adoption rehearsal PostgreSQL e2e', () => {
     });
 
     afterAll(async () => {
-        if (dataSource?.isInitialized) await dataSource.destroy();
-        if (isolatedDatabaseUrl && schema) await dropSchema(isolatedDatabaseUrl, schema);
+        if (dataSource?.isInitialized) {
+            await dataSource.destroy();
+        }
+        if (isolatedDatabaseUrl && schema) {
+            await dropSchema(isolatedDatabaseUrl, schema);
+        }
+        if (process.env.TEST_SHADOW_DATABASE_URL && schema) {
+            await dropSchema(process.env.TEST_SHADOW_DATABASE_URL, schema);
+        }
     });
 
     it('preflights Prisma schema read-only, then fake-baselines TypeORM without changing rows', async () => {
         const before = await representativeRows(dataSource!, schema);
-
-        await expectSchemaParity(dataSource!);
 
         expect(
             await dataSource!.query(`SELECT to_regclass($1) AS table`, [
@@ -78,7 +102,10 @@ describeDatabase('TypeORM adoption rehearsal PostgreSQL e2e', () => {
         ).toEqual([{ table: null }]);
         expect(await representativeRows(dataSource!, schema)).toEqual(before);
 
-        await expect(dataSource!.runMigrations({ fake: true })).resolves.toEqual([]);
+        const result = runAdoptionCli(isolatedDatabaseUrl, schema);
+        if (result.status !== 0) {
+            throw new Error(`${result.stdout}${result.stderr}`);
+        }
         expect(await dataSource!.runMigrations()).toEqual([]);
         expect(
             await dataSource!.query(`SELECT name FROM "${schema}"."${TYPEORM_MIGRATIONS_TABLE}"`),
@@ -107,7 +134,9 @@ describeDatabase('TypeORM adoption rehearsal PostgreSQL e2e', () => {
         );
         await driftDataSource.initialize();
         try {
-            await expect(expectSchemaParity(driftDataSource)).rejects.toThrow();
+            const result = runAdoptionCli(isolatedDatabaseUrl, driftSchema);
+            expect(result.status).not.toBe(0);
+            expect(`${result.stdout}${result.stderr}`).toContain('Schema preflight failed');
             expect(
                 await driftDataSource.query(`SELECT to_regclass($1) AS table`, [
                     `${driftSchema}.${TYPEORM_MIGRATIONS_TABLE}`,
@@ -116,6 +145,9 @@ describeDatabase('TypeORM adoption rehearsal PostgreSQL e2e', () => {
         } finally {
             await driftDataSource.destroy();
             await dropSchema(isolatedDatabaseUrl, driftSchema);
+            if (process.env.TEST_SHADOW_DATABASE_URL) {
+                await dropSchema(process.env.TEST_SHADOW_DATABASE_URL, driftSchema);
+            }
         }
     });
 });

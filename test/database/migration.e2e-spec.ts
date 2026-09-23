@@ -1,5 +1,6 @@
 import { DataSource } from 'typeorm';
 import { randomUUID } from 'node:crypto';
+import { spawnSync } from 'node:child_process';
 import { createDataSourceOptions } from '../../src/database/data-source';
 import { TYPEORM_MIGRATIONS_TABLE } from '../../src/database/database-options';
 import { expectSchemaParity } from './schema-parity';
@@ -10,16 +11,38 @@ import { ProductEntity } from '../../src/database/entities/product.entity';
 const databaseUrl = process.env.TEST_DATABASE_URL;
 const describeDatabase = databaseUrl ? describe : describe.skip;
 
+function runMigrationCli(databaseUrl: string, schema: string) {
+    return spawnSync(
+        process.execPath,
+        [
+            require.resolve('typeorm/cli-ts-node-commonjs.js'),
+            'migration:run',
+            '-d',
+            'src/database/data-source.ts',
+        ],
+        {
+            cwd: process.cwd(),
+            encoding: 'utf8',
+            env: { ...process.env, DATABASE_URL: databaseUrl, DATABASE_SCHEMA: schema },
+        },
+    );
+}
+
 describeDatabase('TypeORM migration PostgreSQL e2e', () => {
     let dataSource: DataSource | undefined;
     let schema: string;
     let databaseUrl: string;
+    let initialMigrationResult: ReturnType<typeof runMigrationCli>;
 
     beforeAll(async () => {
         databaseUrl = process.env.TEST_DATABASE_URL!;
         schema = `test_migration_${randomUUID().replaceAll('-', '')}`;
         try {
             await createSchema(databaseUrl, schema);
+            initialMigrationResult = runMigrationCli(databaseUrl, schema);
+            if (initialMigrationResult.status !== 0) {
+                throw new Error(`${initialMigrationResult.stdout}${initialMigrationResult.stderr}`);
+            }
             dataSource = new DataSource(
                 createDataSourceOptions({
                     DATABASE_URL: databaseUrl,
@@ -27,26 +50,36 @@ describeDatabase('TypeORM migration PostgreSQL e2e', () => {
                 }),
             );
             await dataSource.initialize();
-            await dataSource.runMigrations();
+            await dataSource.query(`SET search_path TO "${schema}"`);
         } catch (error) {
-            if (dataSource?.isInitialized) await dataSource.destroy();
+            if (dataSource?.isInitialized) {
+                await dataSource.destroy();
+            }
             await dropSchema(databaseUrl, schema);
             throw error;
         }
     });
 
     afterAll(async () => {
-        if (dataSource?.isInitialized) await dataSource.destroy();
-        if (databaseUrl && schema) await dropSchema(databaseUrl, schema);
+        if (dataSource?.isInitialized) {
+            await dataSource.destroy();
+        }
+        if (databaseUrl && schema) {
+            await dropSchema(databaseUrl, schema);
+        }
     });
 
     it('migrates a clean schema with complete parity, writes, actions, idempotency, and rollback', async () => {
+        expect(initialMigrationResult.status).toBe(0);
         const tables = await dataSource!.query(
             `SELECT tablename FROM pg_tables WHERE schemaname = $1 AND tablename <> $2`,
             [schema, TYPEORM_MIGRATIONS_TABLE],
         );
         expect(tables).toHaveLength(20);
-        await expect(dataSource!.runMigrations()).resolves.toEqual([]);
+        expect(runMigrationCli(databaseUrl, schema).status).toBe(0);
+        expect(
+            runMigrationCli(databaseUrl, `test_missing_${randomUUID().replaceAll('-', '')}`).status,
+        ).not.toBe(0);
         await expectSchemaParity(dataSource!);
 
         await dataSource!.query(`
@@ -83,7 +116,9 @@ describeDatabase('TypeORM migration PostgreSQL e2e', () => {
             ),
         ).resolves.toBeDefined();
         await expect(
-            dataSource!.query(`DELETE FROM users WHERE id = '00000000-0000-0000-0000-000000000001'`),
+            dataSource!.query(
+                `DELETE FROM users WHERE id = '00000000-0000-0000-0000-000000000001'`,
+            ),
         ).resolves.toBeDefined();
         expect(
             await dataSource!.query(
@@ -125,9 +160,20 @@ describeDatabase('TypeORM migration PostgreSQL e2e', () => {
         await new Promise((resolve) => setTimeout(resolve, 5));
         timestampProduct.name = 'Updated timestamp product';
         const updatedTimestampProduct = await productRepository.save(timestampProduct);
-        expect(updatedTimestampProduct.updatedAt.getTime()).toBeGreaterThan(insertedUpdatedAt.getTime());
+        expect(updatedTimestampProduct.updatedAt.getTime()).toBeGreaterThan(
+            insertedUpdatedAt.getTime(),
+        );
 
         await dataSource!.query(`CREATE TABLE migration_sentinel (id INTEGER PRIMARY KEY)`);
+        await dataSource!.query(`CREATE VIEW migration_guard AS SELECT id FROM users`);
+
+        await expect(dataSource!.undoLastMigration()).rejects.toThrow();
+        expect(
+            await dataSource!.query(`SELECT to_regclass($1) AS table`, [
+                `${schema}.migration_guard`,
+            ]),
+        ).toEqual([{ table: 'migration_guard' }]);
+        await dataSource!.query(`DROP VIEW migration_guard`);
 
         await dataSource!.undoLastMigration();
         const rolledBackTables = await dataSource!.query(

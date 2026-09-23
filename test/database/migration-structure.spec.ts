@@ -64,7 +64,8 @@ describe('initial TypeORM migration', () => {
         ];
 
         for (const table of tables) {
-            expect(migrationSource).toContain(`DROP TABLE IF EXISTS "${table}" CASCADE`);
+            expect(migrationSource).toContain(`DROP TABLE IF EXISTS "${table}"`);
         }
+        expect(migrationSource).not.toMatch(/DROP TABLE IF EXISTS[^;]+CASCADE/);
     });
 });

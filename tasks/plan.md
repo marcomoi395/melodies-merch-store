@@ -1,5 +1,7 @@
 # Implementation Plan: Prisma-to-TypeORM Persistence Migration Foundation
 
+> Status: superseded. The canonical tracker is `.scratch/typeorm-foundation-repair/`; its spec and all four issues are resolved. This plan remains historical context only.
+
 ## Overview
 
 Implement the first foundation phase of the eventual full Prisma replacement from `SPEC.md`: TypeORM 0.3.x configuration, entities for all 20 Prisma models, a complete PostgreSQL initial migration, safe existing-database adoption, and database-backed verification. Existing feature services/controllers remain Prisma-backed until a later rewrite phase.
