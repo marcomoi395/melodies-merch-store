@@ -47,27 +47,29 @@ test/
 
 ### Service Tests
 
-Services contain business logic and interact with TypeORMService. Mock all dependencies.
+Services contain business logic and interact with injected TypeORM repositories. Mock repositories at the service boundary.
 
 ```typescript
 import { Test, TestingModule } from '@nestjs/testing';
 import { ModuleService } from './module.service';
-import { TypeORMService } from 'src/typeorm/typeorm.service';
-import { mockTypeORMService, resetTypeORMMocks } from 'test/mocks/typeorm.mock';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { UserEntity } from 'src/database/entities/user.entity';
 
 describe('ModuleService', () => {
     let service: ModuleService;
-    let typeorm: typeof mockTypeORMService;
+    let repository: typeof repositoryMock;
+
+    const repositoryMock = { findOne: jest.fn(), save: jest.fn() };
 
     beforeEach(async () => {
         resetTypeORMMocks();
 
         const module: TestingModule = await Test.createTestingModule({
-            providers: [ModuleService, { provide: TypeORMService, useValue: mockTypeORMService }],
+        providers: [ModuleService, { provide: getRepositoryToken(UserEntity), useValue: repositoryMock }],
         }).compile();
 
         service = module.get<ModuleService>(ModuleService);
-        typeorm = module.get(TypeORMService);
+        repository = module.get(getRepositoryToken(UserEntity));
     });
 
     it('should perform CRUD operation', async () => {

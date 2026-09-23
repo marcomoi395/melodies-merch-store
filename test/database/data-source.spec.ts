@@ -37,8 +37,8 @@ describe('TypeORM DataSource configuration', () => {
         };
 
         expect(packageJson.scripts.typeorm).toBe('typeorm-ts-node-commonjs');
-        expect(packageJson.scripts['migration:run']).toBeUndefined();
-        expect(packageJson.scripts['migration:revert']).toBeUndefined();
+        expect(packageJson.scripts['migration:run']).toContain('migration:run');
+        expect(packageJson.scripts['migration:revert']).toContain('migration:revert');
     });
 
     it('fails when DATABASE_URL is missing', () => {

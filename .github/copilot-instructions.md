@@ -135,8 +135,7 @@ async getProducts() { }
 
 ### TypeORM Integration
 
-- **Generated Client Location:** `generated/typeorm/` (not default `node_modules/.typeorm/`)
-- **Import Path:** `import { TypeORMClient } from '../generated/typeorm/client'`
+- **Persistence client:** Inject TypeORM repositories with `@InjectRepository`; no generated client is used.
 - **TypeORMService:** Uses `TypeORMPg` adapter, injects ConfigService for DATABASE_URL
 - **Seeding:** `typeorm/seed.ts` populates Super Admin, permissions, and base data from `seed.json`
 
@@ -164,7 +163,7 @@ App validates env vars with Joi schema in `app.module.ts` on startup.
 
 - Unit tests: `src/**/*.spec.ts` (Jest with ts-jest)
 - E2E tests: `test/**/*.e2e-spec.ts`
-- Module name mapping: `src/...` and `generated/...` paths configured in `package.json` jest config
+- Module name mapping: `src/...` paths configured in Jest.
 - TypeORM mocking: Use dependency injection to replace TypeORMService in test modules
 
 ## API Documentation
