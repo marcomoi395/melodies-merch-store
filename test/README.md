@@ -301,11 +301,12 @@ it('should return paginated results', async () => {
 
 ```typescript
 it('should execute in transaction', async () => {
-    typeorm.$transaction.mockImplementation((fn) => fn(typeorm));
+    const entityManager = {};
+    const dataSource = { transaction: jest.fn((fn) => fn(entityManager)) };
 
     await service.methodWithTransaction();
 
-    expect(typeorm.$transaction).toHaveBeenCalled();
+    expect(dataSource.transaction).toHaveBeenCalled();
 });
 ```
 
