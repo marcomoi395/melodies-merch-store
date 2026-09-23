@@ -21,10 +21,7 @@ export function getIsolatedDatabaseTarget(
     const allowedDatabases = environment.TEST_DATABASE_NAME_ALLOWLIST?.split(',').map((name) =>
         name.trim(),
     );
-    if (
-        !dedicatedDatabasePattern.test(databaseName) &&
-        !allowedDatabases?.includes(databaseName)
-    ) {
+    if (!dedicatedDatabasePattern.test(databaseName) && !allowedDatabases?.includes(databaseName)) {
         throw new Error(
             'TEST_DATABASE_URL must target a dedicated test database (test_* or *_test), or be listed in TEST_DATABASE_NAME_ALLOWLIST',
         );

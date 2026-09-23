@@ -56,7 +56,7 @@ export class ArtistsService {
             throw new NotFoundException('Artist not found');
         }
 
-        const { productArtists, ...restData } = result;
+        const { productArtists, metadata: _metadata, ...restData } = result;
 
         // Calculate maxPrice for each product
         const mappedData = productArtists

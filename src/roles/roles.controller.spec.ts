@@ -96,7 +96,11 @@ describe('RolesController', () => {
                 new Error('Role with this name already exists'),
             );
             await expect(
-                controller.createNewRoleForAdmin({ name: 'Admin', description: '' }),
+                controller.createNewRoleForAdmin({
+                    name: 'Admin',
+                    description: '',
+                    permissionIds: [],
+                }),
             ).rejects.toThrow('Role with this name already exists');
         });
     });
@@ -126,7 +130,7 @@ describe('RolesController', () => {
 
         it('should propagate errors from service', async () => {
             mockRolesService.updateRoleForAdmin.mockRejectedValue(new Error('Role not found'));
-            await expect(controller.updateRoleForAdmin({}, 'invalid_id')).rejects.toThrow(
+            await expect(controller.updateRoleForAdmin({} as any, 'invalid_id')).rejects.toThrow(
                 'Role not found',
             );
         });

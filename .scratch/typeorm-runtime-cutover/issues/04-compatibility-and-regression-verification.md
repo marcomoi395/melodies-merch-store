@@ -1,5 +1,5 @@
 Type: task
-Status: open
+Status: resolved
 
 Blocked by: 02-feature-services-to-typeorm, 03-seed-and-operational-cutover
 

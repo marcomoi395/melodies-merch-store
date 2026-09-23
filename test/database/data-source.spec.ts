@@ -15,8 +15,8 @@ describe('TypeORM DataSource configuration', () => {
         });
 
         expect(options.type).toBe('postgres');
-        expect(options.url).toBe('postgresql://localhost/melodies');
-        expect(options.schema).toBe('test_data_source');
+        expect((options as any).url).toBe('postgresql://localhost/melodies');
+        expect((options as any).schema).toBe('test_data_source');
         expect(options.migrationsTableName).toBe(TYPEORM_MIGRATIONS_TABLE);
         expect(options.synchronize).toBe(false);
         expect(options.migrations).toEqual(

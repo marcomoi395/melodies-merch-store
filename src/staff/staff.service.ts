@@ -12,7 +12,7 @@ import { RegisterStaffDto } from './dto/register-staff.dto';
 import * as bcrypt from 'bcryptjs';
 import { formatPermission } from 'src/shared/helper/formatUserResponse';
 import { UpdateStaffDto } from './dto/update-staff.dto';
-import { DataSource, In, IsNull, Not, Repository } from 'typeorm';
+import { DataSource, In, IsNull, Repository } from 'typeorm';
 
 @Injectable()
 export class StaffService {
@@ -23,10 +23,15 @@ export class StaffService {
     ) {}
 
     async getAllStaff() {
-        const staff = await this.users.find({
-            where: { status: Not('deleted') },
-            relations: { userRoles: { role: { rolePermissions: { permission: true } } } },
-        });
+        const staff = await this.users
+            .createQueryBuilder('user')
+            .leftJoinAndSelect('user.userRoles', 'userRole')
+            .leftJoinAndSelect('userRole.role', 'role')
+            .leftJoinAndSelect('role.rolePermissions', 'rolePermission')
+            .leftJoinAndSelect('rolePermission.permission', 'permission')
+            .where('user.status != :status', { status: 'deleted' })
+            .andWhere('userRole.userId IS NOT NULL')
+            .getMany();
 
         return staff.map((user) => formatPermission(user));
     }

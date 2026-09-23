@@ -99,11 +99,11 @@ describe('OrderAdminController', () => {
 
     describe('changeOrderStatusForAdmin', () => {
         it('should update order status', async () => {
-            const updatedOrder = { ...mockOrder, status: 'shipped' };
+            const updatedOrder = { ...mockOrder, status: 'shipped' } as any;
             mockOrderService.changeOrderStatusForAdmin.mockResolvedValue(updatedOrder);
 
             const result = await controller.changeOrderStatusForAdmin(
-                { status: 'shipped' },
+                { status: 'shipped' } as any,
                 'order_123',
             );
 
@@ -120,7 +120,7 @@ describe('OrderAdminController', () => {
                 new Error('Invalid status transition'),
             );
             await expect(
-                controller.changeOrderStatusForAdmin({ status: 'invalid' }, 'order_123'),
+                controller.changeOrderStatusForAdmin({ status: 'invalid' } as any, 'order_123'),
             ).rejects.toThrow('Invalid status transition');
         });
     });

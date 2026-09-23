@@ -37,8 +37,6 @@ test/
 │   └── user.factory.ts
 ├── helpers/           # Test utilities
 │   └── test-helpers.ts
-├── mocks/            # Mock objects
-│   └── typeorm.mock.ts
 ├── jest-e2e.json     # E2E test configuration
 └── README.md         # This file
 ```
@@ -62,10 +60,13 @@ describe('ModuleService', () => {
     const repositoryMock = { findOne: jest.fn(), save: jest.fn() };
 
     beforeEach(async () => {
-        resetTypeORMMocks();
+        jest.clearAllMocks();
 
         const module: TestingModule = await Test.createTestingModule({
-        providers: [ModuleService, { provide: getRepositoryToken(UserEntity), useValue: repositoryMock }],
+            providers: [
+                ModuleService,
+                { provide: getRepositoryToken(UserEntity), useValue: repositoryMock },
+            ],
         }).compile();
 
         service = module.get<ModuleService>(ModuleService);
@@ -74,11 +75,11 @@ describe('ModuleService', () => {
 
     it('should perform CRUD operation', async () => {
         const mockData = { id: '1', name: 'Test' };
-        typeorm.model.findUnique.mockResolvedValue(mockData);
+        repository.findOneBy.mockResolvedValue(mockData);
 
         const result = await service.findById('1');
 
-        expect(typeorm.model.findUnique).toHaveBeenCalledWith({ where: { id: '1' } });
+        expect(repository.findOneBy).toHaveBeenCalledWith({ id: '1' });
         expect(result).toEqual(mockData);
     });
 });
@@ -217,31 +218,18 @@ const user = UserFactory.create({ email: 'custom@example.com' });
 const product = ProductFactory.create({ name: 'Custom Product' });
 ```
 
-### Mocks (`test/mocks/`)
-
-Pre-configured mock objects:
-
-```typescript
-import { mockTypeORMService, resetTypeORMMocks } from 'test/mocks/typeorm.mock';
-
-// Use in tests
-beforeEach(() => {
-    resetTypeORMMocks();
-});
-```
-
 ## Best Practices
 
 ### General
 
 1. **Test Isolation**: Each test should be independent and not rely on other tests
-2. **Reset Mocks**: Always reset mocks between tests with `resetTypeORMMocks()` or `jest.clearAllMocks()`
+2. **Reset Mocks**: Always reset mocks between tests with `jest.clearAllMocks()`
 3. **Descriptive Names**: Use clear, descriptive test names that explain what is being tested
 4. **Arrange-Act-Assert**: Structure tests with setup, execution, and verification phases
 
 ### Unit Tests
 
-1. **Mock External Dependencies**: Mock TypeORMService, external APIs, and other services
+1. **Mock External Dependencies**: Mock injected repositories, external APIs, and other services
 2. **Test Business Logic**: Focus on testing business rules and edge cases
 3. **Verify Method Calls**: Use `expect(mock).toHaveBeenCalledWith(...)` to verify interactions
 4. **Test Error Cases**: Always test error scenarios (NotFoundException, ValidationError, etc.)
@@ -276,11 +264,11 @@ All API endpoints return standardized responses:
 
 ### Testing Decimal Fields
 
-TypeORM returns Decimal objects. Use `@DecimalToNumber()` decorator in response DTOs:
+PostgreSQL decimal columns are exposed as strings by TypeORM. Response DTOs convert them explicitly:
 
 ```typescript
 it('should convert Decimal to number', () => {
-    const product = { price: new TypeORM.Decimal(99.99) };
+    const product = { price: '99.99' };
     const dto = plainToInstance(ProductResponseDto, product, {
         excludeExtraneousValues: true,
     });
@@ -292,10 +280,10 @@ it('should convert Decimal to number', () => {
 
 ```typescript
 it('should return paginated results', async () => {
-    typeorm.model.findMany.mockResolvedValue([
+    repository.find.mockResolvedValue([
         /* items */
     ]);
-    typeorm.model.count.mockResolvedValue(25);
+    repository.count.mockResolvedValue(25);
 
     const result = await service.findAll({ page: 2, limit: 10 });
 

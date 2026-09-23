@@ -2,7 +2,8 @@ const { readdirSync, readFileSync, statSync } = require('node:fs');
 const { join, relative, resolve } = require('node:path');
 
 const root = resolve(process.argv[2] || process.cwd());
-const ignored = new Set(['.git', '.scratch', 'coverage', 'dist', 'node_modules', 'redis_data']);
+const ignored = new Set(['.git', 'coverage', 'dist', 'node_modules', 'redis_data']);
+const trackerRoot = resolve(root, '.scratch');
 const legacyOrm = ['pris', 'ma'].join('');
 const forbidden = [
     new RegExp(`@${legacyOrm}/`, 'i'),
@@ -16,12 +17,19 @@ function files(directory) {
     return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
         if (ignored.has(entry.name)) return [];
         const file = join(directory, entry.name);
-        return entry.isDirectory() ? files(file) : statSync(file).isFile() ? [file] : [];
+        if (entry.isDirectory()) return files(file);
+        if (!statSync(file).isFile()) return [];
+        if (
+            file.startsWith(`${trackerRoot}/`) &&
+            /^Status:\s*resolved\b/im.test(readFileSync(file, 'utf8').slice(0, 1000))
+        ) {
+            return [];
+        }
+        return [file];
     });
 }
 
 const violations = files(root)
-    .filter((file) => !file.endsWith('.lock'))
     .flatMap((file) => {
         const content = readFileSync(file, 'utf8');
         return forbidden.some((pattern) => pattern.test(content)) ? [relative(root, file)] : [];

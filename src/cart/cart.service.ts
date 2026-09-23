@@ -15,29 +15,36 @@ export class CartService {
     ) {}
 
     async getCart(userId: string) {
-        const cart = await this.carts.findOne({
-            where: { userId },
-            relations: {
+        return this.dataSource.transaction(async (tx) => {
+            const relations = {
                 cartItems: {
                     productVariant: { attributes: true },
                     product: { category: true, productArtists: { artist: true } },
                 },
-            },
-        });
-        if (cart) {
+            } as const;
+            let cart = await tx.findOne(CartEntity, { where: { userId }, relations });
+            if (!cart) {
+                await tx.upsert(CartEntity, { userId }, ['userId']);
+                cart = await tx.findOneOrFail(CartEntity, { where: { userId }, relations });
+            }
             return cart;
-        }
-
-        return this.carts.save(this.carts.create({ userId }));
+        });
     }
 
     async addItemToCart(userId: string, data: AddToCartDto) {
         const { productId, productVariantId, quantity } = data;
 
         await this.dataSource.transaction(async (tx) => {
-            let cart = await tx.findOneBy(CartEntity, { userId });
+            let cart = await tx.findOne(CartEntity, {
+                where: { userId },
+                lock: { mode: 'pessimistic_write' },
+            });
             if (!cart) {
-                cart = await tx.save(CartEntity, { userId });
+                await tx.upsert(CartEntity, { userId }, ['userId']);
+                cart = await tx.findOneOrFail(CartEntity, {
+                    where: { userId },
+                    lock: { mode: 'pessimistic_write' },
+                });
             }
 
             const productVariant = await tx.findOne(ProductVariantEntity, {
@@ -65,12 +72,19 @@ export class CartService {
             }
 
             if (currentCartItemQuantity) {
-                await tx.increment(
-                    CartItemEntity,
-                    { id: currentCartItemQuantity.id },
-                    'quantity',
-                    quantity,
-                );
+                const result = await tx
+                    .createQueryBuilder()
+                    .update(CartItemEntity)
+                    .set({ quantity: () => 'quantity + :quantity' })
+                    .where('id = :id AND quantity + :quantity <= :stock', {
+                        id: currentCartItemQuantity.id,
+                        quantity,
+                        stock: productVariant.stockQuantity ?? 0,
+                    })
+                    .execute();
+                if (!result.affected) {
+                    throw new BadRequestException('Requested quantity exceeds available stock');
+                }
             } else {
                 await tx.save(CartItemEntity, {
                     cartId: cart.id,

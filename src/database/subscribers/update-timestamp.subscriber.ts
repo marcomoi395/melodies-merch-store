@@ -1,9 +1,4 @@
-import {
-    EntitySubscriberInterface,
-    EventSubscriber,
-    InsertEvent,
-    UpdateEvent,
-} from 'typeorm';
+import { EntitySubscriberInterface, EventSubscriber, InsertEvent, UpdateEvent } from 'typeorm';
 
 @EventSubscriber()
 export class UpdateTimestampSubscriber implements EntitySubscriberInterface {
@@ -20,9 +15,13 @@ export class UpdateTimestampSubscriber implements EntitySubscriberInterface {
         propertyName: string | undefined,
         replace = false,
     ): void {
-        if (!entity || !propertyName) return;
+        if (!entity || !propertyName) {
+            return;
+        }
 
         const record = entity as Record<string, unknown>;
-        if (replace || record[propertyName] === undefined) record[propertyName] = new Date();
+        if (replace || record[propertyName] === undefined) {
+            record[propertyName] = new Date();
+        }
     }
 }

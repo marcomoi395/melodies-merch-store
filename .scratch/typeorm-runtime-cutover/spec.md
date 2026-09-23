@@ -1,6 +1,6 @@
 # Complete the TypeORM Runtime Cutover
 
-Status: ready-for-agent
+Status: resolved
 
 ## Problem Statement
 

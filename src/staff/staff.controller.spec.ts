@@ -112,7 +112,7 @@ describe('StaffController', () => {
         it('should update staff member', async () => {
             const updateDto = {
                 fullName: 'Updated Name',
-            };
+            } as any;
 
             const updatedStaff = {
                 ...mockStaff,
@@ -133,7 +133,7 @@ describe('StaffController', () => {
 
         it('should propagate errors from service', async () => {
             mockStaffService.updateStaffForAdmin.mockRejectedValue(new Error('Staff not found'));
-            await expect(controller.updateStaffForAdmin({}, 'invalid_id')).rejects.toThrow(
+            await expect(controller.updateStaffForAdmin({} as any, 'invalid_id')).rejects.toThrow(
                 'Staff not found',
             );
         });

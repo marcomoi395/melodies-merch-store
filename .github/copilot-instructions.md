@@ -136,8 +136,8 @@ async getProducts() { }
 ### TypeORM Integration
 
 - **Persistence client:** Inject TypeORM repositories with `@InjectRepository`; no generated client is used.
-- **TypeORMService:** Uses `TypeORMPg` adapter, injects ConfigService for DATABASE_URL
-- **Seeding:** `typeorm/seed.ts` populates Super Admin, permissions, and base data from `seed.json`
+- **Data access:** Inject TypeORM repositories with `@InjectRepository`; use `DataSource.transaction()` for multi-repository writes.
+- **Seeding:** `src/database/seed.ts` populates Super Admin, permissions, and base data.
 
 ### Shared Utilities
 
@@ -164,7 +164,7 @@ App validates env vars with Joi schema in `app.module.ts` on startup.
 - Unit tests: `src/**/*.spec.ts` (Jest with ts-jest)
 - E2E tests: `test/**/*.e2e-spec.ts`
 - Module name mapping: `src/...` paths configured in Jest.
-- TypeORM mocking: Use dependency injection to replace TypeORMService in test modules
+- TypeORM mocking: Use dependency injection to replace repository tokens in test modules.
 
 ## API Documentation
 
@@ -181,19 +181,19 @@ App validates env vars with Joi schema in `app.module.ts` on startup.
 3. Create `controllers/[feature].public.controller.ts` and `controllers/[feature].admin.controller.ts`
 4. Create DTOs in `dto/` (create, update, get, response)
 5. Add guards to admin controller: `@UseGuards(AuthGuard('jwt'), PermissionGuard)`
-6. Add permissions in `typeorm/seed.ts` (PermissionKey enum)
+6. Add permissions in `src/database/seed.ts` (PermissionKey enum)
 7. Import module in `app.module.ts`
 
 ### Adding New Permissions
 
-1. Add enum entry in `typeorm/seed.ts` (PermissionKey)
+1. Add enum entry in `src/database/seed.ts` (PermissionKey)
 2. Add to `PERMISSIONS` array in seed file
-3. Run `npx typeorm db seed` to sync to database
+3. Run `npm run seed` to sync to database
 4. Use `@RequiredPermission(resource, action)` on controller endpoints
 
 ### Database Schema Changes
 
-1. Modify `typeorm/schema.typeorm`
-2. Create migration: `npx typeorm migrate dev --name [description]`
-3. Generate client: `npx typeorm generate`
-4. Update seed data if needed: Edit `typeorm/seed.ts` or `typeorm/seed.json`
+1. Add or modify entities under `src/database/entities/`.
+2. Add a TypeORM migration under `src/database/migrations/`.
+3. Run `npm run migration:run` against the target database.
+4. Update seed data if needed in `src/database/seed.ts`.

@@ -26,4 +26,4 @@ COPY --from=build /app/openapi.yaml ./
 
 EXPOSE 3000
 
-CMD [ "sh", "-c", "node node_modules/typeorm/cli.js migration:run -d dist/src/database/data-source.js && node dist/src/database/seed.js && node dist/src/main" ]
+CMD [ "sh", "-c", "node node_modules/typeorm/cli.js migration:run -d dist/database/data-source.js && node dist/database/seed.js && node dist/main.js" ]

@@ -54,7 +54,6 @@ export function createRedisMock() {
  * Returns the app, module, and the actual JWT secret used by the app.
  */
 export async function createTestApp(
-    repositoryMock: any,
     redisMock?: any,
 ): Promise<{ app: INestApplication; module: TestingModule; jwtSecret: string }> {
     const redis = redisMock ?? createRedisMock();

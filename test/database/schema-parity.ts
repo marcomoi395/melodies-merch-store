@@ -31,7 +31,9 @@ const expectedType = (
     | 'datetime_precision'
 > => {
     const match = /^(\w+)(?:\((\d+)(?:,(\d+))?\))?$/.exec(type);
-    if (!match) throw new Error(`Unsupported inventory type: ${type}`);
+    if (!match) {
+        throw new Error(`Unsupported inventory type: ${type}`);
+    }
 
     const [, base, first, second] = match;
     switch (base) {
@@ -79,13 +81,17 @@ const expectedType = (
 };
 
 const foreignKeyAction = (actionCode: string): 'CASCADE' | 'SET NULL' => {
-    if (actionCode === 'c') return 'CASCADE';
-    if (actionCode === 'n') return 'SET NULL';
+    if (actionCode === 'c') {
+        return 'CASCADE';
+    }
+    if (actionCode === 'n') {
+        return 'SET NULL';
+    }
     throw new Error(`Unsupported PostgreSQL foreign-key action: ${actionCode}`);
 };
 
 export async function expectSchemaParity(dataSource: DataSource): Promise<void> {
-    const schema = dataSource.options.schema as string;
+    const schema = (dataSource.options as any).schema as string;
     const columns = await dataSource.query<ColumnRow[]>(
         `SELECT table_name, column_name, data_type, character_maximum_length, numeric_precision,
                 numeric_scale, datetime_precision, is_nullable, column_default

@@ -177,6 +177,20 @@ export class OrderService {
                 }
             }
             if (data.appliedVoucher) {
+                const discount = await manager.findOne(DiscountEntity, {
+                    where: { code: data.appliedVoucher, isActive: true },
+                    lock: { mode: 'pessimistic_write' },
+                });
+                if (!discount) {
+                    throw new BadRequestException('Invalid voucher code');
+                }
+                if (
+                    discount.usageLimit !== null &&
+                    discount.usedCount !== null &&
+                    discount.usedCount >= discount.usageLimit
+                ) {
+                    throw new BadRequestException('Voucher code usage limit has been reached');
+                }
                 await manager.increment(
                     DiscountEntity,
                     { code: data.appliedVoucher },

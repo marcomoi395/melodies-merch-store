@@ -41,9 +41,9 @@ beforeEach(async () => {
 3. **Default pagination** — call with `{}`, assert `findMany` called with `take: 20, skip: 0`, assert `meta.limit: 20, meta.currentPage: 1`
 4. **Pagination skip math** — page 2, limit 10 → assert `findMany` called with `skip: 10`
 
-### findUnique / Detail Tests
+### Repository / Detail Tests
 
-1. **Happy path** — assert `findUnique` called with `expect.objectContaining({ where: { slug: '...', deletedAt: null } })`, assert result structure
+1. **Happy path** — assert `findOne`/`findOneBy` receives the expected criteria, assert result structure
 2. **Not found** — mock returns `null` → `rejects.toThrow(NotFoundException)`
 3. **Computed field tests** — test service-level calculations (e.g. `maxPrice`):
     - With discount: `effectivePrice = originalPrice * (1 - discountPercent / 100)`
@@ -53,38 +53,30 @@ beforeEach(async () => {
 
 ### Create Tests
 
-1. **Happy path** — assert `typeorm.model.create` called with `expect.objectContaining({ data: expect.objectContaining({ field, slug: expect.any(String) }) })`, assert result fields
-2. **Slug generation** — assert `create` called with `expect.objectContaining({ data: expect.objectContaining({ slug: 'generated-slug' }) })`
-3. **P2002 → ConflictException**:
+1. **Happy path** — assert `create`/`save` receives the expected entity fields, assert result fields
+2. **Slug generation** — assert the saved entity contains the generated slug
+3. **Unique violation → ConflictException** — translate the database driver error at the service boundary
 
-    ```ts
-    new TypeORM.TypeORMClientKnownRequestError('Unique constraint failed', {
-        code: 'P2002',
-        clientVersion: '5.0.0',
-        meta: { target: ['slug'] },
-    });
-    ```
-
-4. **Non-P2002 error rethrow** — `new Error('Unexpected DB error')` → `rejects.toThrow('Unexpected DB error')`
+4. **Unknown database error** — rethrow the original error
 
 ### Update Tests
 
-1. **Happy path** — assert `update` called with `{ where: { id }, data: expect.objectContaining({...}) }`, assert result
-2. **P2025 → NotFoundException**: `new TypeORM.TypeORMClientKnownRequestError('...', { code: 'P2025', clientVersion: '5.0.0' })`
-3. **P2002 → ConflictException** (same shape as create, P2002)
+1. **Happy path** — assert `save` receives the updated entity, assert result
+2. **Not found → NotFoundException**: repository returns `null`
+3. **Unique violation → ConflictException**: repository save rejects with a unique constraint error
 4. **Slug not updated when stageName absent** — assert `update` called with `expect.not.objectContaining({ slug: expect.anything() })`
 5. **Non-TypeORM error rethrow** — `new Error('...')` → assert original message thrown
 
 ### Delete Tests (soft/hard)
 
-1. **NotFoundException** — `findUnique` returns `null` → `rejects.toThrow(NotFoundException)`
-2. **Soft delete when used in orders** — `findUnique` returns record, `relatedModel.findFirst` returns an item → `update` called with `expect.objectContaining({ status: 'deleted' })`, `delete` NOT called
-3. **Hard delete when not in orders** — `relatedModel.findFirst` returns `null` → `delete` called with `{ where: { id } }`, `update` NOT called
-4. **Basic happy path** — assert `findUnique` called with `{ where: { id } }` (smoke test)
+1. **NotFoundException** — `findOne`/`findOneBy` returns `null` → `rejects.toThrow(NotFoundException)`
+2. **Soft delete when used in orders** — repository returns record and relation exists → `save` called with a deleted status
+3. **Hard delete when not in orders** — relation absent → `remove`/`delete` called for the record
+4. **Basic happy path** — assert the repository receives the expected TypeORM criteria
 
 ### TypeORM Mock Reset Rule
 
-- **Never reassign** a mock property object inline inside a test (e.g. `mockTypeORMService.orderItem = {...}`).
+- **Never reassign** a mock repository object inline inside a test.
 - Always use `.mockResolvedValue()` / `.mockRejectedValue()` on the existing `jest.fn()` reference.
 - `jest.clearAllMocks()` in `beforeEach` handles cleanup.
 
