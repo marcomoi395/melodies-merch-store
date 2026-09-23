@@ -110,7 +110,6 @@
         },
         "moduleNameMapper": {
             "^src/(.*)$": "<rootDir>/$1",
-            "^generated/(.*)$": "<rootDir>/../generated/$1",
             "^uuid$": "uuid"
         },
         "transformIgnorePatterns": [

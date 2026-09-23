@@ -12,30 +12,14 @@ Invoke a template by name (e.g. "Service Test", "Admin Controller Test", "Public
 
 ```ts
 let service: XxxService;
-let typeorm: TypeORMService;
-
-const mockTypeORMService = {
-    modelName: {
-        findMany: jest.fn(),
-        findUnique: jest.fn(),
-        count: jest.fn(),
-        create: jest.fn(),
-        update: jest.fn(),
-        delete: jest.fn(),
-    },
-    relatedModel: {
-        findFirst: jest.fn(),
-    },
-};
+let repository: { find: jest.Mock; findOne: jest.Mock; save: jest.Mock };
 
 beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-        providers: [XxxService, { provide: TypeORMService, useValue: mockTypeORMService }],
+        providers: [XxxService, { provide: 'REPOSITORY_TOKEN', useValue: repository }],
     }).compile();
 
     service = module.get<XxxService>(XxxService);
-    typeorm = module.get<TypeORMService>(TypeORMService);
-
     jest.clearAllMocks();
 });
 ```

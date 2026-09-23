@@ -18,6 +18,6 @@ CI must provision a dedicated PostgreSQL database per job (or per test worker), 
 
 The migration e2e tests are skipped when `TEST_DATABASE_URL` is absent, so unit and metadata tests remain runnable without PostgreSQL. They must not be changed to target `DATABASE_URL` from a developer's application environment.
 
-## Legacy mocked e2e tests
+## API e2e tests
 
-Run legacy TypeORM-mocked e2e tests with `npm run test:e2e`. This command sets `TYPEORM_ENABLED=false`, preventing TypeORM initialization while the TypeORM and Redis providers are mocked.
+Run API e2e tests with `npm run test:e2e`. They use the TypeORM application wiring; database-backed suites remain isolated through `npm run test:database`.

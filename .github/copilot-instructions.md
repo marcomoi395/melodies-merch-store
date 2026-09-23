@@ -9,9 +9,8 @@ This is a NestJS backend for an e-commerce platform selling music products and m
 npm install
 
 # Database setup (after configuring .env)
-npx typeorm migrate dev          # Run migrations
-npx typeorm db seed              # Seed initial data (Super Admin, Categories)
-npx typeorm generate             # Generate TypeORM Client (output: generated/typeorm/)
+    npm run migration:run            # Run TypeORM migrations
+    npm run seed                     # Seed initial data (Super Admin, Categories)
 
 # Development
 npm run start:dev               # Watch mode on port 3000
@@ -62,7 +61,7 @@ src/[feature]/
 ### Core Modules
 
 - **auth/** - JWT & local authentication strategies, session management
-- **typeorm/** - TypeORMService (extends TypeORMClient with TypeORMPg adapter)
+- **database/** - TypeORM DataSource, entities, migrations, and seed
 - **redis/** - RedisService for session storage
 - **permissions/** - RBAC system with PermissionGuard
 - **roles/** - Role management

@@ -2,7 +2,7 @@ const { readdirSync, readFileSync, statSync } = require('node:fs');
 const { join, relative, resolve } = require('node:path');
 
 const root = resolve(process.argv[2] || process.cwd());
-const ignored = new Set(['.git', '.scratch', 'coverage', 'dist', 'node_modules']);
+const ignored = new Set(['.git', '.scratch', 'coverage', 'dist', 'node_modules', 'redis_data']);
 const legacyOrm = ['pris', 'ma'].join('');
 const forbidden = [
     new RegExp(`@${legacyOrm}/`, 'i'),
