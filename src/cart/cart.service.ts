@@ -1,70 +1,26 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CartItemEntity } from 'src/database/entities/cart-item.entity';
+import { CartEntity } from 'src/database/entities/cart.entity';
+import { ProductVariantEntity } from 'src/database/entities/product-variant.entity';
+import { DataSource, IsNull, Repository } from 'typeorm';
 import { AddToCartDto } from './dto/add-to-cart.dto';
 
 @Injectable()
 export class CartService {
-    constructor(private prisma: PrismaService) {}
+    constructor(
+        @InjectRepository(CartEntity) private carts: Repository<CartEntity>,
+        @InjectRepository(CartItemEntity) private cartItems: Repository<CartItemEntity>,
+        private dataSource: DataSource,
+    ) {}
 
     async getCart(userId: string) {
-        const cart = await this.prisma.cart.findFirst({
+        const cart = await this.carts.findOne({
             where: { userId },
-            select: {
-                id: true,
-                userId: true,
+            relations: {
                 cartItems: {
-                    select: {
-                        id: true,
-                        cartId: true,
-                        quantity: true,
-                        productVariant: {
-                            select: {
-                                id: true,
-                                name: true,
-                                originalPrice: true,
-                                discountPercent: true,
-                                isPreorder: true,
-                                stockQuantity: true,
-                                attributes: {
-                                    select: {
-                                        key: true,
-                                        value: true,
-                                    },
-                                },
-                            },
-                        },
-                        product: {
-                            select: {
-                                id: true,
-                                name: true,
-                                slug: true,
-                                shortDescription: true,
-                                productType: true,
-                                status: true,
-                                mediaGallery: true,
-                                category: {
-                                    select: {
-                                        name: true,
-                                        slug: true,
-                                    },
-                                },
-                                productArtists: {
-                                    where: {
-                                        artist: { deletedAt: null },
-                                    },
-                                    select: {
-                                        artist: {
-                                            select: {
-                                                id: true,
-                                                stageName: true,
-                                                avatarUrl: true,
-                                            },
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                    },
+                    productVariant: { attributes: true },
+                    product: { category: true, productArtists: { artist: true } },
                 },
             },
         });
@@ -72,42 +28,33 @@ export class CartService {
             return cart;
         }
 
-        return await this.prisma.cart.create({
-            data: {
-                userId,
-            },
-        });
+        return this.carts.save(this.carts.create({ userId }));
     }
 
     async addItemToCart(userId: string, data: AddToCartDto) {
         const { productId, productVariantId, quantity } = data;
 
-        await this.prisma.$transaction(async (tx) => {
-            const cart = await tx.cart.upsert({
-                where: { userId },
-                update: {},
-                create: { userId },
-            });
+        await this.dataSource.transaction(async (tx) => {
+            let cart = await tx.findOneBy(CartEntity, { userId });
+            if (!cart) {
+                cart = await tx.save(CartEntity, { userId });
+            }
 
-            const productVariant = await tx.productVariant.findUnique({
+            const productVariant = await tx.findOne(ProductVariantEntity, {
                 where: {
                     id: productVariantId,
-                    deletedAt: null,
-                    product: { deletedAt: null },
+                    deletedAt: IsNull(),
+                    product: { deletedAt: IsNull() },
                 },
-                select: { stockQuantity: true },
             });
 
             if (!productVariant) {
                 throw new NotFoundException('Product variant not found');
             }
 
-            const currentCartItemQuantity = await tx.cartItem.findFirst({
-                where: {
-                    cartId: cart.id,
-                    productVariantId,
-                },
-                select: { quantity: true },
+            const currentCartItemQuantity = await tx.findOneBy(CartItemEntity, {
+                cartId: cart.id,
+                productVariantId,
             });
 
             if (
@@ -117,49 +64,36 @@ export class CartService {
                 throw new BadRequestException('Requested quantity exceeds available stock');
             }
 
-            // 4. Upsert CartItem
-            await tx.cartItem.upsert({
-                where: {
-                    cartId_productId_productVariantId: {
-                        cartId: cart.id,
-                        productId,
-                        productVariantId,
-                    },
-                },
-                update: {
-                    quantity: { increment: quantity },
-                },
-                create: {
+            if (currentCartItemQuantity) {
+                await tx.increment(
+                    CartItemEntity,
+                    { id: currentCartItemQuantity.id },
+                    'quantity',
+                    quantity,
+                );
+            } else {
+                await tx.save(CartItemEntity, {
                     cartId: cart.id,
                     productId,
                     productVariantId,
-                    quantity: quantity,
-                },
-            });
+                    quantity,
+                });
+            }
         });
 
         return this.getCart(userId);
     }
 
     async updateCartItemQuantity(userId: string, cartItemId: string, quantity: number) {
-        await this.prisma.$transaction(async (tx) => {
-            const cartItem = await tx.cartItem.findFirst({
+        await this.dataSource.transaction(async (tx) => {
+            const cartItem = await tx.findOne(CartItemEntity, {
                 where: {
                     id: cartItemId,
                     cart: { userId },
-                    productVariant: {
-                        deletedAt: null,
-                    },
-                    product: {
-                        deletedAt: null,
-                    },
+                    productVariant: { deletedAt: IsNull() },
+                    product: { deletedAt: IsNull() },
                 },
-                include: {
-                    cart: true,
-                    productVariant: {
-                        select: { stockQuantity: true },
-                    },
-                },
+                relations: { productVariant: true },
             });
 
             if (!cartItem) {
@@ -167,35 +101,26 @@ export class CartService {
             }
 
             if (quantity <= 0) {
-                return await tx.cartItem.delete({
-                    where: { id: cartItemId },
-                });
+                return tx.delete(CartItemEntity, cartItemId);
             }
 
             if (quantity > (cartItem.productVariant?.stockQuantity ?? 0)) {
                 throw new BadRequestException('Requested quantity exceeds available stock');
             }
 
-            await tx.cartItem.update({
-                where: { id: cartItemId },
-                data: { quantity },
-            });
+            await tx.update(CartItemEntity, cartItemId, { quantity });
         });
 
         return this.getCart(userId);
     }
 
     async removeCartItem(userId: string, cartItemId: string) {
-        const cartItem = await this.prisma.cartItem.findFirst({
+        const cartItem = await this.cartItems.findOne({
             where: {
                 id: cartItemId,
                 cart: { userId },
-                productVariant: {
-                    deletedAt: null,
-                },
-                product: {
-                    deletedAt: null,
-                },
+                productVariant: { deletedAt: IsNull() },
+                product: { deletedAt: IsNull() },
             },
         });
 
@@ -203,9 +128,7 @@ export class CartService {
             throw new NotFoundException('Cart item not found');
         }
 
-        await this.prisma.cartItem.delete({
-            where: { id: cartItemId },
-        });
+        await this.cartItems.delete(cartItemId);
 
         return this.getCart(userId);
     }

@@ -1,8 +1,8 @@
 /**
- * Mock Prisma service for unit tests
+ * Legacy repository double for unit tests pending TypeORM query migration.
  */
 
-export const mockPrismaService = {
+export const mockTypeOrmRepository = {
     user: {
         findUnique: jest.fn(),
         findFirst: jest.fn(),
@@ -108,7 +108,7 @@ export const mockPrismaService = {
         count: jest.fn(),
     },
     $transaction: jest.fn((fn) =>
-        typeof fn === 'function' ? fn(mockPrismaService) : Promise.resolve(fn),
+        typeof fn === 'function' ? fn(mockTypeOrmRepository) : Promise.resolve(fn),
     ),
     $connect: jest.fn(),
     $disconnect: jest.fn(),
@@ -117,8 +117,8 @@ export const mockPrismaService = {
 /**
  * Reset all mocks between tests
  */
-export function resetPrismaMocks() {
-    Object.values(mockPrismaService).forEach((model: any) => {
+export function resetTypeOrmRepository() {
+    Object.values(mockTypeOrmRepository).forEach((model: any) => {
         if (typeof model === 'object') {
             Object.values(model).forEach((method: any) => {
                 if (typeof method?.mockReset === 'function') {

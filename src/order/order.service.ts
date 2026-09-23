@@ -1,438 +1,241 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateOrderDto } from './dto/create-order.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DiscountEntity } from 'src/database/entities/discount.entity';
+import { OrderItemEntity } from 'src/database/entities/order-item.entity';
+import { OrderEntity } from 'src/database/entities/order.entity';
+import { ProductVariantEntity } from 'src/database/entities/product-variant.entity';
+import { DataSource, In, IsNull, Repository } from 'typeorm';
 import { DiscountType } from 'src/promotion/dto/create-promotion.dto';
-import { OrderItemCreateManyInput, OrderWhereInput } from 'generated/prisma/models';
-import { Decimal } from '@prisma/client/runtime/client';
+import { CreateOrderDto } from './dto/create-order.dto';
 import { GetOrdersDto } from './dto/get-order.dto';
 import { PreviewOrderDto } from './dto/preview.dto';
 
+type OrderInput = CreateOrderDto | PreviewOrderDto;
+
 @Injectable()
 export class OrderService {
-    constructor(private prisma: PrismaService) {}
+    constructor(
+        @InjectRepository(OrderEntity) private orders: Repository<OrderEntity>,
+        @InjectRepository(ProductVariantEntity) private variants: Repository<ProductVariantEntity>,
+        @InjectRepository(DiscountEntity) private discounts: Repository<DiscountEntity>,
+        private dataSource: DataSource,
+    ) {}
 
-    async getOrdersByUserId(userId: string, query: GetOrdersDto) {
-        const { page = 1, limit = 20, startDate, endDate, status } = query;
-
-        const where: OrderWhereInput = { userId };
-
-        if (status) {
-            where.status = status;
-        }
-        if (startDate || endDate) {
-            where.createdAt = {};
-            if (startDate) {
-                where.createdAt.gte = startDate;
-            }
-            if (endDate) {
-                where.createdAt.lte = endDate;
-            }
-        }
-
-        const [orders, total] = await Promise.all([
-            this.prisma.order.findMany({
-                where,
-                take: limit,
-                skip: (page - 1) * limit,
-                include: { orderItems: true },
-            }),
-            this.prisma.order.count({ where }),
-        ]);
-
-        return {
-            data: orders,
-            meta: {
-                total,
-                page,
-                limit,
-                totalPages: Math.ceil(total / limit),
-            },
-        };
-    }
-
-    async getOrderById(orderId: string) {
-        return await this.prisma.order.findUnique({
-            where: { id: orderId },
-            include: { orderItems: true },
+    private async orderData(payload: OrderInput) {
+        const { items, appliedVoucher, ...rest } = payload;
+        const ids = items.map((item) => item.productVariantId);
+        const variants = await this.variants.find({
+            where: { id: In(ids), deletedAt: IsNull(), product: { status: 'published' } },
+            relations: { product: true },
         });
-    }
-
-    async previewOrder(payload: PreviewOrderDto) {
-        const { items, appliedVoucher, ...restData } = payload;
-
-        const productVariantIds = items.map((i) => i.productVariantId);
-        const productVariants = await this.prisma.productVariant.findMany({
-            where: {
-                id: { in: productVariantIds },
-                deletedAt: null,
-                product: {
-                    status: 'published',
-                },
-            },
-            include: {
-                product: true,
-            },
-        });
-
-        if (productVariants.length !== items.length) {
+        if (variants.length !== items.length) {
             throw new BadRequestException('One or more product variants are invalid');
         }
-
-        let subtotal = new Decimal(0);
-        const orderItemsPreview: OrderItemCreateManyInput[] = [];
-
+        let subtotal = 0;
+        const orderItems: Partial<OrderItemEntity>[] = [];
+        const stock: { id: string; quantity: number }[] = [];
         for (const item of items) {
-            const productVariant = productVariants.find((p) => p.id === item.productVariantId);
-
-            if (!productVariant) {
+            const variant = variants.find((candidate) => candidate.id === item.productVariantId);
+            if (!variant || !variant.product) {
                 throw new BadRequestException(
                     'Invalid product variant ID: ' + item.productVariantId,
                 );
             }
-
-            if ((productVariant.stockQuantity ?? 0) < item.quantity) {
+            if ((variant.stockQuantity ?? 0) < item.quantity) {
                 throw new BadRequestException(
-                    `Sản phẩm ${productVariant.name} chỉ còn lại ${productVariant.stockQuantity}, không đủ số lượng yêu cầu.`,
+                    `Insufficient stock for product variant ID: ${item.productVariantId}`,
                 );
             }
-
-            const originalPrice = new Decimal(productVariant.originalPrice);
-            const discountPercent = new Decimal(productVariant.discountPercent || 0);
-
-            // Price = Original * (1 - Percent/100)
-            const itemPrice = originalPrice.mul(new Decimal(100).minus(discountPercent).div(100));
-            const lineTotal = itemPrice.mul(item.quantity);
-
-            subtotal = subtotal.plus(lineTotal);
-
-            if (!productVariant.product) {
-                throw new BadRequestException(
-                    `Data integrity error: Variant ${productVariant.id} has no parent Product.`,
-                );
-            }
-
-            const orderItem = {
-                productId: productVariant.productId,
-                productVariantId: productVariant.id,
-                productName: productVariant.product.name,
-                variantName: productVariant.name,
+            const originalPrice = Number(variant.originalPrice);
+            const discountPercent = Number(variant.discountPercent ?? 0);
+            const price = originalPrice * (1 - discountPercent / 100);
+            const totalLinePrice = price * item.quantity;
+            subtotal += totalLinePrice;
+            orderItems.push({
+                productId: variant.productId,
+                productVariantId: variant.id,
+                productName: variant.product.name,
+                variantName: variant.name,
                 quantity: item.quantity,
-                price: new Decimal(itemPrice),
-                originalPrice: productVariant.originalPrice,
-                discountPercentage: productVariant.discountPercent || 0,
-                totalLinePrice: lineTotal,
-            };
-
-            orderItemsPreview.push(orderItem);
-        }
-
-        let discountAmount = new Decimal(0);
-
-        if (appliedVoucher) {
-            const code = await this.prisma.discount.findUnique({
-                where: { code: appliedVoucher, isActive: true },
+                price: String(price),
+                originalPrice: variant.originalPrice,
+                discountPercentage: String(discountPercent),
+                totalLinePrice: String(totalLinePrice),
             });
-
-            if (!code) {
+            stock.push({ id: variant.id, quantity: item.quantity });
+        }
+        let discountAmount = 0;
+        if (appliedVoucher) {
+            const discount = await this.discounts.findOneBy({
+                code: appliedVoucher,
+                isActive: true,
+            });
+            if (!discount) {
                 throw new BadRequestException('Invalid voucher code');
             }
-
             const now = new Date();
             if (
-                code?.startDate &&
-                code?.endDate &&
-                (now < code?.startDate || now > code?.endDate)
+                discount.startDate &&
+                discount.endDate &&
+                (now < discount.startDate || now > discount.endDate)
             ) {
                 throw new BadRequestException('Voucher code is not valid at this time');
             }
-
             if (
-                code.usageLimit !== null &&
-                code.usedCount !== null &&
-                code.usedCount >= code.usageLimit
+                discount.usageLimit !== null &&
+                discount.usedCount !== null &&
+                discount.usedCount >= discount.usageLimit
             ) {
                 throw new BadRequestException('Voucher code usage limit has been reached');
             }
-
-            const voucherValue = new Decimal(code.value);
-
-            if (code.type === DiscountType.FIXED) {
-                discountAmount = voucherValue;
-            } else if (code.type === DiscountType.PERCENTAGE) {
-                discountAmount = subtotal.mul(voucherValue.div(100));
-            }
-
-            if (discountAmount.greaterThan(subtotal)) {
-                discountAmount = subtotal;
-            }
+            discountAmount =
+                discount.type === DiscountType.FIXED
+                    ? Number(discount.value)
+                    : (subtotal * Number(discount.value)) / 100;
+            discountAmount = Math.min(discountAmount, subtotal);
         }
-
-        const total = subtotal.minus(discountAmount);
-
         return {
+            ...rest,
+            appliedVoucher: appliedVoucher ?? null,
             subtotal,
-            shippingFee: 0,
             discountAmount,
-            totalAmount: total,
-            appliedVoucher: appliedVoucher || null,
-            shippingAddress: restData.shippingAddress,
-            orderItems: orderItemsPreview,
+            totalAmount: subtotal - discountAmount,
+            orderItems,
+            stock,
+        };
+    }
+
+    private orderQuery(query: GetOrdersDto, userId?: string) {
+        const { status, startDate, endDate } = query;
+        const where = this.orders.createQueryBuilder('order');
+        if (userId) {
+            where.where('order.userId = :userId', { userId });
+        }
+        if (status) {
+            where.andWhere('order.status = :status', { status });
+        }
+        if (startDate) {
+            where.andWhere('order.createdAt >= :startDate', { startDate });
+        }
+        if (endDate) {
+            where.andWhere('order.createdAt <= :endDate', { endDate });
+        }
+        return where;
+    }
+
+    private async listOrders(query: GetOrdersDto, userId?: string) {
+        const { page = 1, limit = 20 } = query;
+        const [orders, total] = await Promise.all([
+            this.orderQuery(query, userId)
+                .leftJoinAndSelect('order.orderItems', 'orderItems')
+                .take(limit)
+                .skip((page - 1) * limit)
+                .getMany(),
+            this.orderQuery(query, userId).getCount(),
+        ]);
+        return { data: orders, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
+    }
+
+    async getOrdersByUserId(userId: string, query: GetOrdersDto) {
+        return this.listOrders(query, userId);
+    }
+    async getOrdersForAdmin(query: GetOrdersDto) {
+        return this.listOrders(query);
+    }
+
+    async getOrderById(orderId: string) {
+        return this.orders.findOne({ where: { id: orderId }, relations: { orderItems: true } });
+    }
+
+    async previewOrder(payload: PreviewOrderDto) {
+        const data = await this.orderData(payload);
+        return {
+            subtotal: data.subtotal,
+            shippingFee: 0,
+            discountAmount: data.discountAmount,
+            totalAmount: data.totalAmount,
+            appliedVoucher: data.appliedVoucher,
+            shippingAddress: data.shippingAddress,
+            orderItems: data.orderItems,
         };
     }
 
     async createOrder(payload: CreateOrderDto, userId: string | null = null) {
-        const { items, appliedVoucher, ...restData } = payload;
-        const productVariantIds = items.map((i) => i.productVariantId);
-        const productVariants = await this.prisma.productVariant.findMany({
-            where: {
-                id: { in: productVariantIds },
-                deletedAt: null,
-            },
-            include: {
-                product: true,
-            },
-        });
-
-        if (productVariants.length !== items.length) {
-            throw new BadRequestException('One or more product variants are invalid');
-        }
-
-        let subtotal = new Decimal(0);
-        const orderItemsData: OrderItemCreateManyInput[] = [];
-        const updateStockData: { productVariantId: string; quantity: number }[] = [];
-
-        for (const item of items) {
-            const productVariant = productVariants.find((p) => p.id === item.productVariantId);
-
-            if (!productVariant) {
-                throw new BadRequestException(
-                    'Invalid product variant ID: ' + item.productVariantId,
+        const data = await this.orderData(payload);
+        return this.dataSource.transaction(async (manager) => {
+            for (const item of data.stock) {
+                const result = await manager
+                    .createQueryBuilder()
+                    .update(ProductVariantEntity)
+                    .set({ stockQuantity: () => `stock_quantity - ${item.quantity}` })
+                    .where('id = :id AND stock_quantity >= :quantity', item)
+                    .execute();
+                if (!result.affected) {
+                    throw new BadRequestException(
+                        'Insufficient stock for product variant ID: ' + item.id,
+                    );
+                }
+            }
+            if (data.appliedVoucher) {
+                await manager.increment(
+                    DiscountEntity,
+                    { code: data.appliedVoucher },
+                    'usedCount',
+                    1,
                 );
             }
-
-            if ((productVariant.stockQuantity ?? 0) < item.quantity) {
-                throw new BadRequestException(
-                    'Insufficient stock for product variant ID: ' + item.productVariantId,
-                );
-            }
-
-            const originalPrice = new Decimal(productVariant.originalPrice);
-            const discountPercent = new Decimal(productVariant.discountPercent || 0);
-
-            // Price = Original * (1 - Percent/100)
-            const itemPrice = originalPrice.mul(new Decimal(100).minus(discountPercent).div(100));
-            const lineTotal = itemPrice.mul(item.quantity);
-
-            subtotal = subtotal.plus(lineTotal);
-
-            if (!productVariant.product) {
-                throw new BadRequestException(
-                    `Data integrity error: Variant ${productVariant.id} has no parent Product.`,
-                );
-            }
-
-            const orderItem = {
-                productId: productVariant.productId,
-                productVariantId: productVariant.id,
-                productName: productVariant.product.name,
-                variantName: productVariant.name,
-                quantity: item.quantity,
-                price: new Decimal(itemPrice),
-                originalPrice: productVariant.originalPrice,
-                discountPercentage: productVariant.discountPercent || 0,
-                totalLinePrice: lineTotal,
-            };
-
-            orderItemsData.push(orderItem);
-            updateStockData.push({
-                productVariantId: productVariant.id,
-                quantity: item.quantity,
+            const order = await manager.save(OrderEntity, {
+                userId,
+                email: payload.email,
+                fullName: payload.fullName,
+                phone: payload.phone,
+                subtotal: String(data.subtotal),
+                shippingFee: '0',
+                discountAmount: String(data.discountAmount),
+                totalAmount: String(data.totalAmount),
+                appliedVoucher: data.appliedVoucher,
+                shippingAddress: payload.shippingAddress as unknown as Record<string, unknown>,
+                paymentMethod: payload.paymentMethod,
+                note: payload.note ?? null,
             });
-        }
-
-        let discountAmount = new Decimal(0);
-
-        if (appliedVoucher) {
-            const code = await this.prisma.discount.findUnique({
-                where: { code: appliedVoucher, isActive: true },
-            });
-
-            if (!code) {
-                throw new BadRequestException('Invalid voucher code');
-            }
-
-            const now = new Date();
-            if (
-                code?.startDate &&
-                code?.endDate &&
-                (now < code?.startDate || now > code?.endDate)
-            ) {
-                throw new BadRequestException('Voucher code is not valid at this time');
-            }
-
-            if (
-                code.usageLimit !== null &&
-                code.usedCount !== null &&
-                code.usedCount >= code.usageLimit
-            ) {
-                throw new BadRequestException('Voucher code usage limit has been reached');
-            }
-
-            const voucherValue = new Decimal(code.value);
-
-            if (code.type === DiscountType.FIXED) {
-                discountAmount = voucherValue;
-            } else if (code.type === DiscountType.PERCENTAGE) {
-                discountAmount = subtotal.mul(voucherValue.div(100));
-            }
-
-            if (discountAmount.greaterThan(subtotal)) {
-                discountAmount = subtotal;
-            }
-        }
-
-        const total = subtotal.minus(discountAmount);
-
-        return await this.prisma.$transaction(async (tx) => {
-            // Update stock quantities
-            await Promise.all(
-                updateStockData.map((item) =>
-                    tx.productVariant.update({
-                        where: { id: item.productVariantId },
-                        data: {
-                            stockQuantity: {
-                                decrement: item.quantity,
-                            },
-                        },
-                    }),
-                ),
+            await manager.save(
+                OrderItemEntity,
+                data.orderItems.map((item) => ({ ...item, orderId: order.id })),
             );
-
-            // Update voucher usage count
-            if (appliedVoucher) {
-                await tx.discount.update({
-                    where: { code: appliedVoucher },
-                    data: { usedCount: { increment: 1 } },
-                });
-            }
-
-            // Create order
-            return await tx.order.create({
-                data: {
-                    userId: userId || null,
-                    email: restData.email,
-                    fullName: restData.fullName,
-                    phone: restData.phone,
-                    subtotal,
-                    shippingFee: 0,
-                    discountAmount,
-                    totalAmount: total,
-                    appliedVoucher: appliedVoucher || null,
-                    shippingAddress: restData.shippingAddress,
-                    paymentMethod: restData.paymentMethod,
-                    orderItems: {
-                        create: orderItemsData,
-                    },
-                    note: restData.note || null,
-                },
-                include: { orderItems: true },
+            return manager.findOneOrFail(OrderEntity, {
+                where: { id: order.id },
+                relations: { orderItems: true },
             });
         });
     }
 
     async cancelOrder(orderId: string, userId: string) {
-        const order = await this.prisma.order.findUnique({
-            where: { id: orderId, userId },
-        });
-
+        const order = await this.orders.findOneBy({ id: orderId, userId });
         if (!order) {
             throw new BadRequestException('Order not found');
         }
-
         if (order.status !== 'PENDING') {
             throw new BadRequestException('Only pending orders can be cancelled');
         }
-
-        return await this.prisma.order.update({
-            where: { id: orderId, userId },
-            data: {
-                status: 'CANCELLED',
-            },
-        });
-    }
-
-    async getOrdersForAdmin(query: GetOrdersDto) {
-        const { page = 1, limit = 20, startDate, endDate, status } = query;
-
-        const where: OrderWhereInput = {};
-
-        if (status) {
-            where.status = status;
-        }
-        // Lọc theo khoảng thời gian
-        if (startDate || endDate) {
-            where.createdAt = {};
-            if (startDate) {
-                where.createdAt.gte = startDate;
-            }
-            if (endDate) {
-                where.createdAt.lte = endDate;
-            }
-        }
-
-        const [orders, total] = await Promise.all([
-            this.prisma.order.findMany({
-                where,
-                take: limit,
-                skip: (page - 1) * limit,
-                include: { orderItems: true },
-            }),
-            this.prisma.order.count({ where }),
-        ]);
-
-        return {
-            data: orders,
-            meta: {
-                total,
-                page,
-                limit,
-                totalPages: Math.ceil(total / limit),
-            },
-        };
+        return this.orders.save({ ...order, status: 'CANCELLED' });
     }
 
     async getOrderDetailForAdmin(orderId: string) {
-        const order = await this.prisma.order.findUnique({
-            where: { id: orderId },
-            include: { orderItems: true },
-        });
-
+        const order = await this.getOrderById(orderId);
         if (!order) {
             throw new BadRequestException('Order not found');
         }
-
         return order;
     }
 
     async changeOrderStatusForAdmin(orderId: string, status: string) {
-        const order = await this.prisma.order.findUnique({
-            where: { id: orderId },
-            include: { orderItems: true },
-        });
-
+        const order = await this.getOrderById(orderId);
         if (!order) {
             throw new BadRequestException('Order not found');
         }
-
         if (order.status === status) {
             throw new BadRequestException('Order is already in the desired status');
         }
-
-        return await this.prisma.order.update({
-            where: { id: orderId },
-            data: {
-                status,
-            },
-        });
+        return this.orders.save({ ...order, status });
     }
 }

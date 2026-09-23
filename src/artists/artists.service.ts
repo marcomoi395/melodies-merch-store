@@ -1,24 +1,27 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ArtistEntity } from 'src/database/entities/artist.entity';
+import { OrderItemEntity } from 'src/database/entities/order-item.entity';
 import { GetArtistsDto } from './dto/get-artists.dto';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import slugify from 'slugify';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/client';
 import { UpdateArtistDto } from './dto/update-artist.dto';
+import { IsNull, Repository } from 'typeorm';
 
 @Injectable()
 export class ArtistsService {
-    constructor(private prisma: PrismaService) {}
+    constructor(
+        @InjectRepository(ArtistEntity) private artists: Repository<ArtistEntity>,
+        @InjectRepository(OrderItemEntity) private orderItems: Repository<OrderItemEntity>,
+    ) {}
 
     async getArtists(query: GetArtistsDto) {
         const { limit = 20, page = 1 } = query;
 
         const [total, artists] = await Promise.all([
-            this.prisma.artist.count(),
-            this.prisma.artist.findMany({
-                where: {
-                    deletedAt: null,
-                },
+            this.artists.count({ where: { deletedAt: IsNull() } }),
+            this.artists.find({
+                where: { deletedAt: IsNull() },
                 take: limit,
                 skip: (page - 1) * limit,
             }),
@@ -36,68 +39,14 @@ export class ArtistsService {
     }
 
     async getArtistDetail(slug: string) {
-        const result = await this.prisma.artist.findUnique({
-            where: { slug, deletedAt: null },
-            select: {
-                id: true,
-                stageName: true,
-                slug: true,
-                avatarUrl: true,
-                bio: true,
+        const result = await this.artists.findOne({
+            where: { slug, deletedAt: IsNull() },
+            relations: {
                 productArtists: {
-                    where: {
-                        product: {
-                            deletedAt: null,
-                            status: 'published',
-                        },
-                    },
-                    select: {
-                        product: {
-                            select: {
-                                id: true,
-                                name: true,
-                                slug: true,
-                                shortDescription: true,
-                                productType: true,
-                                status: true,
-                                minPrice: true,
-                                mediaGallery: true,
-                                category: {
-                                    select: {
-                                        name: true,
-                                        slug: true,
-                                    },
-                                },
-                                productArtists: {
-                                    select: {
-                                        artist: {
-                                            select: {
-                                                id: true,
-                                                stageName: true,
-                                                avatarUrl: true,
-                                            },
-                                        },
-                                    },
-                                },
-                                productVariants: {
-                                    where: { deletedAt: null },
-                                    select: {
-                                        id: true,
-                                        name: true,
-                                        originalPrice: true,
-                                        discountPercent: true,
-                                        isPreorder: true,
-                                        stockQuantity: true,
-                                        attributes: {
-                                            select: {
-                                                key: true,
-                                                value: true,
-                                            },
-                                        },
-                                    },
-                                },
-                            },
-                        },
+                    product: {
+                        category: true,
+                        productArtists: { artist: true },
+                        productVariants: { attributes: true },
                     },
                 },
             },
@@ -110,21 +59,21 @@ export class ArtistsService {
         const { productArtists, ...restData } = result;
 
         // Calculate maxPrice for each product
-        const mappedData = productArtists.map((p) => {
-            if (p.product.productVariants) {
-                const variantPrices = p.product.productVariants.map((v) =>
-                    v.discountPercent
-                        ? Number(v.originalPrice) * (1 - Number(v.discountPercent) / 100)
-                        : Number(v.originalPrice),
+        const mappedData = productArtists
+            .filter((p) => p.product && !p.product.deletedAt && p.product.status === 'published')
+            .map((p) => {
+                const variants = p.product.productVariants.filter((variant) => !variant.deletedAt);
+                const maxPrice = Math.max(
+                    ...variants.map((variant) =>
+                        variant.discountPercent
+                            ? Number(variant.originalPrice) *
+                              (1 - Number(variant.discountPercent) / 100)
+                            : Number(variant.originalPrice),
+                    ),
                 );
-
-                const maxPrice = Math.max(...variantPrices);
-
                 p.product['maxPrice'] = maxPrice;
-
                 return p;
-            }
-        });
+            });
 
         return {
             ...restData,
@@ -140,19 +89,10 @@ export class ArtistsService {
             trim: true,
         });
 
-        try {
-            return await this.prisma.artist.create({
-                data: {
-                    ...payload,
-                    slug,
-                },
-            });
-        } catch (error) {
-            if (error instanceof PrismaClientKnownRequestError && error.code === 'P2002') {
-                throw new ConflictException('Artist with this stage name already exists');
-            }
-            throw error;
+        if (await this.artists.findOneBy({ slug })) {
+            throw new ConflictException('Artist with this stage name already exists');
         }
+        return this.artists.save(this.artists.create({ ...payload, slug }));
     }
 
     async updateArtistForAdmin(id: string, payload: UpdateArtistDto) {
@@ -166,55 +106,35 @@ export class ArtistsService {
             });
         }
 
-        try {
-            return await this.prisma.artist.update({
-                where: { id },
-                data: {
-                    ...payload,
-                    ...(slug ? { slug } : {}),
-                },
-            });
-        } catch (error) {
-            if (error instanceof PrismaClientKnownRequestError && error.code === 'P2002') {
-                throw new ConflictException('Artist with this stage name already exists');
-            }
-
-            if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
-                throw new NotFoundException(`Artist with ID ${id} not found`);
-            }
-
-            throw error;
+        const artist = await this.artists.findOneBy({ id });
+        if (!artist) {
+            throw new NotFoundException(`Artist with ID ${id} not found`);
         }
+        if (slug && (await this.artists.findOneBy({ slug }))?.id !== id) {
+            throw new ConflictException('Artist with this stage name already exists');
+        }
+        return this.artists.save({ ...artist, ...payload, ...(slug && { slug }) });
     }
 
     async deleteArtistForAdmin(id: string) {
-        const findArtist = await this.prisma.artist.findUnique({ where: { id } });
+        const findArtist = await this.artists.findOneBy({ id });
         if (!findArtist) {
             throw new NotFoundException('Artist not found');
         }
 
-        const isUsedInOrders = await this.prisma.orderItem.findFirst({
-            where: {
-                product: {
-                    productArtists: {
-                        some: {
-                            artistId: id,
-                        },
-                    },
-                },
-            },
-        });
+        const isUsedInOrders = await this.orderItems
+            .createQueryBuilder('orderItem')
+            .innerJoin('orderItem.product', 'product')
+            .innerJoin('product.productArtists', 'productArtist', 'productArtist.artistId = :id', {
+                id,
+            })
+            .getOne();
 
         if (isUsedInOrders) {
-            return await this.prisma.artist.update({
-                where: { id },
-                data: {
-                    deletedAt: new Date(),
-                    status: 'deleted',
-                },
-            });
+            return this.artists.save({ ...findArtist, deletedAt: new Date(), status: 'deleted' });
         }
 
-        return await this.prisma.artist.delete({ where: { id } });
+        await this.artists.remove(findArtist);
+        return findArtist;
     }
 }

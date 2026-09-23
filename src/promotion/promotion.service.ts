@@ -4,22 +4,22 @@ import {
     Injectable,
     NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DiscountEntity } from 'src/database/entities/discount.entity';
+import { Repository } from 'typeorm';
 import { CreatePromotionDto, DiscountType } from './dto/create-promotion.dto';
 import { UpdatePromotionDto } from './dto/update-promotion.dto';
 
 @Injectable()
 export class PromotionService {
-    constructor(private prisma: PrismaService) {}
+    constructor(@InjectRepository(DiscountEntity) private discounts: Repository<DiscountEntity>) {}
 
     async getAllPromotionCodes() {
-        return this.prisma.discount.findMany();
+        return this.discounts.find();
     }
 
     async createNewPromotionCode(payload: CreatePromotionDto) {
-        const findPromotion = await this.prisma.discount.findUnique({
-            where: { code: payload.code },
-        });
+        const findPromotion = await this.discounts.findOneBy({ code: payload.code });
 
         if (findPromotion) {
             throw new ConflictException('Promotion with this code already exists');
@@ -34,17 +34,18 @@ export class PromotionService {
 
         const { startDate, endDate, ...rest } = payload;
 
-        return this.prisma.discount.create({
-            data: {
+        return this.discounts.save(
+            this.discounts.create({
                 ...rest,
+                value: String(rest.value),
                 startDate: startDate ? new Date(startDate) : null,
                 endDate: endDate ? new Date(endDate) : null,
-            },
-        });
+            }),
+        );
     }
 
     async updatePromotionCode(id: string, data: UpdatePromotionDto) {
-        const existingDiscount = await this.prisma.discount.findUnique({ where: { id } });
+        const existingDiscount = await this.discounts.findOneBy({ id });
         if (!existingDiscount) {
             throw new NotFoundException('Discount not found');
         }
@@ -59,26 +60,24 @@ export class PromotionService {
             }
         }
 
-        const { startDate, endDate, ...rest } = data;
+        const { startDate, endDate, value: _value, ...rest } = data;
 
-        return this.prisma.discount.update({
-            where: { id },
-            data: {
-                ...rest,
-                startDate: startDate ? new Date(startDate) : undefined,
-                endDate: endDate ? new Date(endDate) : undefined,
-            },
+        return this.discounts.save({
+            ...existingDiscount,
+            ...rest,
+            ...(data.value !== undefined && { value: String(data.value) }),
+            ...(startDate !== undefined && { startDate: startDate ? new Date(startDate) : null }),
+            ...(endDate !== undefined && { endDate: endDate ? new Date(endDate) : null }),
         });
     }
 
     async removePromotionCode(id: string) {
-        const existingDiscount = await this.prisma.discount.findUnique({ where: { id } });
+        const existingDiscount = await this.discounts.findOneBy({ id });
         if (!existingDiscount) {
             throw new NotFoundException('Discount not found');
         }
 
-        return this.prisma.discount.delete({
-            where: { id },
-        });
+        await this.discounts.remove(existingDiscount);
+        return existingDiscount;
     }
 }

@@ -1,7 +1,9 @@
-import { CartItem, Product, ProductVariant } from 'generated/prisma/client';
+import { CartItemEntity } from 'src/database/entities/cart-item.entity';
+import { ProductEntity } from 'src/database/entities/product.entity';
+import { ProductVariantEntity } from 'src/database/entities/product-variant.entity';
 
 export function formatCartResponse(
-    cartItem: CartItem & { product: Product; productVariant: ProductVariant },
+    cartItem: CartItemEntity & { product: ProductEntity; productVariant: ProductVariantEntity },
 ) {
     const { product, productVariant, ...itemRest } = cartItem;
 

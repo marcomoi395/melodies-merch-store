@@ -12,7 +12,10 @@ export class ProductArtistEntity {
     })
     @JoinColumn({ name: 'product_id', referencedColumnName: 'id' })
     product: ProductEntity;
-    @ManyToOne(() => ArtistEntity, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+    @ManyToOne(() => ArtistEntity, (artist) => artist.productArtists, {
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+    })
     @JoinColumn({ name: 'artist_id', referencedColumnName: 'id' })
     artist: ArtistEntity;
 }

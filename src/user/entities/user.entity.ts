@@ -1,5 +1,5 @@
 import { Exclude } from 'class-transformer';
-import { User } from 'generated/prisma/browser';
+import { UserEntity as UserRecord } from 'src/database/entities/user.entity';
 
 export class UserEntity {
     id: string;
@@ -17,7 +17,7 @@ export class UserEntity {
     updatedAt: Date;
     deletedAt: Date | null;
 
-    constructor(partial: Partial<User>) {
+    constructor(partial: Partial<UserRecord>) {
         Object.assign(this, partial);
     }
 

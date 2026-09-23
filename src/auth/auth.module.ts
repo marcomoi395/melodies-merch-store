@@ -4,12 +4,14 @@ import { AuthController } from './auth.controller';
 import { UserService } from 'src/user/user.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserEntity } from 'src/database/entities/user.entity';
 
 @Module({
     imports: [
+        TypeOrmModule.forFeature([UserEntity]),
         JwtModule.registerAsync({
             imports: [ConfigModule],
             useFactory: (configService: ConfigService) => ({
@@ -22,6 +24,6 @@ import { JwtModule } from '@nestjs/jwt';
         }),
     ],
     controllers: [AuthController],
-    providers: [AuthService, UserService, JwtStrategy, LocalStrategy, PrismaService],
+    providers: [AuthService, UserService, JwtStrategy, LocalStrategy],
 })
 export class AuthModule {}

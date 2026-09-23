@@ -5,7 +5,6 @@ import { INestApplication } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
 import { EventEmitter } from 'events';
 import { AppModule } from 'src/app.module';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
 
 /**
@@ -51,11 +50,11 @@ export function createRedisMock() {
 }
 
 /**
- * Creates a NestJS test application with Prisma and Redis mocked.
+ * Creates a NestJS test application with TypeORM and Redis mocked.
  * Returns the app, module, and the actual JWT secret used by the app.
  */
 export async function createTestApp(
-    prismaMock: any,
+    repositoryMock: any,
     redisMock?: any,
 ): Promise<{ app: INestApplication; module: TestingModule; jwtSecret: string }> {
     const redis = redisMock ?? createRedisMock();
@@ -63,8 +62,6 @@ export async function createTestApp(
     const moduleFixture: TestingModule = await Test.createTestingModule({
         imports: [AppModule],
     })
-        .overrideProvider(PrismaService)
-        .useValue(prismaMock)
         .overrideProvider('REDIS_CLIENT')
         .useValue(redis)
         .compile();
