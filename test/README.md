@@ -22,7 +22,8 @@ npm run test:watch
 # Run tests with coverage
 npm run test:cov
 
-# Run E2E tests
+# Run E2E tests against an isolated PostgreSQL database
+export TEST_DATABASE_URL=postgresql://localhost/melodies_test
 npm run test:e2e
 
 # Run specific test file

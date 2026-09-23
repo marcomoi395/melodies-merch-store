@@ -23,7 +23,7 @@ npm run start:prod              # Run production build
 npm run test                    # Run all unit tests
 npm run test:watch              # Watch mode
 npm run test:cov                # With coverage
-npm run test:e2e                # E2E tests (config: test/jest-e2e.json)
+TEST_DATABASE_URL=postgresql://localhost/melodies_test npm run test:e2e
 npm test -- [path/to/file.spec.ts]  # Run single test file
 
 # Linting & Formatting
