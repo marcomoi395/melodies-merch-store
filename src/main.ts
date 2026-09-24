@@ -12,6 +12,4 @@ export async function bootstrap() {
     await app.listen(config.get<number>('PORT', 3000));
 }
 
-if (require.main === module) {
-    void bootstrap();
-}
+void bootstrap();
