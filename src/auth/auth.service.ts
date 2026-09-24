@@ -13,6 +13,7 @@ import Redis from 'ioredis';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity as UserRecord } from 'src/database/entities/user.entity';
 import { generateRandomToken } from 'src/shared/helper/generateRandomToken';
+import { revokeAllTokens } from 'src/shared/helper/revokeAllTokens';
 import { UserEntity as UserResponse } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 import { v4 } from 'uuid';
@@ -118,24 +119,7 @@ export class AuthService {
     }
 
     async revokeAllTokens(userId: string): Promise<void> {
-        const pattern = `whitelist:${userId}:*`;
-        const stream = this.redis.scanStream({
-            match: pattern,
-            count: 100,
-        });
-
-        for await (const chunk of stream) {
-            const keys = chunk as string[];
-
-            if (keys.length > 0) {
-                const pipeline = this.redis.pipeline();
-                keys.forEach((key) => {
-                    pipeline.unlink(key);
-                });
-
-                await pipeline.exec();
-            }
-        }
+        await revokeAllTokens(this.redis, userId);
     }
 
     async refreshTokens(refreshToken: string) {
@@ -177,7 +161,7 @@ export class AuthService {
         const user = await this.user.getUser(email);
 
         if (!user) {
-            throw new BadRequestException('User with this email does not exist');
+            return;
         }
 
         const token = generateRandomToken();
@@ -193,8 +177,8 @@ export class AuthService {
             );
         }
 
-        const host = this.config.get<string>('API_URL');
-        const url = `${host}/api/auth/reset-password?token=${token}`;
+        const url = new URL('reset-password', `${this.config.get<string>('CUSTOMER_APP_URL')}/`);
+        url.searchParams.set('token', token);
 
         // Save token to Redis with expiration (15 minutes)
         await this.redis.set(key, user.id, 'EX', 15 * 60);
@@ -204,7 +188,7 @@ export class AuthService {
             subject: 'Đặt lại mật khẩu Melodies Merch Store',
             template: './reset-password',
             context: {
-                url,
+                url: url.toString(),
             },
         });
     }
@@ -224,5 +208,6 @@ export class AuthService {
         await this.redis.del(key);
 
         await this.users.update(userId, { passwordHash });
+        await revokeAllTokens(this.redis, userId);
     }
 }
