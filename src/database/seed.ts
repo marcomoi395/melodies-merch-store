@@ -360,7 +360,7 @@ async function seedOrders(manager: EntityManager, data: SeedData): Promise<void>
             ? await discountRepository.findOneBy({ code: orderData.discountCode })
             : null;
         const discountAmount =
-            discount?.isActive && discount.type === 'PERCENTAGE'
+            discount?.isActive && discount.type?.toLowerCase() === 'percentage'
                 ? (subtotal * Number(discount.value)) / 100
                 : discount?.isActive
                   ? Number(discount.value)
