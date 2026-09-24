@@ -53,6 +53,9 @@ describe('TypeORM API compatibility (e2e)', () => {
         await createSchema(databaseUrl, schema);
         process.env.DATABASE_URL = databaseUrl;
         process.env.DATABASE_SCHEMA = schema;
+        process.env.CUSTOMER_APP_URL ??= 'http://localhost:3001';
+        process.env.CORS_ORIGINS ??= 'http://localhost:3001';
+        process.env.SWAGGER_ENABLED ??= 'false';
         const migration = spawnSync(
             process.execPath,
             [

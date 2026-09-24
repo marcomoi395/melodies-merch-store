@@ -55,4 +55,17 @@ describe('application bootstrap security', () => {
         expect(SwaggerModule.createDocument).toHaveBeenCalled();
         expect(SwaggerModule.setup).toHaveBeenCalledWith('api', app, {});
     });
+
+    it('keeps startup alive when optional Swagger setup fails', () => {
+        jest.spyOn(SwaggerModule, 'createDocument').mockImplementation(() => {
+            throw new Error('Swagger metadata unavailable');
+        });
+        const config = {
+            getOrThrow: jest.fn().mockReturnValue('https://shop.example'),
+            get: jest.fn().mockReturnValue(true),
+        } as unknown as ConfigService;
+
+        expect(() => configureApplication(app, config)).not.toThrow();
+        expect(SwaggerModule.setup).not.toHaveBeenCalled();
+    });
 });

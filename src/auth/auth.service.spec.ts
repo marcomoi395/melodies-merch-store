@@ -86,7 +86,7 @@ describe('AuthService', () => {
             mailer as any,
         );
 
-        await service.requestPasswordReset('known@example.com');
+        await expect(service.requestPasswordReset('known@example.com')).resolves.toBeUndefined();
         const context = mailer.sendMail.mock.calls.at(-1)[0].context;
         const resetUrl = new URL(context.url);
         const token = resetUrl.searchParams.get('token');

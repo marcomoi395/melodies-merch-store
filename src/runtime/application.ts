@@ -19,10 +19,17 @@ export function configureApplication(app: INestApplication, config: ConfigServic
     });
 
     if (isSwaggerEnabled(config.get<boolean | string>('SWAGGER_ENABLED'))) {
-        const document = SwaggerModule.createDocument(
-            app,
-            new DocumentBuilder().setTitle('Melodies Merch Store API').setVersion('1.0').build(),
-        );
-        SwaggerModule.setup('api', app, document);
+        try {
+            const document = SwaggerModule.createDocument(
+                app,
+                new DocumentBuilder()
+                    .setTitle('Melodies Merch Store API')
+                    .setVersion('1.0')
+                    .build(),
+            );
+            SwaggerModule.setup('api', app, document);
+        } catch {
+            // Documentation is optional; application startup must remain available.
+        }
     }
 }
