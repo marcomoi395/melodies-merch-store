@@ -1,4 +1,14 @@
-import { Controller, Get, HttpCode, Param, ParseUUIDPipe, Patch, Query, Req } from '@nestjs/common';
+import {
+    BadRequestException,
+    Controller,
+    Get,
+    HttpCode,
+    Param,
+    ParseUUIDPipe,
+    Patch,
+    Query,
+    Req,
+} from '@nestjs/common';
 import { OrderService } from '../order.service';
 import { Post, Body, UseGuards } from '@nestjs/common';
 import { OptionalJwtAuthGuard } from 'src/shared/guards/optional-jwt-auth.guard';
@@ -33,8 +43,15 @@ export class OrderPublicController {
     }
 
     @Get(':id')
-    async getOrderByOrderId(@Param('id', new ParseUUIDPipe()) id: string) {
-        const result = await this.orderService.getOrderById(id);
+    @UseGuards(AuthGuard('jwt'))
+    async getOrderByOrderId(
+        @Req() req: Request & { user: IJwtPayload },
+        @Param('id', new ParseUUIDPipe()) id: string,
+    ) {
+        const result = await this.orderService.getOrderById(id, req.user.sub);
+        if (!result) {
+            throw new BadRequestException('Order not found');
+        }
 
         const mappedData = plainToInstance(OrderResponseDto, result, {
             excludeExtraneousValues: true,

@@ -3,7 +3,6 @@ import { TestingModule, Test } from '@nestjs/testing';
 import { Reflector } from '@nestjs/core';
 import { INestApplication } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
-import { EventEmitter } from 'events';
 import { AppModule } from 'src/app.module';
 import { ConfigService } from '@nestjs/config';
 
@@ -32,12 +31,11 @@ export function createRedisMock() {
         }),
         ttl: jest.fn(() => Promise.resolve(-1)),
         scanStream: jest.fn(() => {
-            const stream = new EventEmitter();
-            process.nextTick(() => {
-                stream.emit('data', []);
-                stream.emit('end');
-            });
-            return stream;
+            return {
+                *[Symbol.iterator]() {
+                    yield [];
+                },
+            };
         }),
         pipeline: jest.fn(() => ({
             unlink: jest.fn().mockReturnThis(),

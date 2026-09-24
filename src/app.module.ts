@@ -17,6 +17,7 @@ import { PromotionModule } from './promotion/promotion.module';
 import { CartModule } from './cart/cart.module';
 import { OrderModule } from './order/order.module';
 import { join } from 'path';
+import { parseCorsOrigins } from './runtime/runtime-config';
 
 @Module({
     imports: [
@@ -30,6 +31,20 @@ import { join } from 'path';
                 REDIS_PASSWORD: Joi.string().required(),
                 REDIS_PORT: Joi.number().required(),
                 REDIS_DB: Joi.number().optional(),
+                CUSTOMER_APP_URL: Joi.string()
+                    .uri({ scheme: ['http', 'https'] })
+                    .required(),
+                CORS_ORIGINS: Joi.string()
+                    .custom((value, helpers) => {
+                        try {
+                            parseCorsOrigins(value);
+                            return value;
+                        } catch {
+                            return helpers.error('any.invalid');
+                        }
+                    })
+                    .required(),
+                SWAGGER_ENABLED: Joi.boolean().default(false),
             }),
             validationOptions: {
                 allowUnknown: true,

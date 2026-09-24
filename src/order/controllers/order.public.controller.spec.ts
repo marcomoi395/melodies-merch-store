@@ -92,9 +92,12 @@ describe('OrderPublicController', () => {
         it('should return order by id', async () => {
             mockOrderService.getOrderById.mockResolvedValue(mockOrder);
 
-            const result = await controller.getOrderByOrderId('order_123');
+            const result = await controller.getOrderByOrderId(
+                { user: mockUser } as any,
+                'order_123',
+            );
 
-            expect(service.getOrderById).toHaveBeenCalledWith('order_123');
+            expect(service.getOrderById).toHaveBeenCalledWith('order_123', mockUser.sub);
             expect(result).toEqual({
                 statusCode: 200,
                 message: 'Order retrieved successfully',
@@ -104,9 +107,17 @@ describe('OrderPublicController', () => {
 
         it('should propagate errors from service', async () => {
             mockOrderService.getOrderById.mockRejectedValue(new Error('Order not found'));
-            await expect(controller.getOrderByOrderId('invalid_id')).rejects.toThrow(
-                'Order not found',
-            );
+            await expect(
+                controller.getOrderByOrderId({ user: mockUser } as any, 'invalid_id'),
+            ).rejects.toThrow('Order not found');
+        });
+
+        it('should hide orders that do not belong to the authenticated user', async () => {
+            mockOrderService.getOrderById.mockResolvedValue(null);
+
+            await expect(
+                controller.getOrderByOrderId({ user: mockUser } as any, 'order_123'),
+            ).rejects.toThrow('Order not found');
         });
     });
 

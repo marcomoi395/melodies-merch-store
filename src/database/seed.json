@@ -1,563 +1,131 @@
 {
     "categories": [
         {
-            "name": "Merchandise",
-            "slug": "merchandise",
+            "name": "Music",
+            "slug": "music",
             "children": [
-                { "name": "Áo Thun", "slug": "ao-thun" },
-                { "name": "Nón", "slug": "non" },
-                { "name": "Túi Tote", "slug": "tui-tote" }
+                { "name": "Vinyl", "slug": "vinyl" },
+                { "name": "CD", "slug": "cd" },
+                { "name": "Cassette", "slug": "cassette" }
             ]
         },
         {
-            "name": "Physical Album",
-            "slug": "physical-albupm",
+            "name": "Merchandise",
+            "slug": "merchandise",
             "children": [
-                { "name": "CD", "slug": "cd" },
-                { "name": "Vinyl", "slug": "vinyl" },
-                { "name": "Cassette", "slug": "cassette" }
+                { "name": "Keychain", "slug": "keychain" },
+                { "name": "Apparel", "slug": "apparel" },
+                { "name": "Accessories", "slug": "accessories" }
             ]
         }
     ],
     "discounts": [
         {
-            "code": "NEWYEAR2026",
-            "description": "Giảm giá mừng năm mới",
+            "code": "UAT15",
+            "description": "Ưu đãi 15% cho đơn hàng thử nghiệm UAT",
             "type": "percentage",
             "value": 15,
             "usageLimit": 500,
-            "startDate": "2026-01-01T00:00:00Z",
-            "endDate": "2026-02-01T00:00:00Z"
+            "startDate": "2026-09-01T00:00:00Z",
+            "endDate": "2026-12-31T23:59:59Z"
         },
         {
-            "code": "MELODY",
-            "description": "Giảm giá",
+            "code": "UAT50K",
+            "description": "Giảm 50.000đ cho đơn hàng thử nghiệm UAT",
             "type": "fixed",
             "value": 50000,
             "usageLimit": 500,
-            "startDate": "2026-01-01T00:00:00Z",
-            "endDate": "2026-02-01T00:00:00Z"
+            "startDate": "2026-09-01T00:00:00Z",
+            "endDate": "2026-12-31T23:59:59Z"
         }
     ],
     "artists": [
         {
             "stageName": "Phùng Khánh Linh",
             "slug": "phung-khanh-linh",
-            "bio": "Nữ ca sĩ kiêm nhạc sĩ trẻ tài năng, nổi bật với dòng nhạc City Pop.",
+            "bio": "Ca sĩ, nhạc sĩ Việt Nam với màu sắc pop và city pop đương đại.",
             "status": "active",
-            "avatarUrl": "https://example.com/phung-khanh-linh-avatar.jpg",
+            "avatarUrl": "https://cdn.hstatic.net/products/200001113747/phung-khanh-linh-citopia-the-2nd-album-sunshine-vinyl-lp-dia-than_08a9d9216f5242508945da2155a205ee.jpeg",
             "products": [
                 {
-                    "name": "Giữa Một Vạn Người - The 3rd Album",
-                    "slug": "giua-mot-van-nguoi-album",
-                    "description": "Album phòng thu thứ 3 của Phùng Khánh Linh, đánh dấu sự trưởng thành trong âm nhạc.",
+                    "name": "Phùng Khánh Linh - CITOPIA - The 2nd Album (Sunshine Vinyl LP)",
+                    "slug": "phung-khanh-linh-citopia-sunshine-vinyl",
+                    "description": "Phiên bản vinyl Sunshine của CITOPIA, album phòng thu thứ hai của Phùng Khánh Linh.",
                     "productType": "music",
                     "status": "published",
-                    "minPrice": 350000,
-                    "categorySlug": "cd",
-                    "mediaGallery": [
-                        { "url": "https://example.com/pkl-gmvn-cover.jpg", "type": "image" }
-                    ],
-                    "variants": [
-                        {
-                            "sku": "PKL-GMVN-LTD",
-                            "name": "Giữa Một Vạn Người (Limited Ver.)",
-                            "originalPrice": 350000,
-                            "stockQuantity": 0,
-                            "attributes": [
-                                { "key": "Version", "value": "Limited Box" },
-                                { "key": "Format", "value": "CD" }
-                            ]
-                        },
-                        {
-                            "sku": "PKL-GMVN-DIGI",
-                            "name": "Giữa Một Vạn Người (Digipak Ver.)",
-                            "originalPrice": 350000,
-                            "stockQuantity": 0,
-                            "attributes": [
-                                { "key": "Version", "value": "Digipak" },
-                                { "key": "Format", "value": "CD" }
-                            ]
-                        },
-                        {
-                            "sku": "PKL-GMVN-JEWEL",
-                            "name": "Giữa Một Vạn Người (Jewel Case Ver.)",
-                            "originalPrice": 350000,
-                            "stockQuantity": 50,
-                            "attributes": [
-                                { "key": "Version", "value": "Jewel Case" },
-                                { "key": "Format", "value": "CD" }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "name": "Citopia - The 2nd Studio Album",
-                    "slug": "citopia-album",
-                    "description": "Album phòng thu thứ 2 mang đậm màu sắc City Pop.",
-                    "productType": "music",
-                    "status": "published",
-                    "minPrice": 350000,
-                    "categorySlug": "cd",
-                    "mediaGallery": [
-                        {
-                            "url": "https://example.com/pkl-citopia-cover.jpg",
-                            "type": "image"
-                        }
-                    ],
-                    "variants": [
-                        {
-                            "sku": "PKL-CITOPIA-DIGI",
-                            "name": "Citopia (Digipak Ver.)",
-                            "originalPrice": 350000,
-                            "stockQuantity": 100,
-                            "attributes": [
-                                { "key": "Version", "value": "Digipak" },
-                                { "key": "Format", "value": "CD" }
-                            ]
-                        },
-                        {
-                            "sku": "PKL-CITOPIA-CASSETTE",
-                            "name": "Citopia (Official Cover Ver.) - Cassette",
-                            "originalPrice": 350000,
-                            "stockQuantity": 30,
-                            "attributes": [
-                                { "key": "Version", "value": "Official Cover" },
-                                { "key": "Format", "value": "Cassette" }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "name": "Yesteryear - The 1st Album",
-                    "slug": "yesteryear-album",
-                    "description": "Album đầu tay đầy cảm xúc của Phùng Khánh Linh.",
-                    "productType": "music",
-                    "status": "published",
-                    "minPrice": 350000,
-                    "categorySlug": "cd",
-                    "mediaGallery": [
-                        {
-                            "url": "https://example.com/pkl-yesteryear-cover.jpg",
-                            "type": "image"
-                        }
-                    ],
-                    "variants": [
-                        {
-                            "sku": "PKL-YESTERYEAR-STD",
-                            "name": "Yesteryear (Standard Ver.)",
-                            "originalPrice": 350000,
-                            "stockQuantity": 20,
-                            "attributes": [
-                                { "key": "Version", "value": "Standard" },
-                                { "key": "Format", "value": "CD" }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stageName": "Coldzy",
-            "slug": "coldzy",
-            "bio": "Rapper sở hữu chất giọng trầm ấm, kỹ thuật melody lôi cuốn và tư duy âm nhạc hiện đại.",
-            "status": "active",
-            "avatarUrl": "https://example.com/coldzy-avatar.jpg",
-            "products": [
-                {
-                    "name": "MEDICINE: DETOX",
-                    "slug": "medicine-detox",
-                    "description": "Phiên bản vật lý mở rộng của dự án Medicine, mang đến những liều thuốc tinh thần mới.",
-                    "productType": "music",
-                    "status": "published",
-                    "minPrice": 399000,
-                    "categorySlug": "cd",
-                    "mediaGallery": [
-                        {
-                            "url": "https://example.com/coldzy-medicine-detox-cover.jpg",
-                            "type": "image"
-                        }
-                    ],
-                    "variants": [
-                        {
-                            "sku": "COLDZY-DETOX-PHY",
-                            "name": "Medicine: Detox (Physical Ver.)",
-                            "originalPrice": 399000,
-                            "stockQuantity": 50,
-                            "attributes": [
-                                { "key": "Format", "value": "CD Boxset" },
-                                { "key": "Edition", "value": "Detox" }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "name": "MEDICINE",
-                    "slug": "medicine-original",
-                    "description": "Dự án âm nhạc Medicine nguyên bản của Coldzy.",
-                    "productType": "music",
-                    "status": "published",
-                    "minPrice": 399000,
-                    "categorySlug": "cd",
-                    "mediaGallery": [
-                        {
-                            "url": "https://example.com/coldzy-medicine-cover.jpg",
-                            "type": "image"
-                        }
-                    ],
-                    "variants": [
-                        {
-                            "sku": "COLDZY-MEDICINE-STD",
-                            "name": "Medicine (Standard Ver.)",
-                            "originalPrice": 399000,
-                            "stockQuantity": 100,
-                            "attributes": [
-                                { "key": "Format", "value": "CD" },
-                                { "key": "Edition", "value": "Original" }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stageName": "MIN",
-            "slug": "min",
-            "bio": "Nữ ca sĩ xuất thân từ St.319, nổi bật với phong cách âm nhạc trẻ trung, hình ảnh được đầu tư kỹ lưỡng và vũ đạo điêu luyện.",
-            "status": "active",
-            "avatarUrl": "https://example.com/min-avatar.jpg",
-            "products": [
-                {
-                    "name": "Dear Min - The 2nd Studio Album",
-                    "slug": "dear-min-album",
-                    "description": "Album phòng thu thứ 2 đầy tâm huyết của MIN, đánh dấu một chặng đường nghệ thuật mới.",
-                    "productType": "music",
-                    "status": "published",
-                    "minPrice": 399000,
-                    "categorySlug": "cd",
-                    "mediaGallery": [
-                        {
-                            "url": "https://example.com/min-dear-min-standard.jpg",
-                            "type": "image"
-                        },
-                        {
-                            "url": "https://example.com/min-dear-min-limited.jpg",
-                            "type": "image"
-                        }
-                    ],
-                    "variants": [
-                        {
-                            "sku": "MIN-DEARMIN-STD",
-                            "name": "Dear Min (Standard Version)",
-                            "originalPrice": 399000,
-                            "stockQuantity": 100,
-                            "attributes": [
-                                { "key": "Version", "value": "Standard" },
-                                { "key": "Format", "value": "CD" }
-                            ]
-                        },
-                        {
-                            "sku": "MIN-DEARMIN-LTD",
-                            "name": "Dear Min (Limited Version)",
-                            "originalPrice": 1199000,
-                            "stockQuantity": 50,
-                            "attributes": [
-                                { "key": "Version", "value": "Limited Boxset" },
-                                { "key": "Format", "value": "CD" }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "name": "50/50 - The First Album",
-                    "slug": "50-50-album",
-                    "description": "Album đầu tay khẳng định cá tính âm nhạc đa dạng của MIN.",
-                    "productType": "music",
-                    "status": "published",
-                    "minPrice": 280000,
-                    "categorySlug": "cd",
-                    "mediaGallery": [
-                        { "url": "https://example.com/min-5050-cover.jpg", "type": "image" }
-                    ],
-                    "variants": [
-                        {
-                            "sku": "MIN-5050-STD",
-                            "name": "50/50 (Standard Ver.)",
-                            "originalPrice": 280000,
-                            "stockQuantity": 30,
-                            "attributes": [
-                                { "key": "Version", "value": "Standard" },
-                                { "key": "Format", "value": "CD" }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stageName": "SOOBIN",
-            "slug": "soobin",
-            "bio": "Hoàng tử R&B của SpaceSpeakers, sở hữu giọng hát ngọt ngào, kỹ thuật trình diễn cuốn hút và đa tài trong việc sáng tác, chơi nhạc cụ.",
-            "status": "active",
-            "avatarUrl": "https://example.com/soobin-avatar.jpg",
-            "products": [
-                {
-                    "name": "Bật Nó Lên - Single",
-                    "slug": "bat-no-len-single",
-                    "description": "Đĩa đơn mang màu sắc Synth-pop bắt tai, đánh dấu sự kết hợp đầy ăn ý.",
-                    "productType": "music",
-                    "status": "published",
-                    "minPrice": 350000,
+                    "minPrice": 1200000,
                     "categorySlug": "vinyl",
                     "mediaGallery": [
                         {
-                            "url": "https://example.com/soobin-bnl-vinyl.jpg",
-                            "type": "image"
-                        },
-                        {
-                            "url": "https://example.com/soobin-bnl-cassette.jpg",
+                            "url": "https://cdn.hstatic.net/products/200001113747/phung-khanh-linh-citopia-the-2nd-album-sunshine-vinyl-lp-dia-than_08a9d9216f5242508945da2155a205ee.jpeg",
                             "type": "image"
                         }
                     ],
                     "variants": [
                         {
-                            "sku": "SOOBIN-BNL-LP",
-                            "name": "Bật Nó Lên (White/Blue Colored Vinyl LP)",
-                            "originalPrice": 1050000,
-                            "stockQuantity": 20,
-                            "attributes": [
-                                { "key": "Format", "value": "Vinyl LP" },
-                                { "key": "Color", "value": "White/Blue" }
-                            ]
-                        },
-                        {
-                            "sku": "SOOBIN-BNL-CASS",
-                            "name": "Bật Nó Lên (Sea Green Tape)",
-                            "originalPrice": 350000,
-                            "stockQuantity": 50,
-                            "attributes": [
-                                { "key": "Format", "value": "Cassette" },
-                                { "key": "Color", "value": "Sea Green" }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "name": "The Playah - EP",
-                    "slug": "the-playah-ep",
-                    "description": "EP đánh dấu sự trở lại mạnh mẽ với hình ảnh tay chơi lịch lãm.",
-                    "productType": "music",
-                    "status": "published",
-                    "minPrice": 450000,
-                    "categorySlug": "cd",
-                    "mediaGallery": [
-                        {
-                            "url": "https://example.com/soobin-playah-cover.jpg",
-                            "type": "image"
-                        }
-                    ],
-                    "variants": [
-                        {
-                            "sku": "SOOBIN-PLAYAH-STD",
-                            "name": "The Playah (Standard Ver.)",
-                            "originalPrice": 450000,
-                            "stockQuantity": 30,
-                            "attributes": [
-                                { "key": "Format", "value": "CD" },
-                                { "key": "Version", "value": "Standard" }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stageName": "Karik",
-            "slug": "karik",
-            "bio": "Rapper tiên phong của dòng nhạc Rap tại Việt Nam, nổi tiếng với những bản hit đầy cảm xúc và vai trò Huấn luyện viên tại Rap Việt.",
-            "status": "active",
-            "avatarUrl": "https://example.com/karik-avatar.jpg",
-            "products": [
-                {
-                    "name": "421 - Double Album",
-                    "slug": "421-double-album",
-                    "description": "Album kép 421 đánh dấu cột mốc quan trọng trong sự nghiệp của Karik với sự đầu tư hoành tráng.",
-                    "productType": "music",
-                    "status": "published",
-                    "minPrice": 550000,
-                    "categorySlug": "cd",
-                    "mediaGallery": [
-                        {
-                            "url": "https://example.com/karik-421-boxset.jpg",
-                            "type": "image"
-                        },
-                        { "url": "https://example.com/karik-421-set-b.jpg", "type": "image" }
-                    ],
-                    "variants": [
-                        {
-                            "sku": "KARIK-421-BOX",
-                            "name": "421 Double Album (Boxset Only)",
-                            "originalPrice": 550000,
-                            "stockQuantity": 100,
-                            "attributes": [
-                                { "key": "Version", "value": "Standard Boxset" },
-                                { "key": "Content", "value": "2 CDs + Photobooks" }
-                            ]
-                        },
-                        {
-                            "sku": "KARIK-421-SETA",
-                            "name": "421 Set A: Double Album + Special Gifts",
-                            "originalPrice": 700000,
-                            "stockQuantity": 50,
-                            "attributes": [
-                                { "key": "Version", "value": "Set A" },
-                                { "key": "Content", "value": "Boxset + Special Gifts" }
-                            ]
-                        },
-                        {
-                            "sku": "KARIK-421-SETB",
-                            "name": "421 Set B: Double Album + Art Toy",
-                            "originalPrice": 1100000,
-                            "stockQuantity": 20,
-                            "attributes": [
-                                { "key": "Version", "value": "Set B" },
-                                { "key": "Content", "value": "Boxset + Art Toy" }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "name": "Art Toy Karik - Koniz Edition",
-                    "slug": "art-toy-karik",
-                    "description": "Mô hình Art Toy phiên bản giới hạn mô phỏng hình tượng Karik cực ngầu.",
-                    "productType": "merch",
-                    "status": "published",
-                    "minPrice": 680000,
-                    "categorySlug": "merchandise",
-                    "mediaGallery": [
-                        { "url": "https://example.com/karik-art-toy.jpg", "type": "image" }
-                    ],
-                    "variants": [
-                        {
-                            "sku": "KARIK-TOY-KONIZ",
-                            "name": "Art Toy Karik (Koniz)",
-                            "originalPrice": 680000,
-                            "stockQuantity": 30,
-                            "attributes": [
-                                { "key": "Size", "value": "Standard" },
-                                { "key": "Material", "value": "Vinyl" }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "name": "Dây chuyền 421",
-                    "slug": "day-chuyen-421",
-                    "description": "Phụ kiện dây chuyền thiết kế riêng cho dự án 421.",
-                    "productType": "merch",
-                    "status": "published",
-                    "minPrice": 190000,
-                    "categorySlug": "merchandise",
-                    "mediaGallery": [
-                        { "url": "https://example.com/karik-necklace.jpg", "type": "image" }
-                    ],
-                    "variants": [
-                        {
-                            "sku": "KARIK-NECKLACE-421",
-                            "name": "Dây chuyền 421 Chain",
-                            "originalPrice": 190000,
-                            "stockQuantity": 100,
-                            "attributes": [
-                                { "key": "Material", "value": "Metal" },
-                                { "key": "Type", "value": "Necklace" }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stageName": "BLACKPINK",
-            "slug": "blackpink",
-            "bio": "Nhóm nhạc nữ K-pop đình đám toàn cầu, biểu tượng của phong cách và âm nhạc bùng nổ.",
-            "status": "active",
-            "avatarUrl": "https://example.com/blackpink-avatar.jpg",
-            "products": [
-                {
-                    "name": "The Album - The 1st Full Album",
-                    "slug": "the-album",
-                    "description": "Album phòng thu tiếng Hàn đầu tiên, đánh dấu cột mốc lịch sử của nhóm.",
-                    "productType": "music",
-                    "status": "published",
-                    "minPrice": 360000,
-                    "categorySlug": "cd",
-                    "mediaGallery": [
-                        {
-                            "url": "https://example.com/bp-the-album-vinyl.jpg",
-                            "type": "image"
-                        },
-                        {
-                            "url": "https://example.com/bp-the-album-cd.jpg",
-                            "type": "image"
-                        },
-                        {
-                            "url": "https://example.com/bp-the-album-cassette.jpg",
-                            "type": "image"
-                        }
-                    ],
-                    "variants": [
-                        {
-                            "sku": "BP-THEALBUM-LP-PINK",
-                            "name": "The Album (Limited Edition Vinyl LP) - Pink",
+                            "sku": "HDTDPKLCITOPIASSLP",
+                            "name": "CITOPIA - Sunshine Vinyl LP",
                             "originalPrice": 1200000,
-                            "stockQuantity": 0,
+                            "stockQuantity": 169,
                             "attributes": [
                                 { "key": "Format", "value": "Vinyl LP" },
-                                { "key": "Color", "value": "Pink" }
+                                { "key": "Edition", "value": "Sunshine" },
+                                { "key": "Origin", "value": "Vietnam" }
                             ]
-                        },
-                        {
-                            "sku": "BP-THEALBUM-CD",
-                            "name": "The Album (Standard Ver.)",
-                            "originalPrice": 360000,
-                            "stockQuantity": 100,
-                            "attributes": [
-                                { "key": "Format", "value": "CD" },
-                                { "key": "Version", "value": "Standard" }
-                            ]
-                        },
-                        {
-                            "sku": "BP-THEALBUM-CASS",
-                            "name": "The Album (Cassette Tape)",
-                            "originalPrice": 320000,
-                            "stockQuantity": 0,
-                            "attributes": [{ "key": "Format", "value": "Cassette" }]
                         }
                     ]
                 },
                 {
-                    "name": "Born Pink - Cassette Edition",
-                    "slug": "born-pink-cassette",
-                    "description": "Phiên bản Cassette cổ điển cho album Born Pink.",
+                    "name": "Phùng Khánh Linh - Giữa Một Vạn Người - The 3rd Album",
+                    "slug": "phung-khanh-linh-giua-mot-van-nguoi-cassette",
+                    "description": "Băng cassette của album Giữa Một Vạn Người, phát hành cùng Black Swan Label và Times Records.",
                     "productType": "music",
                     "status": "published",
-                    "minPrice": 320000,
+                    "minPrice": 400000,
                     "categorySlug": "cassette",
                     "mediaGallery": [
                         {
-                            "url": "https://example.com/bp-born-pink-cassette.jpg",
+                            "url": "https://cdn.hstatic.net/products/200001113747/phung-khanh-linh-giua-mot-van-nguoi-the-3rd-album-bang-cassette_376239b84d03402484bc2422569db3cc.jpg",
                             "type": "image"
                         }
                     ],
                     "variants": [
                         {
-                            "sku": "BP-BORNPINK-CASS",
-                            "name": "Born Pink (Cassette Tape)",
-                            "originalPrice": 320000,
-                            "stockQuantity": 0,
+                            "sku": "HDTDPKLGMVNTAPE",
+                            "name": "Giữa Một Vạn Người - Cassette",
+                            "originalPrice": 400000,
+                            "stockQuantity": 308,
                             "attributes": [
                                 { "key": "Format", "value": "Cassette" },
-                                { "key": "Color", "value": "Grey" }
+                                { "key": "Edition", "value": "Standard" },
+                                { "key": "Origin", "value": "Vietnam" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Phùng Khánh Linh - Mascot Keyring",
+                    "slug": "phung-khanh-linh-mascot-keyring",
+                    "description": "Móc khoá mascot official merch kích thước khoảng 20cm.",
+                    "productType": "merch",
+                    "status": "published",
+                    "minPrice": 350000,
+                    "categorySlug": "keychain",
+                    "mediaGallery": [
+                        {
+                            "url": "https://cdn.hstatic.net/products/200001113747/phung-khanh-linh-mascot-keyring-official-merch_940986ea2106431aaef1850c4c7d77b4.jpg",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "HDTDPKLMASCOTKEY",
+                            "name": "Mascot Keyring",
+                            "originalPrice": 350000,
+                            "stockQuantity": 151,
+                            "attributes": [
+                                { "key": "Type", "value": "Keychain" },
+                                { "key": "Size", "value": "20cm" }
                             ]
                         }
                     ]
@@ -565,195 +133,328 @@
             ]
         },
         {
-            "stageName": "Hoàng Dũng",
-            "slug": "hoang-dung",
-            "bio": "Chàng thơ của nhạc Việt với những bản tình ca indie nhẹ nhàng và sâu lắng.",
+            "stageName": "Phạm Anh Duy",
+            "slug": "pham-anh-duy",
+            "bio": "Ca sĩ Việt Nam, hoạt động trong dòng nhạc pop và nhạc trữ tình đương đại.",
             "status": "active",
-            "avatarUrl": "https://example.com/hoang-dung-avatar.jpg",
+            "avatarUrl": "https://cdn.hstatic.net/products/200001113747/cover_c__logo_78285301e9794a0ab8d3c531d104195c.png",
             "products": [
                 {
-                    "name": "Dự án Xoay Tròn (Physical Edition)",
-                    "slug": "xoay-tron-project",
-                    "description": "Phiên bản vật lý đặc biệt của dự án Xoay Tròn, được thiết kế tỉ mỉ.",
+                    "name": "Phạm Anh Duy - 23",
+                    "slug": "pham-anh-duy-23-cd",
+                    "description": "Album 23 phiên bản CD, phát hành tại Việt Nam bởi Times Records.",
                     "productType": "music",
                     "status": "published",
-                    "minPrice": 450000,
+                    "minPrice": 540000,
                     "categorySlug": "cd",
                     "mediaGallery": [
                         {
-                            "url": "https://example.com/hd-xoay-tron-premium.jpg",
-                            "type": "image"
-                        },
-                        {
-                            "url": "https://example.com/hd-xoay-tron-standard.jpg",
+                            "url": "https://cdn.hstatic.net/products/200001113747/cover_c__logo_78285301e9794a0ab8d3c531d104195c.png",
                             "type": "image"
                         }
                     ],
                     "variants": [
                         {
-                            "sku": "HD-XOAYTRON-PRE",
-                            "name": "Xoay Tròn - Premium Version",
-                            "originalPrice": 750000,
-                            "stockQuantity": 50,
+                            "sku": "HDTD-PAD-23-CD",
+                            "name": "23 - CD",
+                            "originalPrice": 540000,
+                            "stockQuantity": 252,
                             "attributes": [
-                                { "key": "Version", "value": "Premium" },
-                                { "key": "Content", "value": "Full Set" }
+                                { "key": "Format", "value": "CD" },
+                                { "key": "Origin", "value": "Vietnam" }
                             ]
-                        },
-                        {
-                            "sku": "HD-XOAYTRON-STD",
-                            "name": "Xoay Tròn - Standard Version",
-                            "originalPrice": 450000,
-                            "stockQuantity": 100,
-                            "attributes": [
-                                { "key": "Version", "value": "Standard" },
-                                { "key": "Content", "value": "Disc Only" }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "name": "Áo phông Xoay Tròn",
-                    "slug": "ao-phong-xoay-tron",
-                    "description": "Áo thun cotton cao cấp nằm trong bộ sưu tập merchandise Xoay Tròn.",
-                    "productType": "merch",
-                    "status": "published",
-                    "minPrice": 349000,
-                    "categorySlug": "ao-thun",
-                    "mediaGallery": [
-                        {
-                            "url": "https://example.com/hd-tshirt-xoay-tron.jpg",
-                            "type": "image"
-                        }
-                    ],
-                    "variants": [
-                        {
-                            "sku": "HD-TSHIRT-WHT",
-                            "name": "Áo phông Xoay Tròn (Trắng)",
-                            "originalPrice": 349000,
-                            "stockQuantity": 100,
-                            "attributes": [
-                                { "key": "Color", "value": "White" },
-                                { "key": "Size", "value": "Freesize" }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "name": "Phụ kiện Xoay Tròn Collection",
-                    "slug": "phu-kien-xoay-tron",
-                    "description": "Các món phụ kiện độc đáo mang đậm dấu ấn của dự án.",
-                    "productType": "merch",
-                    "status": "published",
-                    "minPrice": 99000,
-                    "categorySlug": "merchandise",
-                    "mediaGallery": [
-                        {
-                            "url": "https://example.com/hd-accessories-xoay-tron.jpg",
-                            "type": "image"
-                        }
-                    ],
-                    "variants": [
-                        {
-                            "sku": "HD-SCARF",
-                            "name": "Khăn Xoay Tròn",
-                            "originalPrice": 169000,
-                            "stockQuantity": 50,
-                            "attributes": [{ "key": "Type", "value": "Bandana" }]
-                        },
-                        {
-                            "sku": "HD-SOCKS",
-                            "name": "Tất Xoay Tròn",
-                            "originalPrice": 99000,
-                            "stockQuantity": 100,
-                            "attributes": [{ "key": "Type", "value": "Socks" }]
-                        },
-                        {
-                            "sku": "HD-CAP",
-                            "name": "Mũ Xoay Tròn",
-                            "originalPrice": 250000,
-                            "stockQuantity": 0,
-                            "attributes": [{ "key": "Type", "value": "Cap" }]
-                        },
-                        {
-                            "sku": "HD-LANYARD",
-                            "name": "Dây đeo Xoay Tròn",
-                            "originalPrice": 80000,
-                            "stockQuantity": 0,
-                            "attributes": [{ "key": "Type", "value": "Lanyard" }]
                         }
                     ]
                 }
             ]
         },
         {
-            "stageName": "ROSÉ",
-            "slug": "rose",
-            "bio": "Giọng ca chính độc đáo của BLACKPINK, biểu tượng thời trang và nghệ sĩ solo đầy cảm xúc.",
+            "stageName": "AMEE",
+            "slug": "amee",
+            "bio": "Nghệ sĩ pop Việt Nam với phong cách âm nhạc trẻ trung và giàu màu sắc.",
             "status": "active",
-            "avatarUrl": "https://example.com/rose-avatar.jpg",
+            "avatarUrl": "https://cdn.hstatic.net/products/200001113747/amee-dreamee-dia-cd_0cc3ba2c39ba4c1d9b5804d30a8b7e1d_cfc4c6d78cde4adc9fa30d98a0fd1a99.jpeg",
             "products": [
                 {
-                    "name": "Rosie - First Studio Album",
-                    "slug": "rosie-album",
-                    "description": "Album phòng thu đầu tay 'Rosie' đánh dấu hành trình solo đầy cá tính của ROSÉ.",
+                    "name": "AMEE - dreAMEE (Reissued)",
+                    "slug": "amee-dreamee-reissued-cd",
+                    "description": "Phiên bản tái phát hành album dreAMEE dưới định dạng CD.",
                     "productType": "music",
                     "status": "published",
-                    "minPrice": 380000,
+                    "minPrice": 350000,
                     "categorySlug": "cd",
                     "mediaGallery": [
                         {
-                            "url": "https://example.com/rose-rosie-cover.jpg",
+                            "url": "https://cdn.hstatic.net/products/200001113747/amee-dreamee-dia-cd_0cc3ba2c39ba4c1d9b5804d30a8b7e1d_cfc4c6d78cde4adc9fa30d98a0fd1a99.jpeg",
                             "type": "image"
                         },
                         {
-                            "url": "https://example.com/rose-rosie-band.jpg",
-                            "type": "image"
-                        },
-                        {
-                            "url": "https://example.com/rose-rosie-vinyl-red.jpg",
+                            "url": "https://cdn.hstatic.net/products/200001113747/amee_dreamee-cd-jewel_case_68b368223ab84c5fac837e32d2d3b967_96bca6d670f74a79b00277519921e056.jpg",
                             "type": "image"
                         }
                     ],
                     "variants": [
                         {
-                            "sku": "ROSE-ROSIE-CD-STD",
-                            "name": "Rosie (Standard CD)",
-                            "originalPrice": 380000,
-                            "stockQuantity": 100,
+                            "sku": "122-2025-TIMES-QDXB-CD",
+                            "name": "dreAMEE (Reissued) - CD",
+                            "originalPrice": 350000,
+                            "stockQuantity": 775,
                             "attributes": [
                                 { "key": "Format", "value": "CD" },
-                                { "key": "Version", "value": "Standard" }
+                                { "key": "Edition", "value": "Reissued" }
                             ]
-                        },
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Lou Reed",
+            "slug": "lou-reed",
+            "bio": "Singer-songwriter and guitarist known for his work with The Velvet Underground and solo catalog.",
+            "status": "active",
+            "avatarUrl": "https://bizweb.dktcdn.net/100/411/628/products/41079bb0-fcc6-4f49-9d17-750307fcbf3e.png?v=1789897836883",
+            "products": [
+                {
+                    "name": "Between Thought And Expression - The Lou Reed Anthology",
+                    "slug": "lou-reed-anthology-cassette",
+                    "description": "Tuyển tập Lou Reed dưới định dạng cassette.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 600000,
+                    "categorySlug": "cassette",
+                    "mediaGallery": [
                         {
-                            "sku": "ROSE-ROSIE-CD-BAND",
-                            "name": "Rosie (Band Cover)",
-                            "originalPrice": 450000,
-                            "stockQuantity": 50,
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/41079bb0-fcc6-4f49-9d17-750307fcbf3e.png?v=1789897836883",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "LPCLUB-LOUREED-TAPE",
+                            "name": "Anthology - Cassette",
+                            "originalPrice": 600000,
+                            "stockQuantity": 1,
                             "attributes": [
-                                { "key": "Format", "value": "CD" },
-                                { "key": "Version", "value": "Band Cover" }
+                                { "key": "Format", "value": "Cassette" },
+                                { "key": "Condition", "value": "Used" }
                             ]
-                        },
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Kraftwerk",
+            "slug": "kraftwerk",
+            "bio": "German electronic music group and pioneers of synth-driven popular music.",
+            "status": "active",
+            "avatarUrl": "https://bizweb.dktcdn.net/100/411/628/products/download-2026-09-20t153518-976.png?v=1789893327640",
+            "products": [
+                {
+                    "name": "Radio-Activity",
+                    "slug": "kraftwerk-radio-activity-vinyl",
+                    "description": "Album Radio-Activity của Kraftwerk dưới định dạng vinyl LP.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 850000,
+                    "categorySlug": "vinyl",
+                    "mediaGallery": [
                         {
-                            "sku": "ROSE-ROSIE-LP-RED",
-                            "name": "Rosie (Red Vinyl)",
-                            "originalPrice": 1250000,
-                            "stockQuantity": 0,
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/download-2026-09-20t153518-976.png?v=1789893327640",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "LPCLUB-KRAFTWERK-RADIO",
+                            "name": "Radio-Activity - Vinyl LP",
+                            "originalPrice": 850000,
+                            "stockQuantity": 1,
                             "attributes": [
                                 { "key": "Format", "value": "Vinyl LP" },
-                                { "key": "Color", "value": "Red" }
+                                { "key": "Condition", "value": "Used" }
                             ]
-                        },
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Can",
+            "slug": "can",
+            "bio": "German experimental rock group associated with krautrock and avant-garde recording.",
+            "status": "active",
+            "avatarUrl": "https://bizweb.dktcdn.net/100/411/628/products/c1b9373a-834a-4615-810a-810a5a2495fc.png?v=1789889594823",
+            "products": [
+                {
+                    "name": "Out Of Reach",
+                    "slug": "can-out-of-reach-vinyl",
+                    "description": "Album Out Of Reach của Can dưới định dạng vinyl LP.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 780000,
+                    "categorySlug": "vinyl",
+                    "mediaGallery": [
                         {
-                            "sku": "ROSE-ROSIE-LP-CLEAR",
-                            "name": "Rosie (Clear Vinyl)",
-                            "originalPrice": 1250000,
-                            "stockQuantity": 0,
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/c1b9373a-834a-4615-810a-810a5a2495fc.png?v=1789889594823",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "LPCLUB-CAN-OUTREACH",
+                            "name": "Out Of Reach - Vinyl LP",
+                            "originalPrice": 780000,
+                            "stockQuantity": 1,
                             "attributes": [
                                 { "key": "Format", "value": "Vinyl LP" },
-                                { "key": "Color", "value": "Clear" }
+                                { "key": "Condition", "value": "Used" }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Johnny Griffin",
+            "slug": "johnny-griffin",
+            "bio": "American jazz saxophonist known for his hard bop recordings.",
+            "status": "active",
+            "avatarUrl": "https://bizweb.dktcdn.net/100/411/628/products/8f73e486-db46-429b-9459-c63653534163.png?v=1789889081680",
+            "products": [
+                {
+                    "name": "The Congregation",
+                    "slug": "johnny-griffin-the-congregation-vinyl",
+                    "description": "The Congregation của Johnny Griffin, định dạng vinyl LP.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 900000,
+                    "categorySlug": "vinyl",
+                    "mediaGallery": [
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/8f73e486-db46-429b-9459-c63653534163.png?v=1789889081680",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "LPCLUB-JGRIFFIN-CONG",
+                            "name": "The Congregation - Vinyl LP",
+                            "originalPrice": 900000,
+                            "stockQuantity": 1,
+                            "attributes": [
+                                { "key": "Format", "value": "Vinyl LP" },
+                                { "key": "Condition", "value": "Used" }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Suede",
+            "slug": "suede",
+            "bio": "English alternative rock band from London.",
+            "status": "active",
+            "avatarUrl": "https://bizweb.dktcdn.net/100/411/628/products/download-2026-09-20t183454-093.png?v=1789904111563",
+            "products": [
+                {
+                    "name": "Suede",
+                    "slug": "suede-self-titled-vinyl",
+                    "description": "Album đầu tay Suede dưới định dạng vinyl LP.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 1000000,
+                    "categorySlug": "vinyl",
+                    "mediaGallery": [
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/download-2026-09-20t183454-093.png?v=1789904111563",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "LPCLUB-SUEDE-SELF",
+                            "name": "Suede - Vinyl LP",
+                            "originalPrice": 1000000,
+                            "stockQuantity": 1,
+                            "attributes": [
+                                { "key": "Format", "value": "Vinyl LP" },
+                                { "key": "Condition", "value": "Used" }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "My Chemical Romance",
+            "slug": "my-chemical-romance",
+            "bio": "American rock band known for theatrical alternative rock records.",
+            "status": "active",
+            "avatarUrl": "https://bizweb.dktcdn.net/100/411/628/products/screenshot-2026-09-20-131734.png?v=1789885227250",
+            "products": [
+                {
+                    "name": "Three Cheers For Sweet Revenge",
+                    "slug": "my-chemical-romance-three-cheers-vinyl",
+                    "description": "Album Three Cheers For Sweet Revenge dưới định dạng vinyl LP.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 900000,
+                    "categorySlug": "vinyl",
+                    "mediaGallery": [
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/screenshot-2026-09-20-131734.png?v=1789885227250",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "LPCLUB-MCR-3CHEERS",
+                            "name": "Three Cheers For Sweet Revenge - Vinyl LP",
+                            "originalPrice": 900000,
+                            "stockQuantity": 1,
+                            "attributes": [
+                                { "key": "Format", "value": "Vinyl LP" },
+                                { "key": "Condition", "value": "Used" }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Michael Bublé",
+            "slug": "michael-buble",
+            "bio": "Canadian singer known for pop standards, jazz, and swing-influenced recordings.",
+            "status": "active",
+            "avatarUrl": "https://bizweb.dktcdn.net/100/411/628/products/screenshot-2026-09-20-134142.png?v=1789886512183",
+            "products": [
+                {
+                    "name": "Nobody But Me (Silver Vinyl)",
+                    "slug": "michael-buble-nobody-but-me-silver-vinyl",
+                    "description": "Nobody But Me phiên bản Silver Vinyl.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 850000,
+                    "categorySlug": "vinyl",
+                    "mediaGallery": [
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/screenshot-2026-09-20-134142.png?v=1789886512183",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "LPCLUB-MBUBLE-NOBODY",
+                            "name": "Nobody But Me - Silver Vinyl",
+                            "originalPrice": 850000,
+                            "stockQuantity": 1,
+                            "attributes": [
+                                { "key": "Format", "value": "Vinyl LP" },
+                                { "key": "Color", "value": "Silver" },
+                                { "key": "Condition", "value": "Used" }
                             ]
                         }
                     ]
@@ -766,14 +467,14 @@
             "userEmail": "client@gmail.com",
             "items": [
                 {
-                    "productSlug": "rosie-album",
-                    "variantSku": "ROSE-ROSIE-CD-STD",
+                    "productSlug": "phung-khanh-linh-giua-mot-van-nguoi-cassette",
+                    "variantSku": "HDTDPKLGMVNTAPE",
                     "quantity": 1
                 },
                 {
-                    "productSlug": "phu-kien-xoay-tron",
-                    "variantSku": "HD-SOCKS",
-                    "quantity": 2
+                    "productSlug": "my-chemical-romance-three-cheers-vinyl",
+                    "variantSku": "LPCLUB-MCR-3CHEERS",
+                    "quantity": 1
                 }
             ]
         }
@@ -788,16 +489,16 @@
                 "city": "Hà Nội",
                 "phone": "0987654321"
             },
-            "discountCode": "NEWYEAR2026",
+            "discountCode": "UAT15",
             "items": [
                 {
-                    "productSlug": "rosie-album",
-                    "variantSku": "ROSE-ROSIE-CD-BAND",
+                    "productSlug": "phung-khanh-linh-citopia-sunshine-vinyl",
+                    "variantSku": "HDTDPKLCITOPIASSLP",
                     "quantity": 1
                 },
                 {
-                    "productSlug": "bat-no-len-single",
-                    "variantSku": "SOOBIN-BNL-LP",
+                    "productSlug": "phung-khanh-linh-mascot-keyring",
+                    "variantSku": "HDTDPKLMASCOTKEY",
                     "quantity": 1
                 }
             ],
@@ -805,10 +506,9 @@
                 {
                     "type": "PAYMENT",
                     "provider": "MOMO",
-                    "amount": 0,
                     "status": "SUCCESS",
-                    "gatewayTransactionId": "MOMO_QR_001",
-                    "rawResponse": { "vnp_ResponseCode": "00", "message": "Giao dịch thành công" }
+                    "gatewayTransactionId": "UAT_MOMO_001",
+                    "rawResponse": { "resultCode": 0, "message": "Giao dịch thành công" }
                 }
             ]
         },
@@ -817,15 +517,15 @@
             "status": "PENDING",
             "paymentMethod": "MOMO",
             "shippingAddress": {
-                "street": "456 Quận 1",
-                "city": "HCM",
+                "street": "456 Nguyễn Huệ",
+                "city": "Hồ Chí Minh",
                 "phone": "0909090909"
             },
             "discountCode": null,
             "items": [
                 {
-                    "productSlug": "the-playah-ep",
-                    "variantSku": "SOOBIN-PLAYAH-STD",
+                    "productSlug": "amee-dreamee-reissued-cd",
+                    "variantSku": "122-2025-TIMES-QDXB-CD",
                     "quantity": 1
                 }
             ],
@@ -833,9 +533,8 @@
                 {
                     "type": "PAYMENT",
                     "provider": "MOMO",
-                    "amount": 0,
                     "status": "PENDING",
-                    "gatewayTransactionId": "MOMO_QR_SOOBIN",
+                    "gatewayTransactionId": "UAT_MOMO_002",
                     "rawResponse": { "resultCode": 1000, "message": "Chờ thanh toán" }
                 }
             ]
@@ -845,20 +544,20 @@
             "status": "PROCESSING",
             "paymentMethod": "COD",
             "shippingAddress": {
-                "street": "Số 1 Đại Cồ Việt",
-                "city": "Hà Nội",
-                "phone": "0988888888"
+                "street": "18 Nguyễn Cư Trinh",
+                "city": "Hồ Chí Minh",
+                "phone": "0912345678"
             },
-            "discountCode": "MELODY",
+            "discountCode": "UAT50K",
             "items": [
                 {
-                    "productSlug": "ao-phong-xoay-tron",
-                    "variantSku": "HD-TSHIRT-WHT",
-                    "quantity": 2
+                    "productSlug": "lou-reed-anthology-cassette",
+                    "variantSku": "LPCLUB-LOUREED-TAPE",
+                    "quantity": 1
                 },
                 {
-                    "productSlug": "xoay-tron-project",
-                    "variantSku": "HD-XOAYTRON-STD",
+                    "productSlug": "pham-anh-duy-23-cd",
+                    "variantSku": "HDTD-PAD-23-CD",
                     "quantity": 1
                 }
             ],
@@ -866,9 +565,8 @@
                 {
                     "type": "PAYMENT",
                     "provider": "COD",
-                    "amount": 0,
                     "status": "PENDING",
-                    "gatewayTransactionId": "COD_DELIVERY_001",
+                    "gatewayTransactionId": "UAT_COD_001",
                     "rawResponse": { "note": "Thu tiền mặt khi giao hàng" }
                 }
             ]
@@ -878,20 +576,15 @@
             "status": "CANCELLED",
             "paymentMethod": "MOMO",
             "shippingAddress": {
-                "street": "Landmark 81",
-                "city": "HCM",
-                "phone": "0912345678"
+                "street": "72 Trần Hưng Đạo",
+                "city": "Hà Nội",
+                "phone": "0977777777"
             },
             "discountCode": null,
             "items": [
                 {
-                    "productSlug": "421-double-album",
-                    "variantSku": "KARIK-421-SETB",
-                    "quantity": 1
-                },
-                {
-                    "productSlug": "art-toy-karik",
-                    "variantSku": "KARIK-TOY-KONIZ",
+                    "productSlug": "suede-self-titled-vinyl",
+                    "variantSku": "LPCLUB-SUEDE-SELF",
                     "quantity": 1
                 }
             ],
@@ -899,9 +592,8 @@
                 {
                     "type": "PAYMENT",
                     "provider": "MOMO",
-                    "amount": 0,
                     "status": "FAILED",
-                    "gatewayTransactionId": "ch_KARIK_FAIL",
+                    "gatewayTransactionId": "UAT_MOMO_FAIL_001",
                     "rawResponse": { "error": "Insufficient funds" }
                 }
             ]
@@ -911,20 +603,20 @@
             "status": "COMPLETED",
             "paymentMethod": "MOMO",
             "shippingAddress": {
-                "street": "Hồ Tây",
-                "city": "Hà Nội",
-                "phone": "0977777777"
+                "street": "10 Võ Văn Tần",
+                "city": "Hồ Chí Minh",
+                "phone": "0966666666"
             },
             "discountCode": null,
             "items": [
                 {
-                    "productSlug": "dear-min-album",
-                    "variantSku": "MIN-DEARMIN-LTD",
+                    "productSlug": "kraftwerk-radio-activity-vinyl",
+                    "variantSku": "LPCLUB-KRAFTWERK-RADIO",
                     "quantity": 1
                 },
                 {
-                    "productSlug": "50-50-album",
-                    "variantSku": "MIN-5050-STD",
+                    "productSlug": "johnny-griffin-the-congregation-vinyl",
+                    "variantSku": "LPCLUB-JGRIFFIN-CONG",
                     "quantity": 1
                 }
             ],
@@ -932,10 +624,9 @@
                 {
                     "type": "PAYMENT",
                     "provider": "MOMO",
-                    "amount": 0,
                     "status": "SUCCESS",
-                    "gatewayTransactionId": "MOMO_QR_123",
-                    "rawResponse": { "note": "Chuyển khoản nội dung: MUA ALBUM MIN" }
+                    "gatewayTransactionId": "UAT_MOMO_003",
+                    "rawResponse": { "resultCode": 0, "message": "Giao dịch thành công" }
                 }
             ]
         }

@@ -53,6 +53,9 @@ describe('TypeORM API compatibility (e2e)', () => {
         await createSchema(databaseUrl, schema);
         process.env.DATABASE_URL = databaseUrl;
         process.env.DATABASE_SCHEMA = schema;
+        process.env.CUSTOMER_APP_URL ??= 'http://localhost:3001';
+        process.env.CORS_ORIGINS ??= 'http://localhost:3001';
+        process.env.SWAGGER_ENABLED ??= 'false';
         const migration = spawnSync(
             process.execPath,
             [
@@ -269,7 +272,20 @@ describe('TypeORM API compatibility (e2e)', () => {
         const adminManagedOrderId = getData<{ id: string }>(adminManagedOrder).id;
         expect(adminManagedOrderId).toEqual(expect.any(String));
         expectApi(await http.get('/api/order').set(shopperSession), 200);
-        expectApi(await http.get(`/api/order/${adminManagedOrderId}`), 200);
+        expectApi(await http.get(`/api/order/${adminManagedOrderId}`), 401);
+        expectApi(await http.get(`/api/order/${adminManagedOrderId}`).set(shopperSession), 200);
+        expectApi(
+            await http.get(`/api/order/${adminManagedOrderId}`).set(bearer(shopperToken)),
+            400,
+        );
+
+        const guestOrder = await http.post('/api/order').send({
+            ...order,
+            email: `guest-${randomUUID()}@example.com`,
+        });
+        expectApi(guestOrder, 201);
+        const guestOrderId = getData<{ id: string }>(guestOrder).id;
+        expectApi(await http.get(`/api/order/${guestOrderId}`), 401);
 
         const cancelledOrder = await http
             .post('/api/order')

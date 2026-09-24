@@ -22,7 +22,6 @@ RUN apk add --no-cache openssl
 COPY --from=prod-deps /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/package.json ./
-COPY --from=build /app/openapi.yaml ./
 
 EXPOSE 3000
 
