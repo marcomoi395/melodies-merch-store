@@ -77,7 +77,7 @@ export class PromotionController {
         await this.promotionService.removePromotionCode(id);
 
         return {
-            statusCode: 204,
+            statusCode: 200,
             message: 'Promotion deleted successfully',
         };
     }

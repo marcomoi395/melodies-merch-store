@@ -111,7 +111,7 @@ describe('CategoryAdminController', () => {
 
             expect(service.deleteCategoryForAdmin).toHaveBeenCalledWith('cat_123');
             expect(result).toEqual({
-                statusCode: 204,
+                statusCode: 200,
                 message: 'Category deleted successfully',
             });
         });

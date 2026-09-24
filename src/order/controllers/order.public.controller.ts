@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseUUIDPipe, Patch, Query, Req } from '@nestjs/common';
+import { Controller, Get, HttpCode, Param, ParseUUIDPipe, Patch, Query, Req } from '@nestjs/common';
 import { OrderService } from '../order.service';
 import { Post, Body, UseGuards } from '@nestjs/common';
 import { OptionalJwtAuthGuard } from 'src/shared/guards/optional-jwt-auth.guard';
@@ -48,6 +48,7 @@ export class OrderPublicController {
     }
 
     @Post('preview')
+    @HttpCode(200)
     async previewOrder(@Body() body: PreviewOrderDto) {
         const result = await this.orderService.previewOrder(body);
 

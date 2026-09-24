@@ -141,7 +141,7 @@ describe('PromotionController', () => {
 
             expect(service.removePromotionCode).toHaveBeenCalledWith('promo_123');
             expect(result).toEqual({
-                statusCode: 204,
+                statusCode: 200,
                 message: 'Promotion deleted successfully',
             });
         });

@@ -110,7 +110,8 @@ export class ArtistsService {
         if (!artist) {
             throw new NotFoundException(`Artist with ID ${id} not found`);
         }
-        if (slug && (await this.artists.findOneBy({ slug }))?.id !== id) {
+        const artistWithSlug = slug ? await this.artists.findOneBy({ slug }) : null;
+        if (artistWithSlug && artistWithSlug.id !== id) {
             throw new ConflictException('Artist with this stage name already exists');
         }
         return this.artists.save({ ...artist, ...payload, ...(slug && { slug }) });

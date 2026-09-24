@@ -156,7 +156,8 @@ export class CategoryService {
         if (!category) {
             throw new NotFoundException('Category not found');
         }
-        if (slug && (await this.categories.findOne({ where: { slug } }))?.id !== id) {
+        const categoryWithSlug = slug ? await this.categories.findOne({ where: { slug } }) : null;
+        if (categoryWithSlug && categoryWithSlug.id !== id) {
             throw new ConflictException('Category with this name/slug already exists');
         }
         return this.categories.save({ ...category, ...data, ...(slug && { slug }) });
