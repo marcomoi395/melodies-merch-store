@@ -143,8 +143,11 @@ export class OrderService {
         return this.listOrders(query);
     }
 
-    async getOrderById(orderId: string) {
-        return this.orders.findOne({ where: { id: orderId }, relations: { orderItems: true } });
+    async getOrderById(orderId: string, userId?: string) {
+        return this.orders.findOne({
+            where: userId ? { id: orderId, userId } : { id: orderId },
+            relations: { orderItems: true },
+        });
     }
 
     async previewOrder(payload: PreviewOrderDto) {
