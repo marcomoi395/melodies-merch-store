@@ -29,7 +29,7 @@ This backend is packed with features to ensure a smooth experience for both cust
 - **Database Access:** Uses **TypeORM** with PostgreSQL migrations and explicit entity mappings.
 - **Efficient Session Management:** Leverages **Redis** for high-performance session and key management.
 - **Mail Service:** Handles transactional emails using SMTP configuration.
-- **API Documentation:** Features an `openapi.yaml` for Swagger UI support and a Postman Collection for quick testing and exploration of the Melodies Merch Platform APIs.
+- **API Documentation:** Optionally serves generated Swagger metadata when `SWAGGER_ENABLED=true`, alongside a Postman Collection for quick testing and exploration of the Melodies Merch Platform APIs.
 - **Containerized & Deployment-Ready:** Comes with a `Dockerfile` and `docker-compose.yml` for easy, consistent, and reproducible deployments.
 - **Optimized for Production:** Includes an **Nginx** configuration, ready to be used as a reverse proxy for enhanced performance and security.
 
@@ -70,6 +70,12 @@ To get a local copy up and running, follow these simple steps.
     # Security & Authentication
     BCRYPT_SALT_ROUNDS=10
     JWT_SECRET=your_super_secret_jwt_key
+
+    # Application boundaries
+    API_URL=http://localhost:3000
+    CUSTOMER_APP_URL=http://localhost:3001
+    CORS_ORIGINS=http://localhost:3001
+    SWAGGER_ENABLED=false
 
     # Redis Configuration
     REDIS_HOST=localhost
