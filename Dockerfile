@@ -11,7 +11,6 @@ RUN --mount=type=cache,id=npm,target=/root/.npm \
     npm ci
 COPY . .
 
-RUN npx prisma generate
 RUN npm run build
 
 FROM node:22-alpine AS runner
@@ -22,11 +21,9 @@ RUN apk add --no-cache openssl
 
 COPY --from=prod-deps /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
-COPY --from=build /app/prisma ./prisma
-COPY --from=build /app/prisma.config.ts ./
 COPY --from=build /app/package.json ./
 COPY --from=build /app/openapi.yaml ./
 
 EXPOSE 3000
 
-CMD [ "sh", "-c", "npx prisma migrate deploy && npx prisma db seed && node dist/src/main" ]
+CMD [ "sh", "-c", "node node_modules/typeorm/cli.js migration:run -d dist/database/data-source.js && node dist/database/seed.js && node dist/main.js" ]

@@ -2,42 +2,34 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcryptjs';
-import { User } from 'generated/prisma/browser';
 import Redis from 'ioredis';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserEntity as UserRecord } from 'src/database/entities/user.entity';
 import { generateRandomToken } from 'src/shared/helper/generateRandomToken';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UserService {
     constructor(
-        private prisma: PrismaService,
+        @InjectRepository(UserRecord) private users: Repository<UserRecord>,
         private mailer: MailerService,
         private config: ConfigService,
         @Inject('REDIS_CLIENT') private readonly redis: Redis,
     ) {}
 
-    async getUserWithRole(email: string): Promise<User | null> {
-        return await this.prisma.user.findUnique({
-            where: { email: email },
-            include: {
-                userRoles: {
-                    include: {
-                        role: true,
-                    },
-                },
-            },
-        });
+    async getUserWithRole(email: string): Promise<UserRecord | null> {
+        return this.users.findOne({ where: { email }, relations: { userRoles: { role: true } } });
     }
 
     async getUser(email: string) {
-        return await this.prisma.user.findUnique({ where: { email } });
+        return this.users.findOneBy({ email });
     }
 
     async getUserProfile(userId: string) {
-        const user = await this.prisma.user.findUnique({ where: { id: userId } });
+        const user = await this.users.findOneBy({ id: userId });
 
         if (!user) {
             throw new NotFoundException("User doesn't exist");
@@ -47,13 +39,13 @@ export class UserService {
     }
 
     async updateProfileInfo(userId: string, payload: UpdateUserDto) {
-        const user = await this.prisma.user.findUnique({ where: { id: userId } });
+        const user = await this.users.findOneBy({ id: userId });
 
         if (!user) {
             throw new NotFoundException("User doesn't exist");
         }
 
-        const result = await this.prisma.user.update({ where: { id: userId }, data: payload });
+        const result = await this.users.save({ ...user, ...payload });
         return new UserEntity(result);
     }
 
@@ -62,7 +54,7 @@ export class UserService {
             throw new BadRequestException('New password must be different from old password');
         }
 
-        const user = await this.prisma.user.findUnique({ where: { id: userId } });
+        const user = await this.users.findOneBy({ id: userId });
 
         if (!user || !user.passwordHash) {
             throw new NotFoundException('User not found or invalid account state');
@@ -76,14 +68,11 @@ export class UserService {
 
         const newPasswordHash = await bcrypt.hash(payload.newPassword, 10);
 
-        await this.prisma.user.update({
-            where: { id: userId },
-            data: { passwordHash: newPasswordHash },
-        });
+        await this.users.update(userId, { passwordHash: newPasswordHash });
     }
 
     async requestVerificationEmail(userId: string, email: string) {
-        const user = await this.prisma.user.findUnique({
+        const user = await this.users.findOne({
             where: { id: userId },
             select: { isVerified: true },
         });
@@ -132,9 +121,6 @@ export class UserService {
         // Remove the key from Redis after successful verification
         await this.redis.del(key);
 
-        await this.prisma.user.update({
-            where: { id: userId },
-            data: { isVerified: true },
-        });
+        await this.users.update(userId, { isVerified: true });
     }
 }

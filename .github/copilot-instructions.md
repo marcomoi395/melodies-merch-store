@@ -1,6 +1,6 @@
 # Copilot Instructions - Melodies Merch Store Backend
 
-This is a NestJS backend for an e-commerce platform selling music products and merchandise, using Prisma ORM with PostgreSQL and Redis for session management.
+This is a NestJS backend for an e-commerce platform selling music products and merchandise, using TypeORM ORM with PostgreSQL and Redis for session management.
 
 ## Build, Test, and Lint Commands
 
@@ -9,9 +9,8 @@ This is a NestJS backend for an e-commerce platform selling music products and m
 npm install
 
 # Database setup (after configuring .env)
-npx prisma migrate dev          # Run migrations
-npx prisma db seed              # Seed initial data (Super Admin, Categories)
-npx prisma generate             # Generate Prisma Client (output: generated/prisma/)
+    npm run migration:run            # Run TypeORM migrations
+    npm run seed                     # Seed initial data (Super Admin, Categories)
 
 # Development
 npm run start:dev               # Watch mode on port 3000
@@ -24,7 +23,7 @@ npm run start:prod              # Run production build
 npm run test                    # Run all unit tests
 npm run test:watch              # Watch mode
 npm run test:cov                # With coverage
-npm run test:e2e                # E2E tests (config: test/jest-e2e.json)
+TEST_DATABASE_URL=postgresql://localhost/melodies_test npm run test:e2e
 npm test -- [path/to/file.spec.ts]  # Run single test file
 
 # Linting & Formatting
@@ -62,7 +61,7 @@ src/[feature]/
 ### Core Modules
 
 - **auth/** - JWT & local authentication strategies, session management
-- **prisma/** - PrismaService (extends PrismaClient with PrismaPg adapter)
+- **database/** - TypeORM DataSource, entities, migrations, and seed
 - **redis/** - RedisService for session storage
 - **permissions/** - RBAC system with PermissionGuard
 - **roles/** - Role management
@@ -96,7 +95,7 @@ Use `plainToInstance(ResponseDto, data, { excludeExtraneousValues: true })` to t
 **Response DTOs** (output transformation):
 
 - Use `class-transformer` decorators: `@Expose()`, `@Transform()`, `@Type()`
-- Custom decorator `@DecimalToNumber()` converts Prisma Decimal to number
+- Custom decorator `@DecimalToNumber()` converts TypeORM Decimal to number
 - Support nested transformations with `@Type(() => NestedDto)`
 - Include constructors accepting partial objects
 
@@ -111,7 +110,7 @@ export class ProductResponseDto {
 
     @Expose()
     @DecimalToNumber()
-    price: number; // Prisma Decimal → number
+    price: number; // TypeORM Decimal → number
 }
 ```
 
@@ -134,12 +133,11 @@ async getProducts() { }
 
 **Optional Auth:** Use `OptionalJwtAuthGuard` (in `src/shared/guards/`) to allow unauthenticated access while still populating `req.user` if token exists.
 
-### Prisma Integration
+### TypeORM Integration
 
-- **Generated Client Location:** `generated/prisma/` (not default `node_modules/.prisma/`)
-- **Import Path:** `import { PrismaClient } from '../generated/prisma/client'`
-- **PrismaService:** Uses `PrismaPg` adapter, injects ConfigService for DATABASE_URL
-- **Seeding:** `prisma/seed.ts` populates Super Admin, permissions, and base data from `seed.json`
+- **Persistence client:** Inject TypeORM repositories with `@InjectRepository`; no generated client is used.
+- **Data access:** Inject TypeORM repositories with `@InjectRepository`; use `DataSource.transaction()` for multi-repository writes.
+- **Seeding:** `src/database/seed.ts` populates Super Admin, permissions, and base data.
 
 ### Shared Utilities
 
@@ -165,8 +163,8 @@ App validates env vars with Joi schema in `app.module.ts` on startup.
 
 - Unit tests: `src/**/*.spec.ts` (Jest with ts-jest)
 - E2E tests: `test/**/*.e2e-spec.ts`
-- Module name mapping: `src/...` and `generated/...` paths configured in `package.json` jest config
-- Prisma mocking: Use dependency injection to replace PrismaService in test modules
+- Module name mapping: `src/...` paths configured in Jest.
+- TypeORM mocking: Use dependency injection to replace repository tokens in test modules.
 
 ## API Documentation
 
@@ -183,19 +181,19 @@ App validates env vars with Joi schema in `app.module.ts` on startup.
 3. Create `controllers/[feature].public.controller.ts` and `controllers/[feature].admin.controller.ts`
 4. Create DTOs in `dto/` (create, update, get, response)
 5. Add guards to admin controller: `@UseGuards(AuthGuard('jwt'), PermissionGuard)`
-6. Add permissions in `prisma/seed.ts` (PermissionKey enum)
+6. Add permissions in `src/database/seed.ts` (PermissionKey enum)
 7. Import module in `app.module.ts`
 
 ### Adding New Permissions
 
-1. Add enum entry in `prisma/seed.ts` (PermissionKey)
+1. Add enum entry in `src/database/seed.ts` (PermissionKey)
 2. Add to `PERMISSIONS` array in seed file
-3. Run `npx prisma db seed` to sync to database
+3. Run `npm run seed` to sync to database
 4. Use `@RequiredPermission(resource, action)` on controller endpoints
 
 ### Database Schema Changes
 
-1. Modify `prisma/schema.prisma`
-2. Create migration: `npx prisma migrate dev --name [description]`
-3. Generate client: `npx prisma generate`
-4. Update seed data if needed: Edit `prisma/seed.ts` or `prisma/seed.json`
+1. Add or modify entities under `src/database/entities/`.
+2. Add a TypeORM migration under `src/database/migrations/`.
+3. Run `npm run migration:run` against the target database.
+4. Update seed data if needed in `src/database/seed.ts`.

@@ -1,7 +1,7 @@
 import { Body, Controller, HttpCode, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
-import { User } from 'generated/prisma/browser';
+import { UserEntity } from 'src/database/entities/user.entity';
 import { IJwtPayload } from './auth.interface';
 import { AuthService } from './auth.service';
 import { RefreshTokenDto, RegisterUserDto } from './dto/register-user.dto';
@@ -26,7 +26,7 @@ export class AuthController {
     @UseGuards(AuthGuard('local'))
     @HttpCode(200)
     @Post('login')
-    async login(@Req() req: Request & { user: User }) {
+    async login(@Req() req: Request & { user: UserEntity }) {
         const data = await this.authService.login(req.user);
         return {
             statusCode: 200,

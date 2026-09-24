@@ -11,13 +11,20 @@
         "start": "nest start --watch",
         "start:dev": "nest start --watch",
         "start:debug": "nest start --debug --watch",
-        "start:prod": "node dist/main",
+        "start:prod": "node dist/main.js",
         "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
         "test": "jest",
         "test:watch": "jest --watch",
         "test:cov": "jest --coverage",
         "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
         "test:e2e": "jest --config ./test/jest-e2e.json",
+        "test:database": "jest --config ./test/jest-database.json",
+        "verify:typeorm": "node scripts/check-typeorm-only.cjs",
+        "typeorm": "typeorm-ts-node-commonjs",
+        "migration:run": "typeorm-ts-node-commonjs migration:run -d src/database/data-source.ts",
+        "migration:revert": "typeorm-ts-node-commonjs migration:revert -d src/database/data-source.ts",
+        "migration:adopt": "tsx src/database/adopt.ts",
+        "seed": "tsx src/database/seed.ts",
         "prepare": "husky"
     },
     "dependencies": {
@@ -31,8 +38,7 @@
         "@nestjs/passport": "^11.0.5",
         "@nestjs/platform-express": "^11.0.1",
         "@nestjs/swagger": "^11.2.3",
-        "@prisma/adapter-pg": "^7.2.0",
-        "@prisma/client": "^7.2.0",
+        "@nestjs/typeorm": "^11.0.3",
         "@types/bcrypt": "^6.0.0",
         "@types/js-yaml": "^4.0.9",
         "@types/jsonwebtoken": "^9.0.10",
@@ -54,6 +60,7 @@
         "reflect-metadata": "^0.2.2",
         "rxjs": "^7.8.1",
         "slugify": "^1.6.6",
+        "typeorm": "^0.3.31",
         "uuid": "^13.0.0"
     },
     "devDependencies": {
@@ -80,7 +87,6 @@
         "jest": "^30.0.0",
         "lint-staged": "^16.2.7",
         "prettier": "^3.4.2",
-        "prisma": "^7.2.0",
         "source-map-support": "^0.5.21",
         "supertest": "^7.0.0",
         "ts-jest": "^29.2.5",
@@ -104,7 +110,6 @@
         },
         "moduleNameMapper": {
             "^src/(.*)$": "<rootDir>/$1",
-            "^generated/(.*)$": "<rootDir>/../generated/$1",
             "^uuid$": "uuid"
         },
         "transformIgnorePatterns": [

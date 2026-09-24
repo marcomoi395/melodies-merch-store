@@ -51,7 +51,7 @@ export class CategoryAdminController {
         await this.categoryService.deleteCategoryForAdmin(id);
 
         return {
-            statusCode: 204,
+            statusCode: 200,
             message: 'Category deleted successfully',
         };
     }

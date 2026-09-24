@@ -26,7 +26,7 @@ This backend is packed with features to ensure a smooth experience for both cust
 ### Technical Highlights
 
 - **Scalable Architecture:** Built with **NestJS**, a progressive Node.js framework for building efficient and scalable server-side applications.
-- **Type-Safe Database Access:** Uses **Prisma** as a next-generation ORM for cleaner, more reliable database interactions.
+- **Database Access:** Uses **TypeORM** with PostgreSQL migrations and explicit entity mappings.
 - **Efficient Session Management:** Leverages **Redis** for high-performance session and key management.
 - **Mail Service:** Handles transactional emails using SMTP configuration.
 - **API Documentation:** Features an `openapi.yaml` for Swagger UI support and a Postman Collection for quick testing and exploration of the Melodies Merch Platform APIs.
@@ -84,17 +84,16 @@ To get a local copy up and running, follow these simple steps.
     ```
 
 4. **Running Locally (Development Mode)**
-   Make sure your local PostgreSQL and Redis services are running.
-   **Run Database Migrations:** Push the schema to your database and generate the Prisma Client:
+   Make sure your local PostgreSQL and Redis services are running. For a new database, run the TypeORM migration before seeding or starting the application:
 
     ```bash
-    npx prisma migrate dev
+    npm run migration:run
     ```
 
-    **Seed Initial Data:** Populate the database with essential data (e.g., Super Admin account, Categories):
+    **Seed Initial Data:** Populate the idempotent base data (Super Admin, permissions, catalog, carts, and sample orders):
 
     ```bash
-    npx prisma db seed
+    npm run seed
     ```
 
     **Start the Server:**
@@ -105,10 +104,10 @@ To get a local copy up and running, follow these simple steps.
 
     The application will be available at `http://localhost:3000`.
 
-5. **Deployment (Production)**
-   This project is configured to be deployed using Docker Compose, which includes the API, Database, Redis, and an Nginx reverse proxy with SSL support.
+    Existing databases must pass the TypeORM adoption preflight and be fake-baselined before `migration:run`. See [the cutover runbook](tasks/typeorm-cutover.md).
 
-    **Note:** The provided `docker-compose.yml` assumes you have SSL certificates mapped (e.g., via Let's Encrypt).
+5. **Local dependencies**
+   `docker-compose.local.yml` currently starts PostgreSQL on port `5432` and Redis on port `6380`. Start the API locally with `npm run start:dev`; its API and Nginx service definitions are intentionally commented out.
 
     **Build and Run:**
 
@@ -121,3 +120,11 @@ To get a local copy up and running, follow these simple steps.
     ```bash
     docker-compose ps
     ```
+
+## Database Operations
+
+- `npm run migration:run` applies pending TypeORM migrations.
+- `npm run migration:revert` reverts only the latest TypeORM migration; never use it on a shared deployed database during an application rollback.
+- `npm run migration:adopt` fake-baselines an existing matching schema after preflight; it does not create, drop, or alter application tables.
+- `npm run seed` synchronizes the documented base data. It is repeatable and does not clear the database.
+- `npm run test:database` runs disposable PostgreSQL migration and adoption coverage when `TEST_DATABASE_URL` is configured.

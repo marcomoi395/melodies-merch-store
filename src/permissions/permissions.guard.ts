@@ -6,21 +6,24 @@ import {
     UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { InjectRepository } from '@nestjs/typeorm';
 import { IJwtPayload } from 'src/auth/auth.interface';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PermissionEntity } from 'src/database/entities/permission.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class PermissionGuard implements CanActivate {
     constructor(
         private reflector: Reflector,
-        private prisma: PrismaService,
+        @InjectRepository(PermissionEntity)
+        private permissions: Repository<PermissionEntity>,
     ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
-        const requiredPermission = this.reflector.get<{ resource: string; action: string }>(
-            'permission',
-            context.getHandler(),
-        );
+        const requiredPermission = this.reflector.getAllAndOverride<{
+            resource: string;
+            action: string;
+        }>('permission', [context.getHandler(), context.getClass()]);
 
         if (!requiredPermission) {
             return true;
@@ -34,24 +37,15 @@ export class PermissionGuard implements CanActivate {
             throw new UnauthorizedException('Token is invalid or expired');
         }
 
-        const permissionsData = await this.prisma.permission.findMany({
-            where: {
-                rolePermissions: {
-                    some: {
-                        role: {
-                            userRoles: {
-                                some: {
-                                    userId: user.sub,
-                                },
-                            },
-                        },
-                    },
-                },
-            },
-            select: {
-                name: true,
-            },
-        });
+        const permissionsData = await this.permissions
+            .createQueryBuilder('permission')
+            .innerJoin('permission.rolePermissions', 'rolePermission')
+            .innerJoin('rolePermission.role', 'role')
+            .innerJoin('role.userRoles', 'userRole', 'userRole.userId = :userId', {
+                userId: user.sub,
+            })
+            .select('permission.name', 'name')
+            .getRawMany<{ name: string }>();
 
         const userPermissions = permissionsData.map((p) => p.name.toLowerCase());
 

@@ -4,27 +4,28 @@ import {
     Injectable,
     NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { PermissionEntity } from 'src/database/entities/permission.entity';
+import { RolePermissionEntity } from 'src/database/entities/role-permission.entity';
+import { RoleEntity } from 'src/database/entities/role.entity';
+import { UserRoleEntity } from 'src/database/entities/user-role.entity';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { formatRoleResponse } from 'src/shared/helper/formatRoleResponse';
 import { UpdateRoleDto } from './dto/update-role.dto';
+import { DataSource, In, IsNull, Repository } from 'typeorm';
 
 @Injectable()
 export class RolesService {
-    constructor(private prisma: PrismaService) {}
+    constructor(
+        @InjectRepository(RoleEntity) private roles: Repository<RoleEntity>,
+        @InjectRepository(PermissionEntity) private permissions: Repository<PermissionEntity>,
+        private dataSource: DataSource,
+    ) {}
 
     async getRoles() {
-        const roles = await this.prisma.role.findMany({
-            where: {
-                deletedAt: null,
-            },
-            include: {
-                rolePermissions: {
-                    include: {
-                        permission: true,
-                    },
-                },
-            },
+        const roles = await this.roles.find({
+            where: { deletedAt: IsNull() },
+            relations: { rolePermissions: { permission: true } },
         });
 
         return roles.map((role) => formatRoleResponse(role));
@@ -32,7 +33,7 @@ export class RolesService {
 
     async createNewRoleForAdmin(payload: CreateRoleDto) {
         const { name, description, permissionIds } = payload;
-        const findRole = await this.prisma.role.findUnique({ where: { name } });
+        const findRole = await this.roles.findOneBy({ name });
 
         if (findRole) {
             throw new ConflictException('Role with this name already exists');
@@ -41,10 +42,8 @@ export class RolesService {
         const finalPermissionIds = permissionIds ? [...new Set(permissionIds)] : [];
 
         if (finalPermissionIds.length > 0) {
-            const existingPermissions = await this.prisma.permission.findMany({
-                where: {
-                    id: { in: finalPermissionIds },
-                },
+            const existingPermissions = await this.permissions.find({
+                where: { id: In(finalPermissionIds) },
                 select: { id: true },
             });
 
@@ -58,25 +57,21 @@ export class RolesService {
             }
         }
 
-        const role = await this.prisma.role.create({
-            data: {
-                name,
-                description,
-                rolePermissions: {
-                    create: finalPermissionIds.map((permissionId) => ({
-                        permission: {
-                            connect: { id: permissionId },
-                        },
+        const role = await this.dataSource.transaction(async (manager) => {
+            const created = await manager.save(RoleEntity, { name, description });
+            if (finalPermissionIds.length) {
+                await manager.insert(
+                    RolePermissionEntity,
+                    finalPermissionIds.map((permissionId) => ({
+                        roleId: created.id,
+                        permissionId,
                     })),
-                },
-            },
-            include: {
-                rolePermissions: {
-                    include: {
-                        permission: true,
-                    },
-                },
-            },
+                );
+            }
+            return manager.findOneOrFail(RoleEntity, {
+                where: { id: created.id },
+                relations: { rolePermissions: { permission: true } },
+            });
         });
 
         return formatRoleResponse(role);
@@ -85,13 +80,13 @@ export class RolesService {
     async updateRoleForAdmin(id: string, payload: UpdateRoleDto) {
         const { name, description, permissionIds } = payload;
 
-        const existingRole = await this.prisma.role.findUnique({ where: { id } });
+        const existingRole = await this.roles.findOneBy({ id });
         if (!existingRole) {
             throw new NotFoundException('Role not found');
         }
 
         if (name && name !== existingRole.name) {
-            const duplicateRole = await this.prisma.role.findUnique({ where: { name } });
+            const duplicateRole = await this.roles.findOneBy({ name });
             if (duplicateRole) {
                 throw new ConflictException('Role with this name already exists');
             }
@@ -100,8 +95,8 @@ export class RolesService {
         const finalPermissionIds = permissionIds ? [...new Set(permissionIds)] : [];
 
         if (finalPermissionIds.length > 0) {
-            const existingPermissions = await this.prisma.permission.findMany({
-                where: { id: { in: finalPermissionIds } },
+            const existingPermissions = await this.permissions.find({
+                where: { id: In(finalPermissionIds) },
                 select: { id: true },
             });
 
@@ -115,61 +110,46 @@ export class RolesService {
             }
         }
 
-        const updatedRole = await this.prisma.role.update({
-            where: { id },
-            data: {
+        const updatedRole = await this.dataSource.transaction(async (manager) => {
+            await manager.save(RoleEntity, {
+                ...existingRole,
                 ...(name !== undefined && { name }),
                 ...(description !== undefined && { description }),
-                ...(permissionIds !== undefined && {
-                    rolePermissions: {
-                        deleteMany: {},
-                        create: finalPermissionIds.map((permissionId) => ({
-                            permission: {
-                                connect: { id: permissionId },
-                            },
-                        })),
-                    },
-                }),
-            },
-            include: {
-                rolePermissions: {
-                    include: {
-                        permission: true,
-                    },
-                },
-            },
+            });
+            if (permissionIds !== undefined) {
+                await manager.delete(RolePermissionEntity, { roleId: id });
+                if (finalPermissionIds.length) {
+                    await manager.insert(
+                        RolePermissionEntity,
+                        finalPermissionIds.map((permissionId) => ({ roleId: id, permissionId })),
+                    );
+                }
+            }
+            return manager.findOneOrFail(RoleEntity, {
+                where: { id },
+                relations: { rolePermissions: { permission: true } },
+            });
         });
 
         return formatRoleResponse(updatedRole);
     }
 
     async deleteRoleForAdmin(id: string) {
-        const existingRole = await this.prisma.role.findFirst({
-            where: {
-                id,
-                deletedAt: null,
-            },
-        });
+        const existingRole = await this.roles.findOne({ where: { id, deletedAt: IsNull() } });
 
         if (!existingRole) {
             throw new NotFoundException('Role not found');
         }
 
-        return await this.prisma.$transaction(async (tx) => {
+        return this.dataSource.transaction(async (tx) => {
             // Hard delete records in the junction table (e.g., 'UserRole') to revoke access immediately
-            await tx.userRole.deleteMany({
-                where: { roleId: id },
-            });
+            await tx.delete(UserRoleEntity, { roleId: id });
 
             // Keep 'rolePermissions' intact to enable future restoration if needed
-            return await tx.role.update({
-                where: { id },
-                data: {
-                    deletedAt: new Date(),
-
-                    name: `${existingRole.name}_deleted_${Date.now()}`,
-                    // No changes to rolePermissions
-                },
+            return tx.save(RoleEntity, {
+                ...existingRole,
+                deletedAt: new Date(),
+                name: `${existingRole.name}_deleted_${Date.now()}`,
             });
         });
     }

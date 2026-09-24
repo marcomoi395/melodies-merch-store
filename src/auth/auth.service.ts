@@ -9,27 +9,28 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
-import { User } from 'generated/prisma/browser';
 import Redis from 'ioredis';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserEntity as UserRecord } from 'src/database/entities/user.entity';
 import { generateRandomToken } from 'src/shared/helper/generateRandomToken';
-import { UserEntity } from 'src/user/entities/user.entity';
+import { UserEntity as UserResponse } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 import { v4 } from 'uuid';
+import { Repository } from 'typeorm';
 import { IJwtPayload, IRegisterUser } from './auth.interface';
 
 @Injectable()
 export class AuthService {
     constructor(
         @Inject('REDIS_CLIENT') private readonly redis: Redis,
-        private prisma: PrismaService,
+        @InjectRepository(UserRecord) private users: Repository<UserRecord>,
         private user: UserService,
         private jwt: JwtService,
         private config: ConfigService,
         private mailer: MailerService,
     ) {}
 
-    async registerUserForClient(payload: IRegisterUser): Promise<User> {
+    async registerUserForClient(payload: IRegisterUser): Promise<UserResponse> {
         const findUser = await this.user.getUser(payload.email);
         if (findUser) {
             throw new ConflictException('User with this email already exists');
@@ -39,17 +40,14 @@ export class AuthService {
 
         const { password, ...userData } = payload;
 
-        const newUser = await this.prisma.user.create({
-            data: {
-                ...userData,
-                passwordHash: hashPassword,
-            },
-        });
+        const newUser = await this.users.save(
+            this.users.create({ ...userData, passwordHash: hashPassword }),
+        );
 
-        return new UserEntity(newUser);
+        return new UserResponse(newUser);
     }
 
-    async validateUser(email: string, password: string): Promise<User | null> {
+    async validateUser(email: string, password: string): Promise<UserRecord | null> {
         const findUser = await this.user.getUser(email);
         if (!findUser || !findUser.passwordHash) {
             return null;
@@ -59,13 +57,13 @@ export class AuthService {
 
         if (isPasswordValid) {
             const { passwordHash, ...userData } = findUser;
-            return userData as User;
+            return userData as UserRecord;
         }
 
         return null;
     }
 
-    async login(user: User) {
+    async login(user: UserRecord) {
         const tokenId = v4();
         const token = this.generateToken(user.id, user.email, tokenId);
 
@@ -225,9 +223,6 @@ export class AuthService {
         // Remove the key from Redis after successful verification
         await this.redis.del(key);
 
-        await this.prisma.user.update({
-            where: { id: userId },
-            data: { passwordHash },
-        });
+        await this.users.update(userId, { passwordHash });
     }
 }

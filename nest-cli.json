@@ -7,8 +7,8 @@
         "assets": [
             { "include": "**/*.hbs", "watch": true, "outDir": "dist/src" },
             {
-                "include": "../prisma/**/*.json",
-                "outDir": "dist/prisma",
+                "include": "database/**/*.json",
+                "outDir": "dist/src",
                 "watchAssets": true
             }
         ],

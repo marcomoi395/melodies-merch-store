@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { PrismaModule } from './prisma/prisma.module';
+import { DatabaseModule } from './database/database.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
@@ -20,7 +20,7 @@ import { join } from 'path';
 
 @Module({
     imports: [
-        PrismaModule,
+        DatabaseModule,
         ConfigModule.forRoot({
             isGlobal: true,
             validationSchema: Joi.object({

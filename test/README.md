@@ -22,7 +22,8 @@ npm run test:watch
 # Run tests with coverage
 npm run test:cov
 
-# Run E2E tests
+# Run E2E tests against an isolated PostgreSQL database
+export TEST_DATABASE_URL=postgresql://localhost/melodies_test
 npm run test:e2e
 
 # Run specific test file
@@ -37,8 +38,6 @@ test/
 │   └── user.factory.ts
 ├── helpers/           # Test utilities
 │   └── test-helpers.ts
-├── mocks/            # Mock objects
-│   └── prisma.mock.ts
 ├── jest-e2e.json     # E2E test configuration
 └── README.md         # This file
 ```
@@ -47,36 +46,41 @@ test/
 
 ### Service Tests
 
-Services contain business logic and interact with PrismaService. Mock all dependencies.
+Services contain business logic and interact with injected TypeORM repositories. Mock repositories at the service boundary.
 
 ```typescript
 import { Test, TestingModule } from '@nestjs/testing';
 import { ModuleService } from './module.service';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { mockPrismaService, resetPrismaMocks } from 'test/mocks/prisma.mock';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { UserEntity } from 'src/database/entities/user.entity';
 
 describe('ModuleService', () => {
     let service: ModuleService;
-    let prisma: typeof mockPrismaService;
+    let repository: typeof repositoryMock;
+
+    const repositoryMock = { findOne: jest.fn(), save: jest.fn() };
 
     beforeEach(async () => {
-        resetPrismaMocks();
+        jest.clearAllMocks();
 
         const module: TestingModule = await Test.createTestingModule({
-            providers: [ModuleService, { provide: PrismaService, useValue: mockPrismaService }],
+            providers: [
+                ModuleService,
+                { provide: getRepositoryToken(UserEntity), useValue: repositoryMock },
+            ],
         }).compile();
 
         service = module.get<ModuleService>(ModuleService);
-        prisma = module.get(PrismaService);
+        repository = module.get(getRepositoryToken(UserEntity));
     });
 
     it('should perform CRUD operation', async () => {
         const mockData = { id: '1', name: 'Test' };
-        prisma.model.findUnique.mockResolvedValue(mockData);
+        repository.findOneBy.mockResolvedValue(mockData);
 
         const result = await service.findById('1');
 
-        expect(prisma.model.findUnique).toHaveBeenCalledWith({ where: { id: '1' } });
+        expect(repository.findOneBy).toHaveBeenCalledWith({ id: '1' });
         expect(result).toEqual(mockData);
     });
 });
@@ -215,31 +219,18 @@ const user = UserFactory.create({ email: 'custom@example.com' });
 const product = ProductFactory.create({ name: 'Custom Product' });
 ```
 
-### Mocks (`test/mocks/`)
-
-Pre-configured mock objects:
-
-```typescript
-import { mockPrismaService, resetPrismaMocks } from 'test/mocks/prisma.mock';
-
-// Use in tests
-beforeEach(() => {
-    resetPrismaMocks();
-});
-```
-
 ## Best Practices
 
 ### General
 
 1. **Test Isolation**: Each test should be independent and not rely on other tests
-2. **Reset Mocks**: Always reset mocks between tests with `resetPrismaMocks()` or `jest.clearAllMocks()`
+2. **Reset Mocks**: Always reset mocks between tests with `jest.clearAllMocks()`
 3. **Descriptive Names**: Use clear, descriptive test names that explain what is being tested
 4. **Arrange-Act-Assert**: Structure tests with setup, execution, and verification phases
 
 ### Unit Tests
 
-1. **Mock External Dependencies**: Mock PrismaService, external APIs, and other services
+1. **Mock External Dependencies**: Mock injected repositories, external APIs, and other services
 2. **Test Business Logic**: Focus on testing business rules and edge cases
 3. **Verify Method Calls**: Use `expect(mock).toHaveBeenCalledWith(...)` to verify interactions
 4. **Test Error Cases**: Always test error scenarios (NotFoundException, ValidationError, etc.)
@@ -274,11 +265,11 @@ All API endpoints return standardized responses:
 
 ### Testing Decimal Fields
 
-Prisma returns Decimal objects. Use `@DecimalToNumber()` decorator in response DTOs:
+PostgreSQL decimal columns are exposed as strings by TypeORM. Response DTOs convert them explicitly:
 
 ```typescript
 it('should convert Decimal to number', () => {
-    const product = { price: new Prisma.Decimal(99.99) };
+    const product = { price: '99.99' };
     const dto = plainToInstance(ProductResponseDto, product, {
         excludeExtraneousValues: true,
     });
@@ -290,10 +281,10 @@ it('should convert Decimal to number', () => {
 
 ```typescript
 it('should return paginated results', async () => {
-    prisma.model.findMany.mockResolvedValue([
+    repository.find.mockResolvedValue([
         /* items */
     ]);
-    prisma.model.count.mockResolvedValue(25);
+    repository.count.mockResolvedValue(25);
 
     const result = await service.findAll({ page: 2, limit: 10 });
 
@@ -310,11 +301,12 @@ it('should return paginated results', async () => {
 
 ```typescript
 it('should execute in transaction', async () => {
-    prisma.$transaction.mockImplementation((fn) => fn(prisma));
+    const entityManager = {};
+    const dataSource = { transaction: jest.fn((fn) => fn(entityManager)) };
 
     await service.methodWithTransaction();
 
-    expect(prisma.$transaction).toHaveBeenCalled();
+    expect(dataSource.transaction).toHaveBeenCalled();
 });
 ```
 
