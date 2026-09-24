@@ -1,5 +1,5 @@
 Type: task
-Status: ready-for-agent
+Status: resolved
 
 ## Goal
 
@@ -15,3 +15,7 @@ Make browser access, API documentation, and deployment configuration explicit an
 ## Blocked by
 
 None.
+
+## Answer
+
+Implemented configured CORS, explicit runtime URL and Swagger settings, generated optional Swagger metadata, quiet Swagger failure handling, and bootstrap/configuration tests.

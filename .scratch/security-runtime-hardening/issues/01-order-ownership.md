@@ -1,5 +1,5 @@
 Type: task
-Status: ready-for-agent
+Status: resolved
 
 ## Goal
 
@@ -16,3 +16,7 @@ Restrict shopper order detail to the authenticated owner while preserving guest 
 ## Blocked by
 
 None.
+
+## Answer
+
+Implemented owner-scoped shopper order detail, preserved guest checkout and admin access, and added HTTP regression coverage for anonymous, owner, non-owner, guest, and admin flows.

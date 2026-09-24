@@ -1,5 +1,5 @@
 Type: task
-Status: ready-for-agent
+Status: resolved
 
 ## Goal
 
@@ -15,3 +15,7 @@ Make account recovery links usable and invalidate stale sessions after credentia
 ## Blocked by
 
 None.
+
+## Answer
+
+Implemented customer-application recovery links, refresh-session revocation after credential changes, and non-enumerating password-reset requests with focused service coverage.
