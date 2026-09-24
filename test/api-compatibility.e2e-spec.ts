@@ -229,11 +229,12 @@ describe('TypeORM API compatibility (e2e)', () => {
 
     it('serves every cart and shopper order endpoint', async () => {
         const http = request(app!.getHttpServer());
-        expectApi(await http.get('/api/cart').set(bearer(shopperToken)), 200);
+        const shopperSession = bearer(clientToken);
+        expectApi(await http.get('/api/cart').set(shopperSession), 200);
 
         const addToCart = await http
             .post('/api/cart')
-            .set(bearer(shopperToken))
+            .set(shopperSession)
             .send({ productId, productVariantId, quantity: 1 });
         expectApi(addToCart, 201);
         const cartItems = getData<{ cartItems: Array<{ id: string }> }>(addToCart).cartItems;
@@ -242,13 +243,10 @@ describe('TypeORM API compatibility (e2e)', () => {
             throw new Error('Cart response must include the added item');
         }
         expectApi(
-            await http
-                .patch(`/api/cart/${cartItem.id}`)
-                .set(bearer(shopperToken))
-                .send({ quantity: 2 }),
+            await http.patch(`/api/cart/${cartItem.id}`).set(shopperSession).send({ quantity: 2 }),
             200,
         );
-        expectApi(await http.delete(`/api/cart/${cartItem.id}`).set(bearer(shopperToken)), 200);
+        expectApi(await http.delete(`/api/cart/${cartItem.id}`).set(shopperSession), 200);
 
         const order = {
             fullName: 'E2E Shopper',
@@ -266,26 +264,20 @@ describe('TypeORM API compatibility (e2e)', () => {
             200,
         );
 
-        const adminManagedOrder = await http
-            .post('/api/order')
-            .set(bearer(shopperToken))
-            .send(order);
+        const adminManagedOrder = await http.post('/api/order').set(shopperSession).send(order);
         expectApi(adminManagedOrder, 201);
         const adminManagedOrderId = getData<{ id: string }>(adminManagedOrder).id;
         expect(adminManagedOrderId).toEqual(expect.any(String));
-        expectApi(await http.get('/api/order').set(bearer(shopperToken)), 200);
+        expectApi(await http.get('/api/order').set(shopperSession), 200);
         expectApi(await http.get(`/api/order/${adminManagedOrderId}`), 200);
 
         const cancelledOrder = await http
             .post('/api/order')
-            .set(bearer(shopperToken))
+            .set(shopperSession)
             .send({ ...order, email: `cancel-${randomUUID()}@example.com` });
         expectApi(cancelledOrder, 201);
         const cancelledOrderId = getData<{ id: string }>(cancelledOrder).id;
-        expectApi(
-            await http.patch(`/api/order/${cancelledOrderId}`).set(bearer(shopperToken)),
-            200,
-        );
+        expectApi(await http.patch(`/api/order/${cancelledOrderId}`).set(shopperSession), 200);
 
         expectApi(await http.get('/api/admin/order').set(bearer(adminToken)), 200);
         expectApi(
