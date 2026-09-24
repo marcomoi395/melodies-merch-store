@@ -6,6 +6,7 @@ import Redis from 'ioredis';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity as UserRecord } from 'src/database/entities/user.entity';
 import { generateRandomToken } from 'src/shared/helper/generateRandomToken';
+import { revokeAllTokens } from 'src/shared/helper/revokeAllTokens';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entity';
@@ -69,6 +70,7 @@ export class UserService {
         const newPasswordHash = await bcrypt.hash(payload.newPassword, 10);
 
         await this.users.update(userId, { passwordHash: newPasswordHash });
+        await revokeAllTokens(this.redis, userId);
     }
 
     async requestVerificationEmail(userId: string, email: string) {
@@ -93,8 +95,8 @@ export class UserService {
 
         const token = generateRandomToken();
         const key = `verify-account:${token}`;
-        const host = this.config.get<string>('API_URL');
-        const url = `${host}/api/user/verify-account?token=${token}`;
+        const url = new URL('verify-account', `${this.config.get<string>('CUSTOMER_APP_URL')}/`);
+        url.searchParams.set('token', token);
 
         // Save token to Redis with expiration (15 minutes)
         await this.redis.set(key, userId, 'EX', 15 * 60);
@@ -104,7 +106,7 @@ export class UserService {
             subject: 'Xác thực tài khoản Melodies Merch Store',
             template: './verify-account',
             context: {
-                url,
+                url: url.toString(),
             },
         });
     }
