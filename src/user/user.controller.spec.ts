@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ForbiddenException } from '@nestjs/common';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -143,60 +144,18 @@ describe('UserController', () => {
     });
 
     describe('requestVerificationEmail', () => {
-        it('should send verification email', async () => {
-            const mockRequest = {
-                user: { sub: 'user_123', email: 'test@example.com' },
-            } as any;
-
-            mockUserService.requestVerificationEmail.mockResolvedValue(undefined);
-
-            const result = await controller.requestVerificationEmail(mockRequest);
-
-            expect(service.requestVerificationEmail).toHaveBeenCalledWith(
-                'user_123',
-                'test@example.com',
-            );
-            expect(result).toEqual({
-                statusCode: 200,
-                message: 'Verification email sent successfully',
-            });
-        });
-
-        it('should propagate errors from service', async () => {
-            const mockRequest = { user: { sub: 'user_123', email: 'test@example.com' } } as any;
-            mockUserService.requestVerificationEmail.mockRejectedValue(
-                new Error('User is already verified'),
-            );
-            await expect(controller.requestVerificationEmail(mockRequest)).rejects.toThrow(
-                'User is already verified',
-            );
+        it('disables customer verification', async () => {
+            await expect(
+                controller.requestVerificationEmail({ user: { sub: 'user_123' } } as any),
+            ).rejects.toBeInstanceOf(ForbiddenException);
         });
     });
 
     describe('verificationToken', () => {
-        it('should verify account successfully', async () => {
-            const verificationDto = {
-                token: 'verification-token',
-            };
-
-            mockUserService.verificationToken.mockResolvedValue(undefined);
-
-            const result = await controller.verificationToken(verificationDto);
-
-            expect(service.verificationToken).toHaveBeenCalledWith(verificationDto.token);
-            expect(result).toEqual({
-                statusCode: 200,
-                message: 'Account verified successfully',
-            });
-        });
-
-        it('should propagate errors from service', async () => {
-            mockUserService.verificationToken.mockRejectedValue(
-                new Error('Invalid or expired verification token'),
-            );
-            await expect(controller.verificationToken({ token: 'bad-token' })).rejects.toThrow(
-                'Invalid or expired verification token',
-            );
+        it('disables customer verification', async () => {
+            await expect(
+                controller.verificationToken({ token: 'bad-token' }),
+            ).rejects.toBeInstanceOf(ForbiddenException);
         });
     });
 });

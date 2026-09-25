@@ -1,4 +1,13 @@
-import { IsOptional, IsString, IsNumber, Min, IsBoolean, IsArray, IsUUID } from 'class-validator';
+import {
+    IsOptional,
+    IsString,
+    IsNumber,
+    Min,
+    IsBoolean,
+    IsArray,
+    IsUUID,
+    IsIn,
+} from 'class-validator';
 import { Type, Transform } from 'class-transformer';
 
 export class GetProductsDto {
@@ -38,7 +47,8 @@ export class GetProductsDto {
 
     @IsOptional()
     @IsString()
-    sort?: string; // 'price_asc', 'newest', 'name_desc'
+    @IsIn(['price_asc', 'newest', 'oldest'])
+    sort?: string;
 
     @IsOptional()
     @IsBoolean()

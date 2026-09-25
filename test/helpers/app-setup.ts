@@ -21,6 +21,9 @@ export function createRedisMock() {
 
     return {
         set: jest.fn((key: string, value: string, ...args: any[]) => {
+            if (args.includes('NX') && store.has(key)) {
+                return null;
+            }
             store.set(key, { value });
             return 'OK';
         }),

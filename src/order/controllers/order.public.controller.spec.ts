@@ -1,8 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { OrderPublicController } from './order.public.controller';
 import { OrderService } from '../order.service';
-import { AuthGuard } from '@nestjs/passport';
-import { OptionalJwtAuthGuard } from 'src/shared/guards/optional-jwt-auth.guard';
 
 describe('OrderPublicController', () => {
     let controller: OrderPublicController;
@@ -16,16 +14,9 @@ describe('OrderPublicController', () => {
     };
 
     const mockOrderService = {
-        getOrdersByUserId: jest.fn(),
-        getOrderById: jest.fn(),
         previewOrder: jest.fn(),
+        trackGuestOrders: jest.fn(),
         createOrder: jest.fn(),
-        cancelOrder: jest.fn(),
-    };
-
-    const mockUser = {
-        sub: 'user_123',
-        email: 'test@example.com',
     };
 
     beforeEach(async () => {
@@ -37,12 +28,7 @@ describe('OrderPublicController', () => {
                     useValue: mockOrderService,
                 },
             ],
-        })
-            .overrideGuard(AuthGuard('jwt'))
-            .useValue({ canActivate: () => true })
-            .overrideGuard(OptionalJwtAuthGuard)
-            .useValue({ canActivate: () => true })
-            .compile();
+        }).compile();
 
         controller = module.get<OrderPublicController>(OrderPublicController);
         service = module.get<OrderService>(OrderService);
@@ -52,73 +38,6 @@ describe('OrderPublicController', () => {
 
     it('should be defined', () => {
         expect(controller).toBeDefined();
-    });
-
-    describe('getOrders', () => {
-        it('should return user orders', async () => {
-            const mockResult = {
-                data: [mockOrder],
-                meta: { total: 1, page: 1, limit: 20, totalPages: 1 },
-            };
-
-            mockOrderService.getOrdersByUserId.mockResolvedValue(mockResult);
-
-            const result = await controller.getOrders({ user: mockUser } as any, {
-                page: 1,
-                limit: 20,
-            });
-
-            expect(service.getOrdersByUserId).toHaveBeenCalledWith('user_123', {
-                page: 1,
-                limit: 20,
-            });
-            expect(result).toEqual({
-                statusCode: 200,
-                message: 'Orders retrieved successfully',
-                data: expect.any(Array),
-                meta: mockResult.meta,
-            });
-        });
-
-        it('should propagate errors from service', async () => {
-            mockOrderService.getOrdersByUserId.mockRejectedValue(new Error('Database error'));
-            await expect(
-                controller.getOrders({ user: mockUser } as any, { page: 1, limit: 20 }),
-            ).rejects.toThrow('Database error');
-        });
-    });
-
-    describe('getOrderByOrderId', () => {
-        it('should return order by id', async () => {
-            mockOrderService.getOrderById.mockResolvedValue(mockOrder);
-
-            const result = await controller.getOrderByOrderId(
-                { user: mockUser } as any,
-                'order_123',
-            );
-
-            expect(service.getOrderById).toHaveBeenCalledWith('order_123', mockUser.sub);
-            expect(result).toEqual({
-                statusCode: 200,
-                message: 'Order retrieved successfully',
-                data: expect.any(Object),
-            });
-        });
-
-        it('should propagate errors from service', async () => {
-            mockOrderService.getOrderById.mockRejectedValue(new Error('Order not found'));
-            await expect(
-                controller.getOrderByOrderId({ user: mockUser } as any, 'invalid_id'),
-            ).rejects.toThrow('Order not found');
-        });
-
-        it('should hide orders that do not belong to the authenticated user', async () => {
-            mockOrderService.getOrderById.mockResolvedValue(null);
-
-            await expect(
-                controller.getOrderByOrderId({ user: mockUser } as any, 'order_123'),
-            ).rejects.toThrow('Order not found');
-        });
     });
 
     describe('previewOrder', () => {
@@ -155,6 +74,31 @@ describe('OrderPublicController', () => {
         });
     });
 
+    it('returns only the tracking projection for a guest lookup', async () => {
+        mockOrderService.trackGuestOrders.mockResolvedValue([
+            {
+                id: 'order_123',
+                createdAt: new Date(),
+                status: 'PENDING',
+                trackingCode: null,
+                paymentMethod: 'COD',
+                subtotal: 100,
+                shippingFee: 0,
+                discountAmount: 0,
+                totalAmount: 100,
+                email: 'private@example.com',
+            },
+        ]);
+
+        const result = await controller.trackOrders({ email: 'guest@example.com' });
+
+        expect(service.trackGuestOrders).toHaveBeenCalledWith({ email: 'guest@example.com' });
+        expect(result.data[0]).toEqual(
+            expect.objectContaining({ id: 'order_123', totalAmount: 100 }),
+        );
+        expect(result.data[0]).not.toHaveProperty('email');
+    });
+
     describe('createOrder', () => {
         it('should create an order successfully', async () => {
             const createOrderDto = {
@@ -165,12 +109,9 @@ describe('OrderPublicController', () => {
 
             mockOrderService.createOrder.mockResolvedValue(mockOrder);
 
-            const result = await controller.createOrder(
-                { user: mockUser } as any,
-                createOrderDto as any,
-            );
+            const result = await controller.createOrder(createOrderDto as any);
 
-            expect(service.createOrder).toHaveBeenCalledWith(createOrderDto, mockUser.sub);
+            expect(service.createOrder).toHaveBeenCalledWith(createOrderDto);
             expect(result).toEqual({
                 statusCode: 201,
                 message: 'Order created successfully',
@@ -187,41 +128,15 @@ describe('OrderPublicController', () => {
 
             mockOrderService.createOrder.mockResolvedValue(mockOrder);
 
-            const result = await controller.createOrder(
-                { user: null } as any,
-                createOrderDto as any,
-            );
+            const result = await controller.createOrder(createOrderDto as any);
 
-            expect(service.createOrder).toHaveBeenCalledWith(createOrderDto, null);
+            expect(service.createOrder).toHaveBeenCalledWith(createOrderDto);
             expect(result.statusCode).toBe(201);
         });
 
         it('should propagate errors from service', async () => {
             mockOrderService.createOrder.mockRejectedValue(new Error('Out of stock'));
-            await expect(
-                controller.createOrder({ user: mockUser } as any, {} as any),
-            ).rejects.toThrow('Out of stock');
-        });
-    });
-
-    describe('cancelOrder', () => {
-        it('should cancel an order successfully', async () => {
-            mockOrderService.cancelOrder.mockResolvedValue(undefined);
-
-            const result = await controller.cancelOrder({ user: mockUser } as any, 'order_123');
-
-            expect(service.cancelOrder).toHaveBeenCalledWith('order_123', mockUser.sub);
-            expect(result).toEqual({
-                statusCode: 200,
-                message: 'Order cancelled successfully',
-            });
-        });
-
-        it('should propagate errors from service', async () => {
-            mockOrderService.cancelOrder.mockRejectedValue(new Error('Order cannot be cancelled'));
-            await expect(
-                controller.cancelOrder({ user: mockUser } as any, 'order_123'),
-            ).rejects.toThrow('Order cannot be cancelled');
+            await expect(controller.createOrder({} as any)).rejects.toThrow('Out of stock');
         });
     });
 });

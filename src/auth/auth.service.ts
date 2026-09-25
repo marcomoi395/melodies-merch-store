@@ -49,8 +49,8 @@ export class AuthService {
     }
 
     async validateUser(email: string, password: string): Promise<UserRecord | null> {
-        const findUser = await this.user.getUser(email);
-        if (!findUser || !findUser.passwordHash) {
+        const findUser = await this.user.getUserWithRole(email);
+        if (!findUser || !findUser.passwordHash || !findUser.userRoles?.length) {
             return null;
         }
 

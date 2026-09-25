@@ -37,10 +37,7 @@ describe('TypeORM API compatibility (e2e)', () => {
     let app: INestApplication | undefined;
     let schema: string;
     let adminToken = '';
-    let shopperToken = '';
-    let clientToken = '';
     let categoryId = '';
-    let productId = '';
     let productSlug = '';
     let productVariantId = '';
     let superAdminRoleId = '';
@@ -110,7 +107,6 @@ describe('TypeORM API compatibility (e2e)', () => {
         if (!variant) {
             throw new Error('Seed data must include an in-stock product variant');
         }
-        productId = product.id;
         productSlug = product.slug;
         productVariantId = variant.id;
 
@@ -136,21 +132,27 @@ describe('TypeORM API compatibility (e2e)', () => {
         expectApi(await http.get(`/api/categories/${category.slug}`), 200);
     });
 
-    it('serves every authentication and account endpoint without email delivery', async () => {
+    it('keeps authentication admin-only and disables customer account flows', async () => {
         const http = request(app!.getHttpServer());
-        const email = `e2e-${randomUUID()}@example.com`;
         const password = 'Password@123';
 
         expectApi(
             await http.post('/api/auth/register').send({
-                email,
+                email: `e2e-${randomUUID()}@example.com`,
                 password,
                 fullName: 'E2E Shopper',
             }),
-            201,
+            403,
         );
 
-        const login = await http.post('/api/auth/login').send({ email, password });
+        const customerLogin = await http
+            .post('/api/auth/login')
+            .send({ email: 'client@gmail.com', password: '123456' });
+        expectApi(customerLogin, 401);
+
+        const login = await http
+            .post('/api/auth/login')
+            .send({ email: 'admin@gmail.com', password: '123456' });
         expectApi(login, 200);
         const initialTokens = getData<{ accessToken: string; refreshToken: string }>(login);
         const initialAccessToken = initialTokens.accessToken;
@@ -173,87 +175,25 @@ describe('TypeORM API compatibility (e2e)', () => {
             200,
         );
 
-        const relogin = await http.post('/api/auth/login').send({ email, password });
-        expectApi(relogin, 200);
-        shopperToken = getData<{ accessToken: string }>(relogin).accessToken;
-
-        const adminLogin = await http
-            .post('/api/auth/login')
-            .send({ email: 'admin@gmail.com', password: '123456' });
-        expectApi(adminLogin, 200);
-        adminToken = getData<{ accessToken: string }>(adminLogin).accessToken;
-
-        const clientLogin = await http
-            .post('/api/auth/login')
-            .send({ email: 'client@gmail.com', password: '123456' });
-        expectApi(clientLogin, 200);
-        clientToken = getData<{ accessToken: string }>(clientLogin).accessToken;
-
-        expectApi(await http.post('/api/auth/forgot-password').send({}), 400);
+        adminToken = initialAccessToken;
+        expectApi(
+            await http.post('/api/auth/forgot-password').send({ email: 'client@gmail.com' }),
+            403,
+        );
         expectApi(
             await http.post('/api/auth/reset-password').send({
                 token: 'invalid-token',
                 newPassword: password,
             }),
-            400,
-        );
-
-        expectApi(await http.get('/api/user/me').set(bearer(shopperToken)), 200);
-        expectApi(
-            await http
-                .patch('/api/user/profile')
-                .set(bearer(shopperToken))
-                .send({ fullName: 'Updated E2E Shopper' }),
-            200,
-        );
-        expectApi(
-            await http
-                .patch('/api/user/change-password')
-                .set(bearer(shopperToken))
-                .send({ oldPassword: password, newPassword: 'Password@456' }),
-            200,
-        );
-        const passwordLogin = await http
-            .post('/api/auth/login')
-            .send({ email, password: 'Password@456' });
-        expectApi(passwordLogin, 200);
-        shopperToken = getData<{ accessToken: string }>(passwordLogin).accessToken;
-
-        // The seeded shopper is verified, so this reaches the route without sending SMTP email.
-        expectApi(
-            await http.get('/api/user/request-verification-email').set(bearer(clientToken)),
-            400,
-        );
-        expectApi(
-            await http.post('/api/user/verify-account').send({ token: 'invalid-token' }),
-            400,
+            403,
         );
     });
 
-    it('serves every cart and shopper order endpoint', async () => {
+    it('supports guest checkout and email/phone shipment tracking', async () => {
         const http = request(app!.getHttpServer());
-        const shopperSession = bearer(clientToken);
-        expectApi(await http.get('/api/cart').set(shopperSession), 200);
-
-        const addToCart = await http
-            .post('/api/cart')
-            .set(shopperSession)
-            .send({ productId, productVariantId, quantity: 1 });
-        expectApi(addToCart, 201);
-        const cartItems = getData<{ cartItems: Array<{ id: string }> }>(addToCart).cartItems;
-        const cartItem = cartItems[0];
-        if (!cartItem) {
-            throw new Error('Cart response must include the added item');
-        }
-        expectApi(
-            await http.patch(`/api/cart/${cartItem.id}`).set(shopperSession).send({ quantity: 2 }),
-            200,
-        );
-        expectApi(await http.delete(`/api/cart/${cartItem.id}`).set(shopperSession), 200);
-
         const order = {
-            fullName: 'E2E Shopper',
-            email: `order-${randomUUID()}@example.com`,
+            fullName: 'E2E Guest',
+            email: `guest-${randomUUID()}@example.com`,
             phone: '0900000000',
             items: [{ productVariantId, quantity: 1 }],
             shippingAddress: '1 Regression Test Street',
@@ -267,42 +207,28 @@ describe('TypeORM API compatibility (e2e)', () => {
             200,
         );
 
-        const adminManagedOrder = await http.post('/api/order').set(shopperSession).send(order);
-        expectApi(adminManagedOrder, 201);
-        const adminManagedOrderId = getData<{ id: string }>(adminManagedOrder).id;
-        expect(adminManagedOrderId).toEqual(expect.any(String));
-        expectApi(await http.get('/api/order').set(shopperSession), 200);
-        expectApi(await http.get(`/api/order/${adminManagedOrderId}`), 401);
-        expectApi(await http.get(`/api/order/${adminManagedOrderId}`).set(shopperSession), 200);
-        expectApi(
-            await http.get(`/api/order/${adminManagedOrderId}`).set(bearer(shopperToken)),
-            400,
-        );
-
-        const guestOrder = await http.post('/api/order').send({
-            ...order,
-            email: `guest-${randomUUID()}@example.com`,
-        });
+        const guestOrder = await http.post('/api/order').send(order);
         expectApi(guestOrder, 201);
         const guestOrderId = getData<{ id: string }>(guestOrder).id;
-        expectApi(await http.get(`/api/order/${guestOrderId}`), 401);
-
-        const cancelledOrder = await http
-            .post('/api/order')
-            .set(shopperSession)
-            .send({ ...order, email: `cancel-${randomUUID()}@example.com` });
-        expectApi(cancelledOrder, 201);
-        const cancelledOrderId = getData<{ id: string }>(cancelledOrder).id;
-        expectApi(await http.patch(`/api/order/${cancelledOrderId}`).set(shopperSession), 200);
+        expect(guestOrderId).toEqual(expect.any(String));
+        const tracked = await http.post('/api/order/track').send({ email: order.email });
+        expectApi(tracked, 200);
+        expect(getData<Array<{ id: string; email?: string }>>(tracked)[0]).toEqual(
+            expect.objectContaining({ id: guestOrderId }),
+        );
+        expect(getData<Array<{ email?: string }>>(tracked)[0]?.email).toBeUndefined();
+        expectApi(await http.post('/api/order/track').send({ email: order.email }), 429);
+        expectApi(
+            await http.post('/api/order/track').send({ email: order.email, phone: order.phone }),
+            400,
+        );
+        expectApi(await http.post('/api/order/track').send({ phone: '+84900000000' }), 200);
 
         expectApi(await http.get('/api/admin/order').set(bearer(adminToken)), 200);
-        expectApi(
-            await http.get(`/api/admin/order/${adminManagedOrderId}`).set(bearer(adminToken)),
-            200,
-        );
+        expectApi(await http.get(`/api/admin/order/${guestOrderId}`).set(bearer(adminToken)), 200);
         expectApi(
             await http
-                .patch(`/api/admin/order/${adminManagedOrderId}`)
+                .patch(`/api/admin/order/${guestOrderId}`)
                 .set(bearer(adminToken))
                 .send({ status: 'PROCESSING' }),
             200,
@@ -414,7 +340,7 @@ describe('TypeORM API compatibility (e2e)', () => {
         const http = request(app!.getHttpServer());
         const suffix = randomUUID().slice(0, 8);
 
-        expectApi(await http.get('/api/admin/roles').set(bearer(shopperToken)), 403);
+        expectApi(await http.get('/api/admin/roles'), 401);
 
         const permissions = await http.get('/api/permissions');
         expectApi(permissions, 200);

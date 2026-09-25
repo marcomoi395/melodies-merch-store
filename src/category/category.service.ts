@@ -43,6 +43,10 @@ export class CategoryService {
 
     async getProductsByCategory(query: GetProductsByCategoryDto, slug: string) {
         const { limit = 20, page = 1 } = query;
+        const category = await this.categories.findOneBy({ slug });
+        if (!category) {
+            throw new NotFoundException('Category not found');
+        }
 
         const [products, total] = await Promise.all([
             this.products.find({
@@ -58,10 +62,6 @@ export class CategoryService {
             }),
             this.products.count({ where: { category: { slug }, status: 'published' } }),
         ]);
-
-        if (total === 0) {
-            throw new NotFoundException('Products not found for this category');
-        }
 
         // Calculate maxPrice for each product
         const mappedData = products.map((p) => {

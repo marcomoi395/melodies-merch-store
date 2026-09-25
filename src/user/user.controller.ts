@@ -1,4 +1,14 @@
-import { Body, Controller, Get, HttpCode, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    ForbiddenException,
+    Get,
+    HttpCode,
+    Patch,
+    Post,
+    Req,
+    UseGuards,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -53,22 +63,15 @@ export class UserController {
     @Get('request-verification-email')
     @UseGuards(AuthGuard('jwt'))
     @HttpCode(200)
-    async requestVerificationEmail(@Req() req: Request & { user: IJwtPayload }) {
-        await this.userService.requestVerificationEmail(req.user.sub, req.user.email);
-        return {
-            statusCode: 200,
-            message: 'Verification email sent successfully',
-        };
+    requestVerificationEmail(@Req() req: Request & { user: IJwtPayload }) {
+        void req;
+        return Promise.reject(new ForbiddenException('Customer account verification is disabled'));
     }
 
     @Post('verify-account')
     @HttpCode(200)
-    async verificationToken(@Body() payload: VerificationTokenDto) {
-        await this.userService.verificationToken(payload.token);
-
-        return {
-            statusCode: 200,
-            message: 'Account verified successfully',
-        };
+    verificationToken(@Body() payload: VerificationTokenDto) {
+        void payload;
+        return Promise.reject(new ForbiddenException('Customer account verification is disabled'));
     }
 }

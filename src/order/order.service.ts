@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DiscountEntity } from 'src/database/entities/discount.entity';
 import { OrderItemEntity } from 'src/database/entities/order-item.entity';
@@ -9,6 +9,9 @@ import { DiscountType } from 'src/promotion/dto/create-promotion.dto';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { GetOrdersDto } from './dto/get-order.dto';
 import { PreviewOrderDto } from './dto/preview.dto';
+import { TrackOrderDto } from './dto/track-order.dto';
+import Redis from 'ioredis';
+import { createHash } from 'node:crypto';
 
 type OrderInput = CreateOrderDto | PreviewOrderDto;
 
@@ -19,6 +22,7 @@ export class OrderService {
         @InjectRepository(ProductVariantEntity) private variants: Repository<ProductVariantEntity>,
         @InjectRepository(DiscountEntity) private discounts: Repository<DiscountEntity>,
         private dataSource: DataSource,
+        @Inject('REDIS_CLIENT') private readonly redis: Redis,
     ) {}
 
     private async orderData(payload: OrderInput) {
@@ -73,26 +77,7 @@ export class OrderService {
             if (!discount) {
                 throw new BadRequestException('Invalid voucher code');
             }
-            const now = new Date();
-            if (
-                discount.startDate &&
-                discount.endDate &&
-                (now < discount.startDate || now > discount.endDate)
-            ) {
-                throw new BadRequestException('Voucher code is not valid at this time');
-            }
-            if (
-                discount.usageLimit !== null &&
-                discount.usedCount !== null &&
-                discount.usedCount >= discount.usageLimit
-            ) {
-                throw new BadRequestException('Voucher code usage limit has been reached');
-            }
-            discountAmount =
-                discount.type === DiscountType.FIXED
-                    ? Number(discount.value)
-                    : (subtotal * Number(discount.value)) / 100;
-            discountAmount = Math.min(discountAmount, subtotal);
+            discountAmount = this.calculateDiscount(discount, subtotal);
         }
         return {
             ...rest,
@@ -163,6 +148,77 @@ export class OrderService {
         };
     }
 
+    async trackGuestOrders(payload: TrackOrderDto) {
+        if ((payload.email ? 1 : 0) + (payload.phone ? 1 : 0) !== 1) {
+            throw new BadRequestException('Provide exactly one email or phone');
+        }
+
+        const identifier = payload.email
+            ? `email:${payload.email.trim().toLowerCase()}`
+            : `phone:${this.normalizePhone(payload.phone ?? '')}`;
+        const rateLimitKey = `order-track:${createHash('sha256').update(identifier).digest('hex')}`;
+        const accepted = await this.redis.set(rateLimitKey, '1', 'EX', 10, 'NX');
+        if (accepted !== 'OK') {
+            throw new HttpException(
+                'Please wait before trying again',
+                HttpStatus.TOO_MANY_REQUESTS,
+            );
+        }
+
+        const query = this.orders
+            .createQueryBuilder('order')
+            .where('order.userId IS NULL')
+            .andWhere(
+                payload.email
+                    ? 'LOWER(order.email) = :email'
+                    : "regexp_replace(COALESCE(order.phone, ''), '[^0-9]', '', 'g') = :phone",
+                payload.email
+                    ? { email: payload.email.trim().toLowerCase() }
+                    : { phone: this.normalizePhone(payload.phone ?? '') },
+            )
+            .orderBy('order.createdAt', 'DESC')
+            .take(20);
+        const orders = await query.getMany();
+        return orders.map((order) => ({
+            id: order.id,
+            createdAt: order.createdAt,
+            status: order.status,
+            trackingCode: order.trackingCode,
+            paymentMethod: order.paymentMethod,
+            subtotal: Number(order.subtotal),
+            shippingFee: Number(order.shippingFee),
+            discountAmount: Number(order.discountAmount ?? 0),
+            totalAmount: Number(order.totalAmount),
+        }));
+    }
+
+    private normalizePhone(phone: string): string {
+        const digits = phone.replace(/\D/g, '');
+        return digits.startsWith('84') && digits.length === 11 ? `0${digits.slice(2)}` : digits;
+    }
+
+    private calculateDiscount(discount: DiscountEntity, subtotal: number): number {
+        const now = new Date();
+        if (
+            (discount.startDate && now < discount.startDate) ||
+            (discount.endDate && now > discount.endDate)
+        ) {
+            throw new BadRequestException('Voucher code is not valid at this time');
+        }
+        if (
+            discount.usageLimit !== null &&
+            discount.usedCount !== null &&
+            discount.usedCount >= discount.usageLimit
+        ) {
+            throw new BadRequestException('Voucher code usage limit has been reached');
+        }
+        const discountAmount =
+            discount.type === DiscountType.FIXED
+                ? Number(discount.value)
+                : (subtotal * Number(discount.value)) / 100;
+        return Math.min(discountAmount, subtotal);
+    }
+
     async createOrder(payload: CreateOrderDto, userId: string | null = null) {
         const data = await this.orderData(payload);
         return this.dataSource.transaction(async (manager) => {
@@ -187,19 +243,15 @@ export class OrderService {
                 if (!discount) {
                     throw new BadRequestException('Invalid voucher code');
                 }
-                if (
-                    discount.usageLimit !== null &&
-                    discount.usedCount !== null &&
-                    discount.usedCount >= discount.usageLimit
-                ) {
-                    throw new BadRequestException('Voucher code usage limit has been reached');
-                }
+                const discountAmount = this.calculateDiscount(discount, data.subtotal);
                 await manager.increment(
                     DiscountEntity,
                     { code: data.appliedVoucher },
                     'usedCount',
                     1,
                 );
+                data.discountAmount = discountAmount;
+                data.totalAmount = data.subtotal - discountAmount;
             }
             const order = await manager.save(OrderEntity, {
                 userId,

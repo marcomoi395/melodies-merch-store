@@ -16,7 +16,11 @@ describe('AuthService', () => {
             email: 'a@example.com',
             passwordHash: await bcrypt.hash('password', 4),
         };
-        const users = { getUser: jest.fn().mockResolvedValue(user) };
+        const users = {
+            getUserWithRole: jest
+                .fn()
+                .mockResolvedValue({ ...user, userRoles: [{ role: { name: 'SUPER_ADMIN' } }] }),
+        };
         const service = new AuthService(
             {} as any,
             {} as any,
@@ -28,6 +32,26 @@ describe('AuthService', () => {
         await expect(service.validateUser(user.email, 'password')).resolves.toEqual(
             expect.objectContaining({ id: 'u1' }),
         );
+    });
+
+    it('rejects users without an admin or staff role', async () => {
+        const users = {
+            getUserWithRole: jest.fn().mockResolvedValue({
+                id: 'u1',
+                email: 'customer@example.com',
+                passwordHash: await bcrypt.hash('password', 4),
+                userRoles: [],
+            }),
+        };
+        const service = new AuthService(
+            {} as any,
+            {} as any,
+            users as any,
+            {} as JwtService,
+            config as any,
+            mailer as any,
+        );
+        await expect(service.validateUser('customer@example.com', 'password')).resolves.toBeNull();
     });
 
     it('stores refresh tokens through Redis on login', async () => {

@@ -15,7 +15,13 @@ describe('OrderService', () => {
                 },
             ]),
         };
-        const service = new OrderService({} as any, variants as any, {} as any, {} as any);
+        const service = new OrderService(
+            {} as any,
+            variants as any,
+            {} as any,
+            {} as any,
+            {} as any,
+        );
         const result = await service.previewOrder({
             items: [{ productVariantId: 'v1', quantity: 1 }],
             shippingAddress: {},

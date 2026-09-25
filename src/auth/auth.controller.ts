@@ -1,4 +1,12 @@
-import { Body, Controller, HttpCode, Post, Req, UseGuards } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    ForbiddenException,
+    HttpCode,
+    Post,
+    Req,
+    UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 import { UserEntity } from 'src/database/entities/user.entity';
@@ -13,14 +21,9 @@ export class AuthController {
     constructor(private readonly authService: AuthService) {}
 
     @Post('register')
-    async registerUser(@Body() payload: RegisterUserDto) {
-        const data = await this.authService.registerUserForClient(payload);
-
-        return {
-            statusCode: 201,
-            message: 'User registered successfully',
-            data,
-        };
+    registerUser(@Body() payload: RegisterUserDto) {
+        void payload;
+        return Promise.reject(new ForbiddenException('Customer registration is disabled'));
     }
 
     @UseGuards(AuthGuard('local'))
@@ -61,22 +64,15 @@ export class AuthController {
 
     @Post('forgot-password')
     @HttpCode(200)
-    async forgotPassword(@Body() body: ForgotPasswordDto) {
-        await this.authService.requestPasswordReset(body.email);
-        return {
-            statusCode: 200,
-            message: 'Password reset email sent successfully',
-        };
+    forgotPassword(@Body() body: ForgotPasswordDto) {
+        void body;
+        return Promise.reject(new ForbiddenException('Customer password recovery is disabled'));
     }
 
     @Post('reset-password')
     @HttpCode(200)
-    async resetPassword(@Body() body: ResetPasswordDto) {
-        await this.authService.resetPassword(body.token, body.newPassword);
-
-        return {
-            statusCode: 200,
-            message: 'Password reset successfully',
-        };
+    resetPassword(@Body() body: ResetPasswordDto) {
+        void body;
+        return Promise.reject(new ForbiddenException('Customer password recovery is disabled'));
     }
 }
