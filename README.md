@@ -2,7 +2,7 @@
 
 This repository contains the backend source code for the **Melodies Merch Store**, an e-commerce platform designed for selling physical music (like vinyls, CDs) and official artist merchandise.
 
-**Production URL:** [https://melodies.studio/api](https://melodies.studio/api)
+**Production URL:** [https://shop.banecon.site/api](https://shop.banecon.site/api)
 
 Built with a modern and scalable architecture, this robust backend provides a comprehensive set of APIs to support a full-featured frontend application. It includes everything from product and inventory management to secure order processing, along with a powerful admin panel for complete control over the store's operations.
 
@@ -134,3 +134,20 @@ To get a local copy up and running, follow these simple steps.
 - `npm run migration:adopt` fake-baselines an existing matching schema after preflight; it does not create, drop, or alter application tables.
 - `npm run seed` synchronizes the documented base data. It is repeatable and does not clear the database.
 - `npm run test:database` runs disposable PostgreSQL migration and adoption coverage when `TEST_DATABASE_URL` is configured.
+
+## VPS deployment
+
+The production compose file pulls the published backend and frontend images from Docker Hub. On the VPS, copy `.env.example` to `.env`, replace all placeholder secrets, then run:
+
+```sh
+docker compose pull
+docker compose up -d
+```
+
+Nginx serves the storefront on `127.0.0.1:8081` and proxies `/api` to the backend. A host reverse proxy should terminate HTTPS and forward `shop.banecon.site` to that address. With Caddy:
+
+```caddy
+shop.banecon.site {
+    reverse_proxy 127.0.0.1:8081
+}
+```
