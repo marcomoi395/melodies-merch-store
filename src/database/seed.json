@@ -4,18 +4,36 @@
             "name": "Music",
             "slug": "music",
             "children": [
-                { "name": "Vinyl", "slug": "vinyl" },
-                { "name": "CD", "slug": "cd" },
-                { "name": "Cassette", "slug": "cassette" }
+                {
+                    "name": "Vinyl",
+                    "slug": "vinyl"
+                },
+                {
+                    "name": "CD",
+                    "slug": "cd"
+                },
+                {
+                    "name": "Cassette",
+                    "slug": "cassette"
+                }
             ]
         },
         {
             "name": "Merchandise",
             "slug": "merchandise",
             "children": [
-                { "name": "Keychain", "slug": "keychain" },
-                { "name": "Apparel", "slug": "apparel" },
-                { "name": "Accessories", "slug": "accessories" }
+                {
+                    "name": "Keychain",
+                    "slug": "keychain"
+                },
+                {
+                    "name": "Apparel",
+                    "slug": "apparel"
+                },
+                {
+                    "name": "Accessories",
+                    "slug": "accessories"
+                }
             ]
         }
     ],
@@ -66,11 +84,40 @@
                             "sku": "HDTDPKLCITOPIASSLP",
                             "name": "CITOPIA - Sunshine Vinyl LP",
                             "originalPrice": 1200000,
-                            "stockQuantity": 169,
+                            "stockQuantity": 50,
                             "attributes": [
-                                { "key": "Format", "value": "Vinyl LP" },
-                                { "key": "Edition", "value": "Sunshine" },
-                                { "key": "Origin", "value": "Vietnam" }
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Sunshine"
+                                },
+                                {
+                                    "key": "Origin",
+                                    "value": "Vietnam"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "HDTDPKLCITOPIASSLP-ALT",
+                            "name": "Phùng Khánh Linh - CITOPIA - The 2nd Album (Sunshine Vinyl LP) - Alternate Edition",
+                            "originalPrice": 1344000,
+                            "stockQuantity": 51,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Origin",
+                                    "value": "Vietnam"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Alternate"
+                                }
                             ]
                         }
                     ]
@@ -94,11 +141,40 @@
                             "sku": "HDTDPKLGMVNTAPE",
                             "name": "Giữa Một Vạn Người - Cassette",
                             "originalPrice": 400000,
-                            "stockQuantity": 308,
+                            "stockQuantity": 52,
                             "attributes": [
-                                { "key": "Format", "value": "Cassette" },
-                                { "key": "Edition", "value": "Standard" },
-                                { "key": "Origin", "value": "Vietnam" }
+                                {
+                                    "key": "Format",
+                                    "value": "Cassette"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                },
+                                {
+                                    "key": "Origin",
+                                    "value": "Vietnam"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "HDTDPKLGMVNTAPE-ALT",
+                            "name": "Phùng Khánh Linh - Giữa Một Vạn Người - The 3rd Album - Alternate Edition",
+                            "originalPrice": 448000,
+                            "stockQuantity": 53,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Cassette"
+                                },
+                                {
+                                    "key": "Origin",
+                                    "value": "Vietnam"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Alternate"
+                                }
                             ]
                         }
                     ]
@@ -122,10 +198,36 @@
                             "sku": "HDTDPKLMASCOTKEY",
                             "name": "Mascot Keyring",
                             "originalPrice": 350000,
-                            "stockQuantity": 151,
+                            "stockQuantity": 54,
                             "attributes": [
-                                { "key": "Type", "value": "Keychain" },
-                                { "key": "Size", "value": "20cm" }
+                                {
+                                    "key": "Type",
+                                    "value": "Keychain"
+                                },
+                                {
+                                    "key": "Size",
+                                    "value": "20cm"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "HDTDPKLMASCOTKEY-ALT",
+                            "name": "Phùng Khánh Linh - Mascot Keyring - Alternate Edition",
+                            "originalPrice": 392000,
+                            "stockQuantity": 55,
+                            "attributes": [
+                                {
+                                    "key": "Type",
+                                    "value": "Keychain"
+                                },
+                                {
+                                    "key": "Size",
+                                    "value": "20cm"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Alternate"
+                                }
                             ]
                         }
                     ]
@@ -158,10 +260,36 @@
                             "sku": "HDTD-PAD-23-CD",
                             "name": "23 - CD",
                             "originalPrice": 540000,
-                            "stockQuantity": 252,
+                            "stockQuantity": 56,
                             "attributes": [
-                                { "key": "Format", "value": "CD" },
-                                { "key": "Origin", "value": "Vietnam" }
+                                {
+                                    "key": "Format",
+                                    "value": "CD"
+                                },
+                                {
+                                    "key": "Origin",
+                                    "value": "Vietnam"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "HDTD-PAD-23-CD-ALT",
+                            "name": "Phạm Anh Duy - 23 - Alternate Edition",
+                            "originalPrice": 605000,
+                            "stockQuantity": 57,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "CD"
+                                },
+                                {
+                                    "key": "Origin",
+                                    "value": "Vietnam"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Alternate"
+                                }
                             ]
                         }
                     ]
@@ -198,10 +326,32 @@
                             "sku": "122-2025-TIMES-QDXB-CD",
                             "name": "dreAMEE (Reissued) - CD",
                             "originalPrice": 350000,
-                            "stockQuantity": 775,
+                            "stockQuantity": 58,
                             "attributes": [
-                                { "key": "Format", "value": "CD" },
-                                { "key": "Edition", "value": "Reissued" }
+                                {
+                                    "key": "Format",
+                                    "value": "CD"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Reissued"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "122-2025-TIMES-QDXB-CD-ALT",
+                            "name": "AMEE - dreAMEE (Reissued) - Alternate Edition",
+                            "originalPrice": 392000,
+                            "stockQuantity": 59,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "CD"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Alternate"
+                                }
                             ]
                         }
                     ]
@@ -234,10 +384,36 @@
                             "sku": "LPCLUB-LOUREED-TAPE",
                             "name": "Anthology - Cassette",
                             "originalPrice": 600000,
-                            "stockQuantity": 1,
+                            "stockQuantity": 60,
                             "attributes": [
-                                { "key": "Format", "value": "Cassette" },
-                                { "key": "Condition", "value": "Used" }
+                                {
+                                    "key": "Format",
+                                    "value": "Cassette"
+                                },
+                                {
+                                    "key": "Condition",
+                                    "value": "Used"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "LPCLUB-LOUREED-TAPE-ALT",
+                            "name": "Between Thought And Expression - The Lou Reed Anthology - Alternate Edition",
+                            "originalPrice": 672000,
+                            "stockQuantity": 61,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Cassette"
+                                },
+                                {
+                                    "key": "Condition",
+                                    "value": "Used"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Alternate"
+                                }
                             ]
                         }
                     ]
@@ -270,10 +446,36 @@
                             "sku": "LPCLUB-KRAFTWERK-RADIO",
                             "name": "Radio-Activity - Vinyl LP",
                             "originalPrice": 850000,
-                            "stockQuantity": 1,
+                            "stockQuantity": 62,
                             "attributes": [
-                                { "key": "Format", "value": "Vinyl LP" },
-                                { "key": "Condition", "value": "Used" }
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Condition",
+                                    "value": "Used"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "LPCLUB-KRAFTWERK-RADIO-ALT",
+                            "name": "Radio-Activity - Alternate Edition",
+                            "originalPrice": 952000,
+                            "stockQuantity": 63,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Condition",
+                                    "value": "Used"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Alternate"
+                                }
                             ]
                         }
                     ]
@@ -306,10 +508,36 @@
                             "sku": "LPCLUB-CAN-OUTREACH",
                             "name": "Out Of Reach - Vinyl LP",
                             "originalPrice": 780000,
-                            "stockQuantity": 1,
+                            "stockQuantity": 64,
                             "attributes": [
-                                { "key": "Format", "value": "Vinyl LP" },
-                                { "key": "Condition", "value": "Used" }
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Condition",
+                                    "value": "Used"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "LPCLUB-CAN-OUTREACH-ALT",
+                            "name": "Out Of Reach - Alternate Edition",
+                            "originalPrice": 874000,
+                            "stockQuantity": 65,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Condition",
+                                    "value": "Used"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Alternate"
+                                }
                             ]
                         }
                     ]
@@ -342,10 +570,36 @@
                             "sku": "LPCLUB-JGRIFFIN-CONG",
                             "name": "The Congregation - Vinyl LP",
                             "originalPrice": 900000,
-                            "stockQuantity": 1,
+                            "stockQuantity": 66,
                             "attributes": [
-                                { "key": "Format", "value": "Vinyl LP" },
-                                { "key": "Condition", "value": "Used" }
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Condition",
+                                    "value": "Used"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "LPCLUB-JGRIFFIN-CONG-ALT",
+                            "name": "The Congregation - Alternate Edition",
+                            "originalPrice": 1008000,
+                            "stockQuantity": 67,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Condition",
+                                    "value": "Used"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Alternate"
+                                }
                             ]
                         }
                     ]
@@ -378,10 +632,36 @@
                             "sku": "LPCLUB-SUEDE-SELF",
                             "name": "Suede - Vinyl LP",
                             "originalPrice": 1000000,
-                            "stockQuantity": 1,
+                            "stockQuantity": 68,
                             "attributes": [
-                                { "key": "Format", "value": "Vinyl LP" },
-                                { "key": "Condition", "value": "Used" }
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Condition",
+                                    "value": "Used"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "LPCLUB-SUEDE-SELF-ALT",
+                            "name": "Suede - Alternate Edition",
+                            "originalPrice": 1120000,
+                            "stockQuantity": 69,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Condition",
+                                    "value": "Used"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Alternate"
+                                }
                             ]
                         }
                     ]
@@ -414,10 +694,36 @@
                             "sku": "LPCLUB-MCR-3CHEERS",
                             "name": "Three Cheers For Sweet Revenge - Vinyl LP",
                             "originalPrice": 900000,
-                            "stockQuantity": 1,
+                            "stockQuantity": 70,
                             "attributes": [
-                                { "key": "Format", "value": "Vinyl LP" },
-                                { "key": "Condition", "value": "Used" }
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Condition",
+                                    "value": "Used"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "LPCLUB-MCR-3CHEERS-ALT",
+                            "name": "Three Cheers For Sweet Revenge - Alternate Edition",
+                            "originalPrice": 1008000,
+                            "stockQuantity": 71,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Condition",
+                                    "value": "Used"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Alternate"
+                                }
                             ]
                         }
                     ]
@@ -450,11 +756,2901 @@
                             "sku": "LPCLUB-MBUBLE-NOBODY",
                             "name": "Nobody But Me - Silver Vinyl",
                             "originalPrice": 850000,
-                            "stockQuantity": 1,
+                            "stockQuantity": 72,
                             "attributes": [
-                                { "key": "Format", "value": "Vinyl LP" },
-                                { "key": "Color", "value": "Silver" },
-                                { "key": "Condition", "value": "Used" }
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Color",
+                                    "value": "Silver"
+                                },
+                                {
+                                    "key": "Condition",
+                                    "value": "Used"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "LPCLUB-MBUBLE-NOBODY-ALT",
+                            "name": "Nobody But Me (Silver Vinyl) - Alternate Edition",
+                            "originalPrice": 952000,
+                            "stockQuantity": 73,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Color",
+                                    "value": "Silver"
+                                },
+                                {
+                                    "key": "Condition",
+                                    "value": "Used"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Alternate"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Darius Milhaud",
+            "slug": "darius-milhaud",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog vinyl.",
+            "status": "active",
+            "avatarUrl": "https://bizweb.dktcdn.net/100/411/628/products/346a864d-4432-494e-97c2-224ebf11d5ac.jpg?v=1790271001167",
+            "products": [
+                {
+                    "name": "La Création Du Monde / Le Boeuf Sur Le Toit / Saudades Do Brasil - Four Dances",
+                    "slug": "la-creation-du-monde-le-boeuf-sur-le-toit-saudades-do-brasil-four-dances",
+                    "description": "Sản phẩm tham khảo từ catalog LP Club; định dạng vinyl.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 380000,
+                    "categorySlug": "vinyl",
+                    "mediaGallery": [
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/346a864d-4432-494e-97c2-224ebf11d5ac.jpg?v=1790271001167",
+                            "type": "image"
+                        },
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/bb745fe8-12f5-4e37-83c8-1ff059158fc8.jpg?v=1790271001167",
+                            "type": "image"
+                        },
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/b12989ea-db7a-4ca5-ba7d-3c26cf642a16.jpg?v=1790271001167",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "LPCLUB-001",
+                            "name": "La Création Du Monde / Le Boeuf Sur Le Toit / Saudades Do Brasil - F - Standard",
+                            "originalPrice": 380000,
+                            "stockQuantity": 74,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "LPCLUB-001-ALT",
+                            "name": "La Création Du Monde / Le Boeuf Sur Le Toit / Saudades Do Brasil - F - Colored Vinyl",
+                            "originalPrice": 426000,
+                            "stockQuantity": 75,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Colored Vinyl"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Black Sabbath",
+            "slug": "black-sabbath",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog vinyl.",
+            "status": "active",
+            "avatarUrl": "https://bizweb.dktcdn.net/100/411/628/products/27b886c9-8593-4eb6-aa59-d2379e8a0b4d.jpg?v=1790269247740",
+            "products": [
+                {
+                    "name": "Master Of Reality",
+                    "slug": "master-of-reality",
+                    "description": "Sản phẩm tham khảo từ catalog LP Club; định dạng vinyl.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 980000,
+                    "categorySlug": "vinyl",
+                    "mediaGallery": [
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/27b886c9-8593-4eb6-aa59-d2379e8a0b4d.jpg?v=1790269247740",
+                            "type": "image"
+                        },
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/574fb460-c2da-45ce-8a8e-e7470516bf86.jpg?v=1790269247740",
+                            "type": "image"
+                        },
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/2bb9dabe-c072-4727-a4fb-4c4b5bc023e3.jpg?v=1790269247740",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "LPCLUB-002",
+                            "name": "Master Of Reality - Standard",
+                            "originalPrice": 980000,
+                            "stockQuantity": 76,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "LPCLUB-002-ALT",
+                            "name": "Master Of Reality - Colored Vinyl",
+                            "originalPrice": 1098000,
+                            "stockQuantity": 77,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Colored Vinyl"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Frédéric Chopin",
+            "slug": "frederic-chopin",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog vinyl.",
+            "status": "active",
+            "avatarUrl": "https://bizweb.dktcdn.net/100/411/628/products/8cd330e1-5626-4d17-8529-d5510ecbb905.jpg?v=1790267067200",
+            "products": [
+                {
+                    "name": "Chopin Waltzes",
+                    "slug": "chopin-waltzes",
+                    "description": "Sản phẩm tham khảo từ catalog LP Club; định dạng vinyl.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 350000,
+                    "categorySlug": "vinyl",
+                    "mediaGallery": [
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/8cd330e1-5626-4d17-8529-d5510ecbb905.jpg?v=1790267067200",
+                            "type": "image"
+                        },
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/df67fa00-b1b9-4ae0-85ad-1300cdd3d54b.jpg?v=1790267067200",
+                            "type": "image"
+                        },
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/cee751f6-d332-4f5a-ae62-33d6e90d19d1.jpg?v=1790267067200",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "LPCLUB-003",
+                            "name": "Chopin Waltzes - Standard",
+                            "originalPrice": 350000,
+                            "stockQuantity": 78,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "LPCLUB-003-ALT",
+                            "name": "Chopin Waltzes - Colored Vinyl",
+                            "originalPrice": 392000,
+                            "stockQuantity": 79,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Colored Vinyl"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Conan Gray",
+            "slug": "conan-gray",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog cd.",
+            "status": "active",
+            "avatarUrl": "https://bizweb.dktcdn.net/100/411/628/products/5d818687-d4b8-4418-a623-7a5e7d4ecc17.png?v=1790249409520",
+            "products": [
+                {
+                    "name": "Wishbone (CD)",
+                    "slug": "wishbone-cd",
+                    "description": "Sản phẩm tham khảo từ catalog LP Club; định dạng cd.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 450000,
+                    "categorySlug": "cd",
+                    "mediaGallery": [
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/5d818687-d4b8-4418-a623-7a5e7d4ecc17.png?v=1790249409520",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "LPCLUB-004",
+                            "name": "Wishbone (CD) - Standard",
+                            "originalPrice": 450000,
+                            "stockQuantity": 80,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "CD"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "LPCLUB-004-ALT",
+                            "name": "Wishbone (CD) - Jewel Case",
+                            "originalPrice": 504000,
+                            "stockQuantity": 81,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "CD"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Jewel Case"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "ADÉLA",
+            "slug": "adela",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog cd.",
+            "status": "active",
+            "avatarUrl": "https://bizweb.dktcdn.net/100/411/628/products/6749843b-3394-43b7-95e1-82aac6ca329a.png?v=1790248976580",
+            "products": [
+                {
+                    "name": "Prima (Alternative cover - Signed CD)",
+                    "slug": "prima-alternative-cover-signed-cd",
+                    "description": "Sản phẩm tham khảo từ catalog LP Club; định dạng cd.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 590000,
+                    "categorySlug": "cd",
+                    "mediaGallery": [
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/6749843b-3394-43b7-95e1-82aac6ca329a.png?v=1790248976580",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "LPCLUB-005",
+                            "name": "Prima (Alternative cover - Signed CD) - Standard",
+                            "originalPrice": 590000,
+                            "stockQuantity": 82,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "CD"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "LPCLUB-005-ALT",
+                            "name": "Prima (Alternative cover - Signed CD) - Jewel Case",
+                            "originalPrice": 661000,
+                            "stockQuantity": 83,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "CD"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Jewel Case"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Prima (Signed CD)",
+                    "slug": "prima-signed-cd",
+                    "description": "Sản phẩm tham khảo từ catalog LP Club; định dạng cd.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 590000,
+                    "categorySlug": "cd",
+                    "mediaGallery": [
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/ce055702-27d0-4570-8780-7faf784a53d4.png?v=1790248827803",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "LPCLUB-006",
+                            "name": "Prima (Signed CD) - Standard",
+                            "originalPrice": 590000,
+                            "stockQuantity": 84,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "CD"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "LPCLUB-006-ALT",
+                            "name": "Prima (Signed CD) - Jewel Case",
+                            "originalPrice": 661000,
+                            "stockQuantity": 85,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "CD"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Jewel Case"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "The Marías",
+            "slug": "the-marias",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog vinyl.",
+            "status": "active",
+            "avatarUrl": "https://bizweb.dktcdn.net/100/411/628/products/4f82a739-b9de-43d6-a403-a5b41a8d3c18.png?v=1790247799640",
+            "products": [
+                {
+                    "name": "Submarine",
+                    "slug": "submarine",
+                    "description": "Sản phẩm tham khảo từ catalog LP Club; định dạng vinyl.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 450000,
+                    "categorySlug": "vinyl",
+                    "mediaGallery": [
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/4f82a739-b9de-43d6-a403-a5b41a8d3c18.png?v=1790247799640",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "LPCLUB-007",
+                            "name": "Submarine - Standard",
+                            "originalPrice": 450000,
+                            "stockQuantity": 86,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "LPCLUB-007-ALT",
+                            "name": "Submarine - Colored Vinyl",
+                            "originalPrice": 504000,
+                            "stockQuantity": 87,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Colored Vinyl"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Sombr",
+            "slug": "sombr",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog vinyl.",
+            "status": "active",
+            "avatarUrl": "https://bizweb.dktcdn.net/100/411/628/products/image-2026-02-14t111941-176-a47356d0-2938-4bb5-896e-ca157a7cc33e.png?v=1790247118687",
+            "products": [
+                {
+                    "name": "I Barely Know Her",
+                    "slug": "i-barely-know-her",
+                    "description": "Sản phẩm tham khảo từ catalog LP Club; định dạng vinyl.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 400000,
+                    "categorySlug": "vinyl",
+                    "mediaGallery": [
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/image-2026-02-14t111941-176-a47356d0-2938-4bb5-896e-ca157a7cc33e.png?v=1790247118687",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "LPCLUB-008",
+                            "name": "I Barely Know Her - Standard",
+                            "originalPrice": 400000,
+                            "stockQuantity": 88,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "LPCLUB-008-ALT",
+                            "name": "I Barely Know Her - Colored Vinyl",
+                            "originalPrice": 448000,
+                            "stockQuantity": 89,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Colored Vinyl"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Tyler, The Creator",
+            "slug": "tyler-the-creator",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog vinyl.",
+            "status": "active",
+            "avatarUrl": "https://bizweb.dktcdn.net/100/411/628/products/image-2025-10-17t192311-658-72b267c0-6395-4f4e-b039-a7b37260b129-c777a9c7-42cd-4eb6-a33c-ce9a801b22dd.png?v=1790246827813",
+            "products": [
+                {
+                    "name": "Chromakopia",
+                    "slug": "chromakopia",
+                    "description": "Sản phẩm tham khảo từ catalog LP Club; định dạng vinyl.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 480000,
+                    "categorySlug": "vinyl",
+                    "mediaGallery": [
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/image-2025-10-17t192311-658-72b267c0-6395-4f4e-b039-a7b37260b129-c777a9c7-42cd-4eb6-a33c-ce9a801b22dd.png?v=1790246827813",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "LPCLUB-009",
+                            "name": "Chromakopia - Standard",
+                            "originalPrice": 480000,
+                            "stockQuantity": 90,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "LPCLUB-009-ALT",
+                            "name": "Chromakopia - Colored Vinyl",
+                            "originalPrice": 538000,
+                            "stockQuantity": 91,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Colored Vinyl"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "LP Club Selection",
+            "slug": "lp-club-selection",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog accessories.",
+            "status": "active",
+            "avatarUrl": "https://bizweb.dktcdn.net/100/411/628/products/05b187d7-5489-48be-afe4-545d5e02b0cd.jpg?v=1790244233250",
+            "products": [
+                {
+                    "name": "Combo dụng cụ lau đĩa cán gỗ và nước lau đĩa Elvon",
+                    "slug": "combo-dung-cu-lau-dia-can-go-va-nuoc-lau-dia-elvon",
+                    "description": "Sản phẩm tham khảo từ catalog LP Club; định dạng accessories.",
+                    "productType": "merch",
+                    "status": "published",
+                    "minPrice": 250000,
+                    "categorySlug": "accessories",
+                    "mediaGallery": [
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/05b187d7-5489-48be-afe4-545d5e02b0cd.jpg?v=1790244233250",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "LPCLUB-010",
+                            "name": "Combo dụng cụ lau đĩa cán gỗ và nước lau đĩa Elvon - Standard",
+                            "originalPrice": 250000,
+                            "stockQuantity": 92,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Accessory"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "LPCLUB-010-ALT",
+                            "name": "Combo dụng cụ lau đĩa cán gỗ và nước lau đĩa Elvon - Premium Set",
+                            "originalPrice": 280000,
+                            "stockQuantity": 93,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Accessory"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Premium Set"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Dụng cụ lau đĩa",
+                    "slug": "dung-cu-lau-dia",
+                    "description": "Sản phẩm tham khảo từ catalog LP Club; định dạng accessories.",
+                    "productType": "merch",
+                    "status": "published",
+                    "minPrice": 180000,
+                    "categorySlug": "accessories",
+                    "mediaGallery": [
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/6b75996f-8590-424c-bbbf-8b8f5506b4a1.png?v=1790242875570",
+                            "type": "image"
+                        },
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/download-2026-09-24t164959-135.png?v=1790243462230",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "LPCLUB-011",
+                            "name": "Dụng cụ lau đĩa - Standard",
+                            "originalPrice": 180000,
+                            "stockQuantity": 94,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Accessory"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "LPCLUB-011-ALT",
+                            "name": "Dụng cụ lau đĩa - Premium Set",
+                            "originalPrice": 202000,
+                            "stockQuantity": 95,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Accessory"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Premium Set"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Pyotr Ilyich Tchaikovsky",
+            "slug": "pyotr-ilyich-tchaikovsky",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog vinyl.",
+            "status": "active",
+            "avatarUrl": "https://bizweb.dktcdn.net/100/411/628/products/65c1c575-e461-49fe-a225-9973fa89ed8e.jpg?v=1790184767010",
+            "products": [
+                {
+                    "name": "The Great Romantic Ballets",
+                    "slug": "the-great-romantic-ballets",
+                    "description": "Sản phẩm tham khảo từ catalog LP Club; định dạng vinyl.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 880000,
+                    "categorySlug": "vinyl",
+                    "mediaGallery": [
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/65c1c575-e461-49fe-a225-9973fa89ed8e.jpg?v=1790184767010",
+                            "type": "image"
+                        },
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/608c5ea8-43a1-4194-8090-847f2e9ab309.jpg?v=1790184767010",
+                            "type": "image"
+                        },
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/a9e628c2-1ddf-4e48-80c1-c3e11ebaa840.jpg?v=1790184767010",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "LPCLUB-012",
+                            "name": "The Great Romantic Ballets - Standard",
+                            "originalPrice": 880000,
+                            "stockQuantity": 96,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "LPCLUB-012-ALT",
+                            "name": "The Great Romantic Ballets - Colored Vinyl",
+                            "originalPrice": 986000,
+                            "stockQuantity": 97,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Colored Vinyl"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Carl Nielsen",
+            "slug": "carl-nielsen",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog vinyl.",
+            "status": "active",
+            "avatarUrl": "https://bizweb.dktcdn.net/100/411/628/products/8459e425-a93b-4423-b9f8-224c7ed11729.jpg?v=1790090128200",
+            "products": [
+                {
+                    "name": "The Complete Symphonies",
+                    "slug": "the-complete-symphonies",
+                    "description": "Sản phẩm tham khảo từ catalog LP Club; định dạng vinyl.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 1280000,
+                    "categorySlug": "vinyl",
+                    "mediaGallery": [
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/8459e425-a93b-4423-b9f8-224c7ed11729.jpg?v=1790090128200",
+                            "type": "image"
+                        },
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/301e1b8f-958d-4dad-b785-a4fb4baabe97.jpg?v=1790090128200",
+                            "type": "image"
+                        },
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/486c8967-ffc7-4736-9220-d47e276ad59f.jpg?v=1790090128200",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "LPCLUB-013",
+                            "name": "The Complete Symphonies - Standard",
+                            "originalPrice": 1280000,
+                            "stockQuantity": 98,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "LPCLUB-013-ALT",
+                            "name": "The Complete Symphonies - Colored Vinyl",
+                            "originalPrice": 1434000,
+                            "stockQuantity": 99,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Colored Vinyl"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Franz Liszt",
+            "slug": "franz-liszt",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog vinyl.",
+            "status": "active",
+            "avatarUrl": "https://bizweb.dktcdn.net/100/411/628/products/a0f75ab7-d824-4a41-8a97-cc4bbfd30c3b.jpg?v=1790081053063",
+            "products": [
+                {
+                    "name": "Complete Hungarian Rhapsodies",
+                    "slug": "complete-hungarian-rhapsodies",
+                    "description": "Sản phẩm tham khảo từ catalog LP Club; định dạng vinyl.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 780000,
+                    "categorySlug": "vinyl",
+                    "mediaGallery": [
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/a0f75ab7-d824-4a41-8a97-cc4bbfd30c3b.jpg?v=1790081053063",
+                            "type": "image"
+                        },
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/1881f649-6ae1-421e-97b4-14ae7a67abbe.jpg?v=1790081053063",
+                            "type": "image"
+                        },
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/965a9d5b-434f-4bf2-afff-a7a51218851a.jpg?v=1790081053063",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "LPCLUB-014",
+                            "name": "Complete Hungarian Rhapsodies - Standard",
+                            "originalPrice": 780000,
+                            "stockQuantity": 100,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "LPCLUB-014-ALT",
+                            "name": "Complete Hungarian Rhapsodies - Colored Vinyl",
+                            "originalPrice": 874000,
+                            "stockQuantity": 50,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Colored Vinyl"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Jim Reeves",
+            "slug": "jim-reeves",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog vinyl.",
+            "status": "active",
+            "avatarUrl": "https://bizweb.dktcdn.net/100/411/628/products/55fd35b8-f8aa-4dbf-90b4-090d18da5e8a.jpg?v=1790074433823",
+            "products": [
+                {
+                    "name": "The Country Gentleman",
+                    "slug": "the-country-gentleman",
+                    "description": "Sản phẩm tham khảo từ catalog LP Club; định dạng vinyl.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 280000,
+                    "categorySlug": "vinyl",
+                    "mediaGallery": [
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/55fd35b8-f8aa-4dbf-90b4-090d18da5e8a.jpg?v=1790074433823",
+                            "type": "image"
+                        },
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/8ce86c4d-d179-4d58-b501-455cfea8d258.jpg?v=1790074433823",
+                            "type": "image"
+                        },
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/d43c6521-d35e-4d6a-b39e-10c95dbadbc9.jpg?v=1790074433823",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "LPCLUB-015",
+                            "name": "The Country Gentleman - Standard",
+                            "originalPrice": 280000,
+                            "stockQuantity": 51,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "LPCLUB-015-ALT",
+                            "name": "The Country Gentleman - Colored Vinyl",
+                            "originalPrice": 314000,
+                            "stockQuantity": 52,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Colored Vinyl"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Ottorino Respighi",
+            "slug": "ottorino-respighi",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog vinyl.",
+            "status": "active",
+            "avatarUrl": "https://bizweb.dktcdn.net/100/411/628/products/e9c97763-83df-49bc-a7df-0da03e056702.jpg?v=1790072148137",
+            "products": [
+                {
+                    "name": "Ancient Airs And Dances Suite Three, Gli Uccelli, La Boutique Fantasque",
+                    "slug": "ancient-airs-and-dances-suite-three-gli-uccelli-la-boutique-fantasque",
+                    "description": "Sản phẩm tham khảo từ catalog LP Club; định dạng vinyl.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 450000,
+                    "categorySlug": "vinyl",
+                    "mediaGallery": [
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/e9c97763-83df-49bc-a7df-0da03e056702.jpg?v=1790072148137",
+                            "type": "image"
+                        },
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/8ceb34ba-75fd-48e0-9475-f3c2ddfdea05.jpg?v=1790072148137",
+                            "type": "image"
+                        },
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/690dee7e-acf9-4c2c-a86a-60f33c6f19d0.jpg?v=1790072148137",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "LPCLUB-016",
+                            "name": "Ancient Airs And Dances Suite Three, Gli Uccelli, La Boutique Fantas - Standard",
+                            "originalPrice": 450000,
+                            "stockQuantity": 53,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "LPCLUB-016-ALT",
+                            "name": "Ancient Airs And Dances Suite Three, Gli Uccelli, La Boutique Fantas - Colored Vinyl",
+                            "originalPrice": 504000,
+                            "stockQuantity": 54,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Colored Vinyl"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Arnold Schönberg",
+            "slug": "arnold-schonberg",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog vinyl.",
+            "status": "active",
+            "avatarUrl": "https://bizweb.dktcdn.net/100/411/628/products/8e23bfe5-ed47-45df-85ae-dbadb39200ec.jpg?v=1789985905900",
+            "products": [
+                {
+                    "name": "Verklärte Nacht - String Trio Op. 45 - Phantasy for Violin and Piano Op. 47",
+                    "slug": "verkl-rte-nacht-string-trio-op-45-phantasy-for-violin-and-piano-op-47",
+                    "description": "Sản phẩm tham khảo từ catalog LP Club; định dạng vinyl.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 450000,
+                    "categorySlug": "vinyl",
+                    "mediaGallery": [
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/8e23bfe5-ed47-45df-85ae-dbadb39200ec.jpg?v=1789985905900",
+                            "type": "image"
+                        },
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/34cf4bcb-46a3-4da9-b03e-6517f4449ce2.jpg?v=1789985905900",
+                            "type": "image"
+                        },
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/2df01abc-56b5-4508-9fae-7c25371a7834.jpg?v=1789985905900",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "LPCLUB-017",
+                            "name": "Verklärte Nacht - String Trio Op. 45 - Phantasy for Violin and Piano - Standard",
+                            "originalPrice": 450000,
+                            "stockQuantity": 55,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "LPCLUB-017-ALT",
+                            "name": "Verklärte Nacht - String Trio Op. 45 - Phantasy for Violin and Piano - Colored Vinyl",
+                            "originalPrice": 504000,
+                            "stockQuantity": 56,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Colored Vinyl"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Edward MacDowell",
+            "slug": "edward-macdowell",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog vinyl.",
+            "status": "active",
+            "avatarUrl": "https://bizweb.dktcdn.net/100/411/628/products/f996ac50-3986-4cd7-be56-1173376d0a23.jpg?v=1789983703053",
+            "products": [
+                {
+                    "name": "The Two Piano Concertos",
+                    "slug": "the-two-piano-concertos",
+                    "description": "Sản phẩm tham khảo từ catalog LP Club; định dạng vinyl.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 450000,
+                    "categorySlug": "vinyl",
+                    "mediaGallery": [
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/f996ac50-3986-4cd7-be56-1173376d0a23.jpg?v=1789983703053",
+                            "type": "image"
+                        },
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/0e66fcb8-01fc-4366-80e3-787150b35a71.jpg?v=1789983703053",
+                            "type": "image"
+                        },
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/aef9713c-c4b6-4995-a2a9-35896ac456e1.jpg?v=1789983703053",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "LPCLUB-018",
+                            "name": "The Two Piano Concertos - Standard",
+                            "originalPrice": 450000,
+                            "stockQuantity": 57,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "LPCLUB-018-ALT",
+                            "name": "The Two Piano Concertos - Colored Vinyl",
+                            "originalPrice": 504000,
+                            "stockQuantity": 58,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Colored Vinyl"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Ludwig van Beethoven",
+            "slug": "ludwig-van-beethoven",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog vinyl.",
+            "status": "active",
+            "avatarUrl": "https://bizweb.dktcdn.net/100/411/628/products/1bcb0b69-3f2c-4f93-ae6d-a311aa4b8c4d.jpg?v=1789918936787",
+            "products": [
+                {
+                    "name": "Violin Sonatas Kreutzer • Spring",
+                    "slug": "violin-sonatas-kreutzer-spring",
+                    "description": "Sản phẩm tham khảo từ catalog LP Club; định dạng vinyl.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 450000,
+                    "categorySlug": "vinyl",
+                    "mediaGallery": [
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/1bcb0b69-3f2c-4f93-ae6d-a311aa4b8c4d.jpg?v=1789918936787",
+                            "type": "image"
+                        },
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/d1b3bd03-c1eb-4de4-b575-b4a465848947.jpg?v=1789918936787",
+                            "type": "image"
+                        },
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/a7cb9a06-4f57-4ad1-ab6b-04f7a9bc7f44.jpg?v=1789918936787",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "LPCLUB-019",
+                            "name": "Violin Sonatas Kreutzer • Spring - Standard",
+                            "originalPrice": 450000,
+                            "stockQuantity": 59,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "LPCLUB-019-ALT",
+                            "name": "Violin Sonatas Kreutzer • Spring - Colored Vinyl",
+                            "originalPrice": 504000,
+                            "stockQuantity": 60,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Colored Vinyl"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Complete Piano Sonatas",
+                    "slug": "complete-piano-sonatas",
+                    "description": "Sản phẩm tham khảo từ catalog LP Club; định dạng vinyl.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 1280000,
+                    "categorySlug": "vinyl",
+                    "mediaGallery": [
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/53640348-7cf0-48d8-b500-fea2c9fa178d.jpg?v=1789831608440",
+                            "type": "image"
+                        },
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/66218fcc-10cf-4713-a31a-d6b3e6aea2ff.jpg?v=1789831608440",
+                            "type": "image"
+                        },
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/cbfe2b6f-69e1-4121-bd88-11f6b5dab8a8.jpg?v=1789831608440",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "LPCLUB-024",
+                            "name": "Complete Piano Sonatas - Standard",
+                            "originalPrice": 1280000,
+                            "stockQuantity": 61,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "LPCLUB-024-ALT",
+                            "name": "Complete Piano Sonatas - Colored Vinyl",
+                            "originalPrice": 1434000,
+                            "stockQuantity": 62,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Colored Vinyl"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "The Shadows",
+            "slug": "the-shadows",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog vinyl.",
+            "status": "active",
+            "avatarUrl": "https://bizweb.dktcdn.net/100/411/628/products/f9af5557-24d4-4fad-9d31-84d9e87ac7d6.jpg?v=1789917202367",
+            "products": [
+                {
+                    "name": "Silver Album",
+                    "slug": "silver-album",
+                    "description": "Sản phẩm tham khảo từ catalog LP Club; định dạng vinyl.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 380000,
+                    "categorySlug": "vinyl",
+                    "mediaGallery": [
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/f9af5557-24d4-4fad-9d31-84d9e87ac7d6.jpg?v=1789917202367",
+                            "type": "image"
+                        },
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/e0fb4dcc-c420-4c1f-b8e0-eae1a1ecf825.jpg?v=1789917202367",
+                            "type": "image"
+                        },
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/00d40ee4-5a26-49e4-9e9b-c916bf766c46.jpg?v=1789917202367",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "LPCLUB-020",
+                            "name": "Silver Album - Standard",
+                            "originalPrice": 380000,
+                            "stockQuantity": 63,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "LPCLUB-020-ALT",
+                            "name": "Silver Album - Colored Vinyl",
+                            "originalPrice": 426000,
+                            "stockQuantity": 64,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Colored Vinyl"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Bat For Lashes",
+            "slug": "bat-for-lashes",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog vinyl.",
+            "status": "active",
+            "avatarUrl": "https://bizweb.dktcdn.net/100/411/628/products/download-2026-09-20t105426-328.png?v=1789898084733",
+            "products": [
+                {
+                    "name": "The Dream Of Delphi (Red Vinyl)",
+                    "slug": "bat-for-lashes-the-dream-of-delphi-red-vinyl-lp",
+                    "description": "Sản phẩm tham khảo từ catalog LP Club; định dạng vinyl.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 750000,
+                    "categorySlug": "vinyl",
+                    "mediaGallery": [
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/download-2026-09-20t105426-328.png?v=1789898084733",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "LPCLUB-021",
+                            "name": "The Dream Of Delphi (Red Vinyl) - Standard",
+                            "originalPrice": 750000,
+                            "stockQuantity": 65,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "LPCLUB-021-ALT",
+                            "name": "The Dream Of Delphi (Red Vinyl) - Colored Vinyl",
+                            "originalPrice": 840000,
+                            "stockQuantity": 66,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Colored Vinyl"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Felix Mendelssohn-Bartholdy",
+            "slug": "felix-mendelssohn-bartholdy",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog vinyl.",
+            "status": "active",
+            "avatarUrl": "https://bizweb.dktcdn.net/100/411/628/products/25edf2c5-daa9-4b39-b871-454c8297cf01.jpg?v=1789836326190",
+            "products": [
+                {
+                    "name": "Copy of Violin Concertos",
+                    "slug": "copy-of-violin-concertos",
+                    "description": "Sản phẩm tham khảo từ catalog LP Club; định dạng vinyl.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 450000,
+                    "categorySlug": "vinyl",
+                    "mediaGallery": [
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/25edf2c5-daa9-4b39-b871-454c8297cf01.jpg?v=1789836326190",
+                            "type": "image"
+                        },
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/a108f866-d5c5-42e8-bd5e-5ba70a32b16c.jpg?v=1789836326190",
+                            "type": "image"
+                        },
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/fbbc5270-3b45-46e4-8f2b-af6cd1ef0a40.jpg?v=1789836326190",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "LPCLUB-022",
+                            "name": "Copy of Violin Concertos - Standard",
+                            "originalPrice": 450000,
+                            "stockQuantity": 67,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "LPCLUB-022-ALT",
+                            "name": "Copy of Violin Concertos - Colored Vinyl",
+                            "originalPrice": 504000,
+                            "stockQuantity": 68,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Colored Vinyl"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Gaetano Donizetti",
+            "slug": "gaetano-donizetti",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog vinyl.",
+            "status": "active",
+            "avatarUrl": "https://bizweb.dktcdn.net/100/411/628/products/67f96e65-0a2a-403e-b300-fa88e007c53e.jpg?v=1789835269983",
+            "products": [
+                {
+                    "name": "Don Pasquale",
+                    "slug": "don-pasquale",
+                    "description": "Sản phẩm tham khảo từ catalog LP Club; định dạng vinyl.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 650000,
+                    "categorySlug": "vinyl",
+                    "mediaGallery": [
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/67f96e65-0a2a-403e-b300-fa88e007c53e.jpg?v=1789835269983",
+                            "type": "image"
+                        },
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/9eeb1631-40ee-46c4-9b66-fbb39285ba37.jpg?v=1789835269983",
+                            "type": "image"
+                        },
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/ebf213d9-8a76-414c-8b14-60fc20c9ffdd.jpg?v=1789835269983",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "LPCLUB-023",
+                            "name": "Don Pasquale - Standard",
+                            "originalPrice": 650000,
+                            "stockQuantity": 69,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "LPCLUB-023-ALT",
+                            "name": "Don Pasquale - Colored Vinyl",
+                            "originalPrice": 728000,
+                            "stockQuantity": 70,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Colored Vinyl"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Alexandre Lagoya",
+            "slug": "alexandre-lagoya",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog vinyl.",
+            "status": "active",
+            "avatarUrl": "https://bizweb.dktcdn.net/100/411/628/products/71e83692-787d-4392-a30e-5a7bbfbb6b96.jpg?v=1789815338337",
+            "products": [
+                {
+                    "name": "Virtuoso Music for Two Guitars - Guitar Duets",
+                    "slug": "virtuoso-music-for-two-guitars-guitar-duets",
+                    "description": "Sản phẩm tham khảo từ catalog LP Club; định dạng vinyl.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 480000,
+                    "categorySlug": "vinyl",
+                    "mediaGallery": [
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/71e83692-787d-4392-a30e-5a7bbfbb6b96.jpg?v=1789815338337",
+                            "type": "image"
+                        },
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/3a683a74-d851-4291-ad85-3340a3861ec1.jpg?v=1789815338337",
+                            "type": "image"
+                        },
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/3713c96d-7919-4484-93d6-9171beb0492f.jpg?v=1789815338337",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "LPCLUB-025",
+                            "name": "Virtuoso Music for Two Guitars - Guitar Duets - Standard",
+                            "originalPrice": 480000,
+                            "stockQuantity": 71,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "LPCLUB-025-ALT",
+                            "name": "Virtuoso Music for Two Guitars - Guitar Duets - Colored Vinyl",
+                            "originalPrice": 538000,
+                            "stockQuantity": 72,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Colored Vinyl"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Ramones",
+            "slug": "ramones",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog vinyl.",
+            "status": "active",
+            "avatarUrl": "https://bizweb.dktcdn.net/100/411/628/products/download-2026-09-20t183409-747.png?v=1789904151163",
+            "products": [
+                {
+                    "name": "Greatest Hits",
+                    "slug": "ramones-greatest-hits",
+                    "description": "Sản phẩm tham khảo từ catalog LP Club; định dạng vinyl.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 800000,
+                    "categorySlug": "vinyl",
+                    "mediaGallery": [
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/download-2026-09-20t183409-747.png?v=1789904151163",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "LPCLUB-026",
+                            "name": "Greatest Hits - Standard",
+                            "originalPrice": 800000,
+                            "stockQuantity": 73,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "LPCLUB-026-ALT",
+                            "name": "Greatest Hits - Colored Vinyl",
+                            "originalPrice": 896000,
+                            "stockQuantity": 74,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Colored Vinyl"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Chet Baker",
+            "slug": "chet-baker",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog vinyl.",
+            "status": "active",
+            "avatarUrl": "https://bizweb.dktcdn.net/100/411/628/products/download-2026-09-20t130550-173.png?v=1789884362813",
+            "products": [
+                {
+                    "name": "Chet Baker & Strings",
+                    "slug": "chet-baker-and-strings",
+                    "description": "Sản phẩm tham khảo từ catalog LP Club; định dạng vinyl.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 750000,
+                    "categorySlug": "vinyl",
+                    "mediaGallery": [
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/download-2026-09-20t130550-173.png?v=1789884362813",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "LPCLUB-027",
+                            "name": "Chet Baker & Strings - Standard",
+                            "originalPrice": 750000,
+                            "stockQuantity": 75,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "LPCLUB-027-ALT",
+                            "name": "Chet Baker & Strings - Colored Vinyl",
+                            "originalPrice": 840000,
+                            "stockQuantity": 76,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Colored Vinyl"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Chet Baker - Chet - Đĩa CD",
+                    "slug": "chet-baker-chet-dia-cd",
+                    "description": "Sản phẩm tham khảo từ catalog Hãng Đĩa Thời Đại; định dạng cd.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 450000,
+                    "categorySlug": "cd",
+                    "mediaGallery": [
+                        {
+                            "url": "https://cdn.hstatic.net/products/200001113747/chet_a8d7bc73eff74e5281f80f30e6cead0d.png",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "HDTDCBCHETCD",
+                            "name": "Chet Baker - Chet - Đĩa CD - Standard",
+                            "originalPrice": 450000,
+                            "stockQuantity": 77,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "CD"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "HDTDCBCHETCD-ALT",
+                            "name": "Chet Baker - Chet - Đĩa CD - Jewel Case",
+                            "originalPrice": 504000,
+                            "stockQuantity": 78,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "CD"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Jewel Case"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Take That",
+            "slug": "take-that",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog cd.",
+            "status": "active",
+            "avatarUrl": "https://bizweb.dktcdn.net/100/411/628/products/495bf998-1779-4875-a312-d32e5f961ce8.png?v=1789809799663",
+            "products": [
+                {
+                    "name": "Beautiful World",
+                    "slug": "take-that-beautiful-world-cd",
+                    "description": "Sản phẩm tham khảo từ catalog LP Club; định dạng cd.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 300000,
+                    "categorySlug": "cd",
+                    "mediaGallery": [
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/495bf998-1779-4875-a312-d32e5f961ce8.png?v=1789809799663",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "LPCLUB-028",
+                            "name": "Beautiful World - Standard",
+                            "originalPrice": 300000,
+                            "stockQuantity": 79,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "CD"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "LPCLUB-028-ALT",
+                            "name": "Beautiful World - Jewel Case",
+                            "originalPrice": 336000,
+                            "stockQuantity": 80,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "CD"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Jewel Case"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Weezer",
+            "slug": "weezer",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog cd.",
+            "status": "active",
+            "avatarUrl": "https://bizweb.dktcdn.net/100/411/628/products/0b668b14-6777-4f6b-be17-c6b39990c780.png?v=1789809304340",
+            "products": [
+                {
+                    "name": "Weezer (Black Album)",
+                    "slug": "weezer-weezer-black-album-cd",
+                    "description": "Sản phẩm tham khảo từ catalog LP Club; định dạng cd.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 300000,
+                    "categorySlug": "cd",
+                    "mediaGallery": [
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/0b668b14-6777-4f6b-be17-c6b39990c780.png?v=1789809304340",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "LPCLUB-029",
+                            "name": "Weezer (Black Album) - Standard",
+                            "originalPrice": 300000,
+                            "stockQuantity": 81,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "CD"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "LPCLUB-029-ALT",
+                            "name": "Weezer (Black Album) - Jewel Case",
+                            "originalPrice": 336000,
+                            "stockQuantity": 82,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "CD"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Jewel Case"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Weezer - Weezer - Đĩa CD",
+                    "slug": "weezer-weezer-dia-cd",
+                    "description": "Sản phẩm tham khảo từ catalog Hãng Đĩa Thời Đại; định dạng cd.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 550000,
+                    "categorySlug": "cd",
+                    "mediaGallery": [
+                        {
+                            "url": "https://cdn.hstatic.net/products/200001113747/untitled_design_70c3396c8c9d4b36bf2e257b4c72c6a3.png",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "HDTDWEEZERCD",
+                            "name": "Weezer - Weezer - Đĩa CD - Standard",
+                            "originalPrice": 550000,
+                            "stockQuantity": 83,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "CD"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "HDTDWEEZERCD-ALT",
+                            "name": "Weezer - Weezer - Đĩa CD - Jewel Case",
+                            "originalPrice": 616000,
+                            "stockQuantity": 84,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "CD"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Jewel Case"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "The Art Of Noise",
+            "slug": "the-art-of-noise",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog cassette.",
+            "status": "active",
+            "avatarUrl": "https://bizweb.dktcdn.net/100/411/628/products/0e325979-9c3b-4c5e-932a-a842dc616823.png?v=1789808172707",
+            "products": [
+                {
+                    "name": "In No Sense? Nonsense!",
+                    "slug": "the-art-of-noise-in-no-sense-nonsense-cassette",
+                    "description": "Sản phẩm tham khảo từ catalog LP Club; định dạng cassette.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 320000,
+                    "categorySlug": "cassette",
+                    "mediaGallery": [
+                        {
+                            "url": "https://bizweb.dktcdn.net/100/411/628/products/0e325979-9c3b-4c5e-932a-a842dc616823.png?v=1789808172707",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "LPCLUB-030",
+                            "name": "In No Sense? Nonsense! - Standard",
+                            "originalPrice": 320000,
+                            "stockQuantity": 85,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Cassette"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "LPCLUB-030-ALT",
+                            "name": "In No Sense? Nonsense! - Clear Shell",
+                            "originalPrice": 358000,
+                            "stockQuantity": 86,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Cassette"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Clear Shell"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Frank Sinatra",
+            "slug": "frank-sinatra",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog vinyl.",
+            "status": "active",
+            "avatarUrl": "https://cdn.hstatic.net/products/200001113747/untitled_design-11_9455c1a1200f446ba2911e09258793e4.png",
+            "products": [
+                {
+                    "name": "Frank Sinatra - My Way: 50th Anniversary Edition (Vinyl LP) - Đĩa Than",
+                    "slug": "frank-sinatra-my-way-50th-anniversary-edition-vinyl-lp-dia-than",
+                    "description": "Sản phẩm tham khảo từ catalog Hãng Đĩa Thời Đại; định dạng vinyl.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 1350000,
+                    "categorySlug": "vinyl",
+                    "mediaGallery": [
+                        {
+                            "url": "https://cdn.hstatic.net/products/200001113747/untitled_design-11_9455c1a1200f446ba2911e09258793e4.png",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "HDTDFSMW50THLP",
+                            "name": "Frank Sinatra - My Way: 50th Anniversary Edition (Vinyl LP) - Đĩa Th - Standard",
+                            "originalPrice": 1350000,
+                            "stockQuantity": 87,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "HDTDFSMW50THLP-ALT",
+                            "name": "Frank Sinatra - My Way: 50th Anniversary Edition (Vinyl LP) - Đĩa Th - Colored Vinyl",
+                            "originalPrice": 1512000,
+                            "stockQuantity": 88,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Colored Vinyl"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Frank Sinatra  - Strangers In The Night (Vinyl LP) - Đĩa Than",
+                    "slug": "frank-sinatra-strangers-in-the-night-vinyl-lp-dia-than",
+                    "description": "Sản phẩm tham khảo từ catalog Hãng Đĩa Thời Đại; định dạng vinyl.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 1200000,
+                    "categorySlug": "vinyl",
+                    "mediaGallery": [
+                        {
+                            "url": "https://cdn.hstatic.net/products/200001113747/untitled_design-7_3d8c1f11e9254de5ba08d002abf4d766.png",
+                            "type": "image"
+                        },
+                        {
+                            "url": "https://cdn.hstatic.net/products/200001113747/untitled_design-7_d177444ce0c7483ca264e7b249f3de63.png",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "HDTDFSSITNLP",
+                            "name": "Frank Sinatra  - Strangers In The Night (Vinyl LP) - Đĩa Than - Standard",
+                            "originalPrice": 1200000,
+                            "stockQuantity": 89,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "HDTDFSSITNLP-ALT",
+                            "name": "Frank Sinatra  - Strangers In The Night (Vinyl LP) - Đĩa Than - Colored Vinyl",
+                            "originalPrice": 1344000,
+                            "stockQuantity": 90,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Colored Vinyl"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Yungblud",
+            "slug": "yungblud",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog vinyl.",
+            "status": "active",
+            "avatarUrl": "https://cdn.hstatic.net/products/200001113747/untitled_design-10_beddc4d2f1ec40c2913772fa60f76c97.png",
+            "products": [
+                {
+                    "name": "Yungblud - The Underrated Youth (Vinyl LP) - Đĩa Than",
+                    "slug": "yungblud-the-underrated-youth-vinyl-lp-dia-than",
+                    "description": "Sản phẩm tham khảo từ catalog Hãng Đĩa Thời Đại; định dạng vinyl.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 1100000,
+                    "categorySlug": "vinyl",
+                    "mediaGallery": [
+                        {
+                            "url": "https://cdn.hstatic.net/products/200001113747/untitled_design-10_beddc4d2f1ec40c2913772fa60f76c97.png",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "HDTDYTUYLP",
+                            "name": "Yungblud - The Underrated Youth (Vinyl LP) - Đĩa Than - Standard",
+                            "originalPrice": 1100000,
+                            "stockQuantity": 91,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "HDTDYTUYLP-ALT",
+                            "name": "Yungblud - The Underrated Youth (Vinyl LP) - Đĩa Than - Colored Vinyl",
+                            "originalPrice": 1232000,
+                            "stockQuantity": 92,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Colored Vinyl"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Nhạc Phim",
+            "slug": "nhac-phim",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog vinyl.",
+            "status": "active",
+            "avatarUrl": "https://cdn.hstatic.net/products/200001113747/untitled_design-9_bf84cede421d47c7800edfcc902afcaf.png",
+            "products": [
+                {
+                    "name": "Nhạc Phim - Stranger Things 5 OST (Vinyl LP) - Đĩa Than",
+                    "slug": "nhac-phim-stranger-things-5-ost-vinyl-lp-dia-than",
+                    "description": "Sản phẩm tham khảo từ catalog Hãng Đĩa Thời Đại; định dạng vinyl.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 1100000,
+                    "categorySlug": "vinyl",
+                    "mediaGallery": [
+                        {
+                            "url": "https://cdn.hstatic.net/products/200001113747/untitled_design-9_bf84cede421d47c7800edfcc902afcaf.png",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "HDTDST5OSTLP",
+                            "name": "Nhạc Phim - Stranger Things 5 OST (Vinyl LP) - Đĩa Than - Standard",
+                            "originalPrice": 1100000,
+                            "stockQuantity": 93,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "HDTDST5OSTLP-ALT",
+                            "name": "Nhạc Phim - Stranger Things 5 OST (Vinyl LP) - Đĩa Than - Colored Vinyl",
+                            "originalPrice": 1232000,
+                            "stockQuantity": 94,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Colored Vinyl"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Panic at the Disco – Pretty Odd (Vinyl LP)",
+            "slug": "panic-at-the-disco-pretty-odd-vinyl-lp",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog vinyl.",
+            "status": "active",
+            "avatarUrl": "https://cdn.hstatic.net/products/200001113747/untitled_design-8_ada139439fda4828b02fe1ade9cde99d.png",
+            "products": [
+                {
+                    "name": "Panic at the Disco – Pretty Odd (Vinyl LP) - Đĩa Than",
+                    "slug": "panic-at-the-disco-pretty-odd-vinyl-lp-dia-than",
+                    "description": "Sản phẩm tham khảo từ catalog Hãng Đĩa Thời Đại; định dạng vinyl.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 1200000,
+                    "categorySlug": "vinyl",
+                    "mediaGallery": [
+                        {
+                            "url": "https://cdn.hstatic.net/products/200001113747/untitled_design-8_ada139439fda4828b02fe1ade9cde99d.png",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "HDTDPATDPOLP",
+                            "name": "Panic at the Disco – Pretty Odd (Vinyl LP) - Đĩa Than - Standard",
+                            "originalPrice": 1200000,
+                            "stockQuantity": 95,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "HDTDPATDPOLP-ALT",
+                            "name": "Panic at the Disco – Pretty Odd (Vinyl LP) - Đĩa Than - Colored Vinyl",
+                            "originalPrice": 1344000,
+                            "stockQuantity": 96,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Colored Vinyl"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Bleachers",
+            "slug": "bleachers",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog vinyl.",
+            "status": "active",
+            "avatarUrl": "https://cdn.hstatic.net/products/200001113747/untitled_design-6_c7f8f6db70a64ce0820de70c0610cc89.png",
+            "products": [
+                {
+                    "name": "Bleachers - Everyone For Ten Minutes (Vinyl LP) - Đĩa Than",
+                    "slug": "bleachers-everyone-for-ten-minutes-vinyl-lp-dia-than",
+                    "description": "Sản phẩm tham khảo từ catalog Hãng Đĩa Thời Đại; định dạng vinyl.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 1150000,
+                    "categorySlug": "vinyl",
+                    "mediaGallery": [
+                        {
+                            "url": "https://cdn.hstatic.net/products/200001113747/untitled_design-6_c7f8f6db70a64ce0820de70c0610cc89.png",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "HDTDBEFTMLP",
+                            "name": "Bleachers - Everyone For Ten Minutes (Vinyl LP) - Đĩa Than - Standard",
+                            "originalPrice": 1150000,
+                            "stockQuantity": 97,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "HDTDBEFTMLP-ALT",
+                            "name": "Bleachers - Everyone For Ten Minutes (Vinyl LP) - Đĩa Than - Colored Vinyl",
+                            "originalPrice": 1288000,
+                            "stockQuantity": 98,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Colored Vinyl"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Bob Marley and the Wailers",
+            "slug": "bob-marley-and-the-wailers",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog vinyl.",
+            "status": "active",
+            "avatarUrl": "https://cdn.hstatic.net/products/200001113747/untitled_design-5_fc132e6d5bb24d22a14283774e46171a.png",
+            "products": [
+                {
+                    "name": "Bob Marley and the Wailers - Legend: The Best of - Đĩa Than",
+                    "slug": "bob-marley-and-the-wailers-legend-the-best-of-dia-than-2",
+                    "description": "Sản phẩm tham khảo từ catalog Hãng Đĩa Thời Đại; định dạng vinyl.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 1350000,
+                    "categorySlug": "vinyl",
+                    "mediaGallery": [
+                        {
+                            "url": "https://cdn.hstatic.net/products/200001113747/untitled_design-5_fc132e6d5bb24d22a14283774e46171a.png",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "HDTDBMATWLBLP",
+                            "name": "Bob Marley and the Wailers - Legend: The Best of - Đĩa Than - Standard",
+                            "originalPrice": 1350000,
+                            "stockQuantity": 99,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "HDTDBMATWLBLP-ALT",
+                            "name": "Bob Marley and the Wailers - Legend: The Best of - Đĩa Than - Colored Vinyl",
+                            "originalPrice": 1512000,
+                            "stockQuantity": 100,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "Vinyl LP"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Colored Vinyl"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Matilda Mann",
+            "slug": "matilda-mann",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog cd.",
+            "status": "active",
+            "avatarUrl": "https://cdn.hstatic.net/products/200001113747/untitled_design-4_fa01eb67728d4ea780b32f22589a4d4d.png",
+            "products": [
+                {
+                    "name": "Matilda Mann - Roxwell - Đĩa CD",
+                    "slug": "matilda-mann-roxwell-dia-cd",
+                    "description": "Sản phẩm tham khảo từ catalog Hãng Đĩa Thời Đại; định dạng cd.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 580000,
+                    "categorySlug": "cd",
+                    "mediaGallery": [
+                        {
+                            "url": "https://cdn.hstatic.net/products/200001113747/untitled_design-4_fa01eb67728d4ea780b32f22589a4d4d.png",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "HDTDOLVYSVSFAGSILCD",
+                            "name": "Matilda Mann - Roxwell - Đĩa CD - Standard",
+                            "originalPrice": 580000,
+                            "stockQuantity": 50,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "CD"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "HDTDOLVYSVSFAGSILCD-ALT",
+                            "name": "Matilda Mann - Roxwell - Đĩa CD - Jewel Case",
+                            "originalPrice": 650000,
+                            "stockQuantity": 51,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "CD"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Jewel Case"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Blondie",
+            "slug": "blondie",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog cd.",
+            "status": "active",
+            "avatarUrl": "https://cdn.hstatic.net/products/200001113747/untitled_design-2_7ee90005e5b848b49b8aa432cdf7b9c1.png",
+            "products": [
+                {
+                    "name": "Blondie - Greatest Hits - Đĩa CD",
+                    "slug": "blondie-greatest-hits-dia-cd",
+                    "description": "Sản phẩm tham khảo từ catalog Hãng Đĩa Thời Đại; định dạng cd.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 460000,
+                    "categorySlug": "cd",
+                    "mediaGallery": [
+                        {
+                            "url": "https://cdn.hstatic.net/products/200001113747/untitled_design-2_7ee90005e5b848b49b8aa432cdf7b9c1.png",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "HDTDBGHCD",
+                            "name": "Blondie - Greatest Hits - Đĩa CD - Standard",
+                            "originalPrice": 460000,
+                            "stockQuantity": 52,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "CD"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "HDTDBGHCD-ALT",
+                            "name": "Blondie - Greatest Hits - Đĩa CD - Jewel Case",
+                            "originalPrice": 515000,
+                            "stockQuantity": 53,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "CD"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Jewel Case"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Elvis Presley",
+            "slug": "elvis-presley",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog cd.",
+            "status": "active",
+            "avatarUrl": "https://cdn.hstatic.net/products/200001113747/el_95756e554827484d91e5645c5e29275c.png",
+            "products": [
+                {
+                    "name": "Elvis Presley - Gold (50 Original Hits) - Đĩa CD",
+                    "slug": "elvis-presley-gold-50-original-hits-dia-cd",
+                    "description": "Sản phẩm tham khảo từ catalog Hãng Đĩa Thời Đại; định dạng cd.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 450000,
+                    "categorySlug": "cd",
+                    "mediaGallery": [
+                        {
+                            "url": "https://cdn.hstatic.net/products/200001113747/el_95756e554827484d91e5645c5e29275c.png",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "HDTDEPGOLDCD",
+                            "name": "Elvis Presley - Gold (50 Original Hits) - Đĩa CD - Standard",
+                            "originalPrice": 450000,
+                            "stockQuantity": 54,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "CD"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "HDTDEPGOLDCD-ALT",
+                            "name": "Elvis Presley - Gold (50 Original Hits) - Đĩa CD - Jewel Case",
+                            "originalPrice": 504000,
+                            "stockQuantity": 55,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "CD"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Jewel Case"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Roberta Flack",
+            "slug": "roberta-flack",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog cd.",
+            "status": "active",
+            "avatarUrl": "https://cdn.hstatic.net/products/200001113747/roberta_89dbac23c74e40338ce7e607e333f4d1.png",
+            "products": [
+                {
+                    "name": "Roberta Flack - Killing Me Softly - Đĩa CD",
+                    "slug": "roberta-flack-killing-me-softly-dia-cd",
+                    "description": "Sản phẩm tham khảo từ catalog Hãng Đĩa Thời Đại; định dạng cd.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 450000,
+                    "categorySlug": "cd",
+                    "mediaGallery": [
+                        {
+                            "url": "https://cdn.hstatic.net/products/200001113747/roberta_89dbac23c74e40338ce7e607e333f4d1.png",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "HDTDRFKMSJPCD",
+                            "name": "Roberta Flack - Killing Me Softly - Đĩa CD - Standard",
+                            "originalPrice": 450000,
+                            "stockQuantity": 56,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "CD"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "HDTDRFKMSJPCD-ALT",
+                            "name": "Roberta Flack - Killing Me Softly - Đĩa CD - Jewel Case",
+                            "originalPrice": 504000,
+                            "stockQuantity": 57,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "CD"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Jewel Case"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Billy Joel",
+            "slug": "billy-joel",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog cd.",
+            "status": "active",
+            "avatarUrl": "https://cdn.hstatic.net/products/200001113747/bill_942473ec0f624b11b7b54902f528a785.png",
+            "products": [
+                {
+                    "name": "Billy Joel - Glass Houses - Đĩa CD",
+                    "slug": "billy-joel-glass-houses-dia-cd",
+                    "description": "Sản phẩm tham khảo từ catalog Hãng Đĩa Thời Đại; định dạng cd.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 450000,
+                    "categorySlug": "cd",
+                    "mediaGallery": [
+                        {
+                            "url": "https://cdn.hstatic.net/products/200001113747/bill_942473ec0f624b11b7b54902f528a785.png",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "HDTDBJGHJPCD",
+                            "name": "Billy Joel - Glass Houses - Đĩa CD - Standard",
+                            "originalPrice": 450000,
+                            "stockQuantity": 58,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "CD"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "HDTDBJGHJPCD-ALT",
+                            "name": "Billy Joel - Glass Houses - Đĩa CD - Jewel Case",
+                            "originalPrice": 504000,
+                            "stockQuantity": 59,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "CD"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Jewel Case"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Billy Joel - 52nd Street - Đĩa CD",
+                    "slug": "billy-joel-52nd-street-dia-cd",
+                    "description": "Sản phẩm tham khảo từ catalog Hãng Đĩa Thời Đại; định dạng cd.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 450000,
+                    "categorySlug": "cd",
+                    "mediaGallery": [
+                        {
+                            "url": "https://cdn.hstatic.net/products/200001113747/billy-joel-52nd-street-japanese-cd-album-with-obi.jpg_10e202028bdf43d9af2ae4cd51d905a4.webp",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "HDTDBJ52SCD",
+                            "name": "Billy Joel - 52nd Street - Đĩa CD - Standard",
+                            "originalPrice": 450000,
+                            "stockQuantity": 60,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "CD"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "HDTDBJ52SCD-ALT",
+                            "name": "Billy Joel - 52nd Street - Đĩa CD - Jewel Case",
+                            "originalPrice": 504000,
+                            "stockQuantity": 61,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "CD"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Jewel Case"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Ella Fitzgerald – The Platinum Collection",
+            "slug": "ella-fitzgerald-the-platinum-collection",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog cd.",
+            "status": "active",
+            "avatarUrl": "https://cdn.hstatic.net/products/200001113747/ella_4e6f95969177488eb97db073e0d7ead2.png",
+            "products": [
+                {
+                    "name": "Ella Fitzgerald – The Platinum Collection - Đĩa CD",
+                    "slug": "ella-fitzgerald-the-platinum-collection-dia-cd",
+                    "description": "Sản phẩm tham khảo từ catalog Hãng Đĩa Thời Đại; định dạng cd.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 450000,
+                    "categorySlug": "cd",
+                    "mediaGallery": [
+                        {
+                            "url": "https://cdn.hstatic.net/products/200001113747/ella_4e6f95969177488eb97db073e0d7ead2.png",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "HDTDEFTPCCD",
+                            "name": "Ella Fitzgerald – The Platinum Collection - Đĩa CD - Standard",
+                            "originalPrice": 450000,
+                            "stockQuantity": 62,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "CD"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "HDTDEFTPCCD-ALT",
+                            "name": "Ella Fitzgerald – The Platinum Collection - Đĩa CD - Jewel Case",
+                            "originalPrice": 504000,
+                            "stockQuantity": 63,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "CD"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Jewel Case"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Sarah Vaughan",
+            "slug": "sarah-vaughan",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog cd.",
+            "status": "active",
+            "avatarUrl": "https://cdn.hstatic.net/products/200001113747/sarah_a599cb9de66141b38b17e1c4ca2e9eb2.png",
+            "products": [
+                {
+                    "name": "Sarah Vaughan - Jazz Special Selection -1 - Đĩa CD",
+                    "slug": "sarah-vaughan-jazz-special-selection-1-dia-cd",
+                    "description": "Sản phẩm tham khảo từ catalog Hãng Đĩa Thời Đại; định dạng cd.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 450000,
+                    "categorySlug": "cd",
+                    "mediaGallery": [
+                        {
+                            "url": "https://cdn.hstatic.net/products/200001113747/sarah_a599cb9de66141b38b17e1c4ca2e9eb2.png",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "HDTDSRVJSSCD",
+                            "name": "Sarah Vaughan - Jazz Special Selection -1 - Đĩa CD - Standard",
+                            "originalPrice": 450000,
+                            "stockQuantity": 64,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "CD"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "HDTDSRVJSSCD-ALT",
+                            "name": "Sarah Vaughan - Jazz Special Selection -1 - Đĩa CD - Jewel Case",
+                            "originalPrice": 504000,
+                            "stockQuantity": 65,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "CD"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Jewel Case"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stageName": "Red Hot Chili Peppers",
+            "slug": "red-hot-chili-peppers",
+            "bio": "Nghệ sĩ hoặc tuyển chọn trong catalog cd.",
+            "status": "active",
+            "avatarUrl": "https://cdn.hstatic.net/products/200001113747/093624738626.sml_cf80f35d502340a8bc100807ce6c5d7e.jpg",
+            "products": [
+                {
+                    "name": "Red Hot Chili Peppers - Californication - Đĩa CD",
+                    "slug": "red-hot-chili-peppers-californication-dia-cd",
+                    "description": "Sản phẩm tham khảo từ catalog Hãng Đĩa Thời Đại; định dạng cd.",
+                    "productType": "music",
+                    "status": "published",
+                    "minPrice": 450000,
+                    "categorySlug": "cd",
+                    "mediaGallery": [
+                        {
+                            "url": "https://cdn.hstatic.net/products/200001113747/093624738626.sml_cf80f35d502340a8bc100807ce6c5d7e.jpg",
+                            "type": "image"
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "sku": "HDTDRHCPCCD",
+                            "name": "Red Hot Chili Peppers - Californication - Đĩa CD - Standard",
+                            "originalPrice": 450000,
+                            "stockQuantity": 66,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "CD"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Standard"
+                                }
+                            ]
+                        },
+                        {
+                            "sku": "HDTDRHCPCCD-ALT",
+                            "name": "Red Hot Chili Peppers - Californication - Đĩa CD - Jewel Case",
+                            "originalPrice": 504000,
+                            "stockQuantity": 67,
+                            "attributes": [
+                                {
+                                    "key": "Format",
+                                    "value": "CD"
+                                },
+                                {
+                                    "key": "Edition",
+                                    "value": "Jewel Case"
+                                }
                             ]
                         }
                     ]
@@ -474,6 +3670,11 @@
                 {
                     "productSlug": "my-chemical-romance-three-cheers-vinyl",
                     "variantSku": "LPCLUB-MCR-3CHEERS",
+                    "quantity": 1
+                },
+                {
+                    "productSlug": "la-creation-du-monde-le-boeuf-sur-le-toit-saudades-do-brasil-four-dances",
+                    "variantSku": "LPCLUB-001-ALT",
                     "quantity": 1
                 }
             ]
@@ -508,7 +3709,10 @@
                     "provider": "MOMO",
                     "status": "SUCCESS",
                     "gatewayTransactionId": "UAT_MOMO_001",
-                    "rawResponse": { "resultCode": 0, "message": "Giao dịch thành công" }
+                    "rawResponse": {
+                        "resultCode": 0,
+                        "message": "Giao dịch thành công"
+                    }
                 }
             ]
         },
@@ -535,7 +3739,10 @@
                     "provider": "MOMO",
                     "status": "PENDING",
                     "gatewayTransactionId": "UAT_MOMO_002",
-                    "rawResponse": { "resultCode": 1000, "message": "Chờ thanh toán" }
+                    "rawResponse": {
+                        "resultCode": 1000,
+                        "message": "Chờ thanh toán"
+                    }
                 }
             ]
         },
@@ -567,7 +3774,9 @@
                     "provider": "COD",
                     "status": "PENDING",
                     "gatewayTransactionId": "UAT_COD_001",
-                    "rawResponse": { "note": "Thu tiền mặt khi giao hàng" }
+                    "rawResponse": {
+                        "note": "Thu tiền mặt khi giao hàng"
+                    }
                 }
             ]
         },
@@ -594,7 +3803,9 @@
                     "provider": "MOMO",
                     "status": "FAILED",
                     "gatewayTransactionId": "UAT_MOMO_FAIL_001",
-                    "rawResponse": { "error": "Insufficient funds" }
+                    "rawResponse": {
+                        "error": "Insufficient funds"
+                    }
                 }
             ]
         },
@@ -626,7 +3837,10 @@
                     "provider": "MOMO",
                     "status": "SUCCESS",
                     "gatewayTransactionId": "UAT_MOMO_003",
-                    "rawResponse": { "resultCode": 0, "message": "Giao dịch thành công" }
+                    "rawResponse": {
+                        "resultCode": 0,
+                        "message": "Giao dịch thành công"
+                    }
                 }
             ]
         }

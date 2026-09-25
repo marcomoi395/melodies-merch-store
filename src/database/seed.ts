@@ -171,6 +171,7 @@ async function seedIdentity(manager: EntityManager): Promise<void> {
 }
 
 async function seedCatalog(manager: EntityManager, data: SeedData): Promise<void> {
+    const updatedAt = new Date();
     const categoryRepository = manager.getRepository(CategoryEntity);
     for (const category of data.categories) {
         await categoryRepository.upsert({ name: category.name, slug: category.slug }, ['slug']);
@@ -190,6 +191,7 @@ async function seedCatalog(manager: EntityManager, data: SeedData): Promise<void
             startDate: new Date(discount.startDate),
             endDate: new Date(discount.endDate),
             isActive: true,
+            updatedAt: new Date(),
         })),
         ['code'],
     );
@@ -231,6 +233,7 @@ async function seedCatalog(manager: EntityManager, data: SeedData): Promise<void
                     minPrice: String(productData.minPrice),
                     mediaGallery: productData.mediaGallery ?? [],
                     categoryId: category.id,
+                    updatedAt,
                 },
                 ['slug'],
             );
@@ -248,6 +251,7 @@ async function seedCatalog(manager: EntityManager, data: SeedData): Promise<void
                         name: variantData.name,
                         originalPrice: String(variantData.originalPrice),
                         stockQuantity: variantData.stockQuantity,
+                        updatedAt,
                     },
                     ['sku'],
                 );
@@ -386,6 +390,7 @@ async function seedOrders(manager: EntityManager, data: SeedData): Promise<void>
                 totalAmount: String(totalAmount),
                 currency: 'VND',
                 appliedVoucher: discount?.isActive ? discount.code : '',
+                updatedAt: new Date(),
             },
             ['id'],
         );
