@@ -46,6 +46,8 @@ Customer-facing login, register, profile, password change, customer order histor
 26. As a customer, I want catalog filters and pagination encoded in the URL, so that I can refresh or share a discovery view.
 27. As a customer, I want search-empty, filter-empty, and product-not-found states, so that stale or narrow queries remain understandable.
 28. As a customer, I want store discovery controls usable on mobile, so that browsing does not require a desktop.
+29. As a customer, I want a product detail gallery that supports multiple images, so that I can inspect an item from different views.
+30. As a customer, I want related products on product detail, so that I can continue browsing similar items.
 37. As a guest customer, I want to enter a voucher at checkout, so that I can use a code received from an external campaign.
 38. As a guest customer, I want voucher preview evaluated by the server, so that the displayed total matches checkout rules.
 39. As a guest customer, I want subtotal, voucher discount, shipping fee, and final total shown separately, so that I understand the amount due.
@@ -68,7 +70,8 @@ Customer-facing login, register, profile, password change, customer order histor
 - Apply appropriate abuse protection to the public tracking endpoint before production release, such as rate limiting and response minimization. Do not expose a customer order list through an unauthenticated full-detail endpoint.
 - Do not expose `/categories` or `/artists` storefront pages. Keep artist filtering inside the main store only. Extend the main catalog request with repeated `artistId` using OR semantics, repeated `type`, `price_min`, `price_max`, `stock_status=true`, `sort=oldest`, `keyword`, `page`, and `limit`. Price range uses `originalPrice`.
 - Preserve discovery query parameters in the URL. Applying a filter resets page to `1`; pagination retains all other values. Use allowlisted sort values only.
-- Use explicit API records and parent IDs for breadcrumbs. Do not require or synthesize a `children` tree.
+- Keep product media normalized as an ordered string array and render a selectable gallery when more than one image is available.
+- Load up to four related products by shared artist; fall back to the same product type when no artist is attached. Exclude the current product.
 - Keep voucher entry available for guest checkout. Send `appliedVoucher` only when non-empty to `POST /order/preview` and `POST /order`.
 - Use the preview response as the displayed source of truth for subtotal, discount, shipping, applied voucher, and total. Invalidate preview when its inputs change.
 - At order creation, revalidate voucher active state, date window, usage limit, and final discount under the voucher transaction lock before consuming usage. Recheck stock transactionally. On failure, clear the stale preview and preserve the guest cart context.

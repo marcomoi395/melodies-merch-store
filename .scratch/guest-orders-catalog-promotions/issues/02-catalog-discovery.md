@@ -10,6 +10,8 @@ Deliver Phase 2 store discovery: in-store artist filtering, `oldest` sorting, sh
 - Do not expose `/category` or `/artist` storefront pages. Keep artist selection as a main-store filter only.
 - Add main-store artist (OR), original-price minimum/maximum, in-stock-only, and `oldest` discovery controls.
 - Preserve filters and pagination in shareable URL query parameters.
+- Render multiple product images as a selectable gallery on product detail.
+- Show up to four related products by shared artist, with product-type fallback when no artist is available.
 - Distinguish loading, API error, empty results, and product-not-found states.
 - Keep controls usable on mobile.
 
@@ -20,6 +22,7 @@ Deliver Phase 2 store discovery: in-store artist filtering, `oldest` sorting, sh
 - Changing a filter resets page to `1`; pagination retains every other filter.
 - `/category` and `/artist` routes are absent and show the generic not-found state.
 - Search no-match, filter-empty, and invalid product routes have distinct useful states.
+- Product detail supports multiple images and excludes the current product from related products.
 
 ## Testing Notes
 
