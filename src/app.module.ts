@@ -26,6 +26,9 @@ import { parseCorsOrigins } from './runtime/runtime-config';
             isGlobal: true,
             validationSchema: Joi.object({
                 DATABASE_URL: Joi.string().required(),
+                CUSTOMER_DATA_ENCRYPTION_KEY: Joi.string()
+                    .pattern(/^[a-fA-F0-9]{64}$/)
+                    .required(),
                 JWT_SECRET: Joi.string().required(),
                 REDIS_HOST: Joi.string().required(),
                 REDIS_PASSWORD: Joi.string().required(),

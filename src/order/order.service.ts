@@ -12,6 +12,7 @@ import { PreviewOrderDto } from './dto/preview.dto';
 import { TrackOrderDto } from './dto/track-order.dto';
 import Redis from 'ioredis';
 import { createHash } from 'node:crypto';
+import { customerLookup } from '../database/customer-encryption';
 
 type OrderInput = CreateOrderDto | PreviewOrderDto;
 
@@ -169,12 +170,12 @@ export class OrderService {
             .createQueryBuilder('order')
             .where('order.userId IS NULL')
             .andWhere(
-                payload.email
-                    ? 'LOWER(order.email) = :email'
-                    : "regexp_replace(COALESCE(order.phone, ''), '[^0-9]', '', 'g') = :phone",
-                payload.email
-                    ? { email: payload.email.trim().toLowerCase() }
-                    : { phone: this.normalizePhone(payload.phone ?? '') },
+                payload.email ? 'order.emailLookup = :lookup' : 'order.phoneLookup = :lookup',
+                {
+                    lookup: payload.email
+                        ? customerLookup('email', payload.email)
+                        : customerLookup('phone', payload.phone ?? ''),
+                },
             )
             .orderBy('order.createdAt', 'DESC')
             .take(20);

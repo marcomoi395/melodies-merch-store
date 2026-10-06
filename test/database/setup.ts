@@ -5,3 +5,6 @@ if (process.env.TEST_DATABASE_URL) {
     process.env.DATABASE_SCHEMA = target.schema;
     process.env.DATABASE_URL = target.url;
 }
+
+// Test-only key; never use this deterministic value in deployment.
+process.env.CUSTOMER_DATA_ENCRYPTION_KEY = 'ab'.repeat(32);

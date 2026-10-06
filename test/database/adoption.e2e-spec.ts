@@ -103,11 +103,13 @@ describeDatabase('TypeORM adoption rehearsal PostgreSQL e2e', () => {
         if (result.status !== 0) {
             throw new Error(`${result.stdout}${result.stderr}`);
         }
-        expect(await dataSource!.runMigrations()).toEqual([]);
         expect(
             await dataSource!.query(`SELECT name FROM "${schema}"."${TYPEORM_MIGRATIONS_TABLE}"`),
         ).toEqual([{ name: 'Initial20260106151610' }]);
         expect(await representativeRows(dataSource!, schema)).toEqual(before);
+        expect((await dataSource!.runMigrations()).map((migration) => migration.name)).toEqual([
+            'EncryptOrderCustomers20261006000000',
+        ]);
     });
 
     it('rejects drift before writing TypeORM migration history', async () => {

@@ -1,3 +1,4 @@
+import { customerLookup } from './customer-encryption';
 import 'dotenv/config';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -380,6 +381,8 @@ async function seedOrders(manager: EntityManager, data: SeedData): Promise<void>
                 email: user.email,
                 fullName: user.fullName,
                 phone: orderData.shippingAddress.phone ?? user.phone,
+                emailLookup: customerLookup('email', user.email),
+                phoneLookup: customerLookup('phone', orderData.shippingAddress.phone ?? user.phone),
                 status: orderData.status ?? 'PENDING',
                 paymentMethod: orderData.paymentMethod ?? 'COD',
                 shippingAddress: orderData.shippingAddress as any,

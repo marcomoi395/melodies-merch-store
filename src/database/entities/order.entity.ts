@@ -2,6 +2,7 @@ import {
     Column,
     Entity,
     JoinColumn,
+    Index,
     ManyToOne,
     OneToMany,
     PrimaryGeneratedColumn,
@@ -11,15 +12,30 @@ import { DiscountUsageEntity } from './discount-usage.entity';
 import { OrderItemEntity } from './order-item.entity';
 import { TransactionEntity } from './transaction.entity';
 import { UserEntity } from './user.entity';
+import { customerTransformer } from '../customer-encryption';
 @Entity({ name: 'orders' })
 export class OrderEntity {
     @PrimaryGeneratedColumn('uuid') id: string;
     @Column({ name: 'user_id', type: 'uuid', nullable: true }) userId: string | null;
-    @Column({ type: 'varchar', length: 255, nullable: true }) email: string | null;
-    @Column({ name: 'full_name', type: 'varchar', length: 100, nullable: true }) fullName:
+    @Column({ type: 'text', nullable: true, transformer: customerTransformer('email') }) email:
         | string
         | null;
-    @Column({ type: 'varchar', length: 20, nullable: true }) phone: string | null;
+    @Column({
+        name: 'full_name',
+        type: 'text',
+        nullable: true,
+        transformer: customerTransformer('full_name'),
+    })
+    fullName: string | null;
+    @Column({ type: 'text', nullable: true, transformer: customerTransformer('phone') }) phone:
+        | string
+        | null;
+    @Index('orders_email_lookup_idx')
+    @Column({ name: 'email_lookup', type: 'varchar', length: 64, nullable: true, select: false })
+    emailLookup: string | null;
+    @Index('orders_phone_lookup_idx')
+    @Column({ name: 'phone_lookup', type: 'varchar', length: 64, nullable: true, select: false })
+    phoneLookup: string | null;
     @Column({ type: 'varchar', length: 20, nullable: true, default: 'PENDING' }) status:
         | string
         | null;
@@ -34,11 +50,18 @@ export class OrderEntity {
     @Column({ name: 'applied_voucher', type: 'varchar', nullable: true }) appliedVoucher:
         | string
         | null;
-    @Column({ name: 'shipping_address', type: 'jsonb' }) shippingAddress: Record<string, unknown>;
+    @Column({
+        name: 'shipping_address',
+        type: 'jsonb',
+        transformer: customerTransformer('shipping_address'),
+    })
+    shippingAddress: Record<string, unknown>;
     @Column({ name: 'tracking_code', type: 'varchar', length: 50, nullable: true }) trackingCode:
         | string
         | null;
-    @Column({ type: 'text', nullable: true }) note: string | null;
+    @Column({ type: 'text', nullable: true, transformer: customerTransformer('note') }) note:
+        | string
+        | null;
     @Column({ name: 'payment_method', type: 'varchar', length: 20, nullable: true }) paymentMethod:
         | string
         | null;

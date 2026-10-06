@@ -151,3 +151,11 @@ shop.banecon.site {
     reverse_proxy 127.0.0.1:8081
 }
 ```
+
+## Customer data encryption
+
+Order `fullName`, `email`, `phone`, `shippingAddress` and `note` are encrypted in PostgreSQL using AES-256-GCM. Random IVs and authentication tags protect each value; email/phone searches use normalized HMAC-SHA-256 lookup indexes. TypeORM decrypts API responses; use HTTPS for transport. This change does not encrypt account profiles, logs or browser storage.
+
+Before deploying, generate `CUSTOMER_DATA_ENCRYPTION_KEY` with `openssl rand -hex 32` and store the 64 hex characters in backend environment/secret storage. Never put this key in frontend variables, source control or logs. Preserve the same key with database backups: losing or replacing it makes existing orders unreadable. Key rotation requires re-encrypting rows and rebuilding lookup hashes.
+
+Stop API workers and take a database backup, then run `npm run migration:run` with this key configured before starting the new backend. The migration encrypts existing orders and builds lookup indexes in a transaction, processing 500 rows per batch. The table remains locked until commit; schedule downtime appropriate to table size. Do not run the old backend against the encrypted schema. `npm run migration:revert` requires the same key and restores plaintext without truncating fields; roll back the application together with the migration.

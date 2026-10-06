@@ -6,6 +6,7 @@ import { TYPEORM_MIGRATIONS_TABLE } from '../../src/database/database-options';
 import { expectSchemaParity } from './schema-parity';
 import { createSchema, dropSchema } from './postgres-lifecycle';
 import { CategoryEntity } from '../../src/database/entities/category.entity';
+import { encryptCustomerValue } from '../../src/database/customer-encryption';
 import { ProductEntity } from '../../src/database/entities/product.entity';
 
 const databaseUrl = process.env.TEST_DATABASE_URL;
@@ -97,7 +98,7 @@ describeDatabase('TypeORM migration PostgreSQL e2e', () => {
             INSERT INTO variant_attributes (id, variant_id, key, value) VALUES ('00000000-0000-0000-0000-000000000009', '00000000-0000-0000-0000-000000000008', 'size', 'M');
             INSERT INTO carts (id, user_id, updated_at) VALUES ('00000000-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000001', CURRENT_TIMESTAMP);
             INSERT INTO cart_items (id, cart_id, product_id, product_variant_id) VALUES ('00000000-0000-0000-0000-000000000011', '00000000-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000007', '00000000-0000-0000-0000-000000000008');
-            INSERT INTO orders (id, user_id, subtotal, shipping_fee, total_amount, shipping_address, updated_at) VALUES ('00000000-0000-0000-0000-000000000012', '00000000-0000-0000-0000-000000000001', 100, 0, 100, '{}', CURRENT_TIMESTAMP);
+            INSERT INTO orders (id, user_id, subtotal, shipping_fee, total_amount, shipping_address, updated_at) VALUES ('00000000-0000-0000-0000-000000000012', '00000000-0000-0000-0000-000000000001', 100, 0, 100, '${JSON.stringify(encryptCustomerValue('shipping_address', {}))}', CURRENT_TIMESTAMP);
             INSERT INTO order_items (id, order_id, product_id, product_variant_id, product_name, variant_name, quantity, price, original_price, discount_percentage, total_line_price) VALUES ('00000000-0000-0000-0000-000000000013', '00000000-0000-0000-0000-000000000012', '00000000-0000-0000-0000-000000000007', '00000000-0000-0000-0000-000000000008', 'Product', 'Standard', 1, 100, 100, 0, 100);
             INSERT INTO discounts (id, value, updated_at) VALUES ('00000000-0000-0000-0000-000000000014', 10, CURRENT_TIMESTAMP);
             INSERT INTO discount_usages (id, discount_id, user_id, order_id) VALUES ('00000000-0000-0000-0000-000000000015', '00000000-0000-0000-0000-000000000014', '00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000012');
@@ -167,6 +168,7 @@ describeDatabase('TypeORM migration PostgreSQL e2e', () => {
         await dataSource!.query(`CREATE TABLE migration_sentinel (id INTEGER PRIMARY KEY)`);
         await dataSource!.query(`CREATE VIEW migration_guard AS SELECT id FROM users`);
 
+        await dataSource!.undoLastMigration(); // Restore plaintext before testing initial migration rollback.
         await expect(dataSource!.undoLastMigration()).rejects.toThrow();
         expect(
             await dataSource!.query(`SELECT to_regclass($1) AS table`, [

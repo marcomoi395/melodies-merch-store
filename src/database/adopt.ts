@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { randomUUID } from 'node:crypto';
 import { DataSource } from 'typeorm';
 import { createDataSourceOptions } from './data-source';
+import { Initial20260106151610 } from './migrations/20260106151610-initial';
 
 const initialMigrationName = 'Initial20260106151610';
 
@@ -87,9 +88,10 @@ export async function preflightExistingDatabase(
     try {
         await shadowAdmin.initialize();
         await shadowAdmin.query(`CREATE SCHEMA "${shadowSchema}"`);
-        shadow = new DataSource(
-            createDataSourceOptions({ DATABASE_URL: shadowUrl, DATABASE_SCHEMA: shadowSchema }),
-        );
+        shadow = new DataSource({
+            ...createDataSourceOptions({ DATABASE_URL: shadowUrl, DATABASE_SCHEMA: shadowSchema }),
+            migrations: [Initial20260106151610],
+        });
         target = new DataSource(
             createDataSourceOptions({ DATABASE_URL: targetUrl, DATABASE_SCHEMA: targetSchema }),
         );
@@ -126,7 +128,10 @@ export async function preflightExistingDatabase(
 
 export async function adoptExistingDatabase(): Promise<void> {
     await preflightExistingDatabase();
-    const dataSource = new DataSource(createDataSourceOptions());
+    const dataSource = new DataSource({
+        ...createDataSourceOptions(),
+        migrations: [Initial20260106151610],
+    });
     await dataSource.initialize();
     try {
         const migrations = dataSource.migrations;
