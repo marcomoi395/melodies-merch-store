@@ -67,9 +67,16 @@ describeDatabase('customer encryption PostgreSQL', () => {
         expect(loaded.fullName).toBe('Nguyễn An');
         expect(loaded.shippingAddress).toBe('123 Test Street');
         expect(loaded.emailLookup).toBeUndefined();
-        const service = new OrderService(repository, {} as any, {} as any, source, {
-            set: jest.fn().mockResolvedValue('OK'),
-        } as any);
+        const service = new OrderService(
+            repository,
+            {} as any,
+            {} as any,
+            source,
+            {
+                set: jest.fn().mockResolvedValue('OK'),
+            } as any,
+            {} as any,
+        );
         expect((await service.trackGuestOrders({ email: 'guest@example.com' }))[0].id).toBe(id);
         expect((await service.trackGuestOrders({ phone: '0901234567' }))[0].id).toBe(id);
         await repository.update(id, { phone: '0907654321' });

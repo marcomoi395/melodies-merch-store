@@ -76,6 +76,12 @@ export class OrderResponseDto {
     paymentMethod: string;
 
     @Expose()
+    paymentId?: string;
+
+    @Expose()
+    paymentUrl?: string | null;
+
+    @Expose()
     shippingAddress: string;
 
     @Expose()

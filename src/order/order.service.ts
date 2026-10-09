@@ -6,7 +6,9 @@ import { OrderEntity } from 'src/database/entities/order.entity';
 import { ProductVariantEntity } from 'src/database/entities/product-variant.entity';
 import { DataSource, In, IsNull, Repository } from 'typeorm';
 import { DiscountType } from 'src/promotion/dto/create-promotion.dto';
-import { CreateOrderDto } from './dto/create-order.dto';
+import { MomoService } from '../payment/momo.service';
+import { TransactionEntity } from '../database/entities/transaction.entity';
+import { CreateOrderDto, PaymentMethod } from './dto/create-order.dto';
 import { GetOrdersDto } from './dto/get-order.dto';
 import { PreviewOrderDto } from './dto/preview.dto';
 import { TrackOrderDto } from './dto/track-order.dto';
@@ -24,6 +26,7 @@ export class OrderService {
         @InjectRepository(DiscountEntity) private discounts: Repository<DiscountEntity>,
         private dataSource: DataSource,
         @Inject('REDIS_CLIENT') private readonly redis: Redis,
+        private readonly momo: MomoService,
     ) {}
 
     private async orderData(payload: OrderInput) {
@@ -222,7 +225,10 @@ export class OrderService {
 
     async createOrder(payload: CreateOrderDto, userId: string | null = null) {
         const data = await this.orderData(payload);
-        return this.dataSource.transaction(async (manager) => {
+        if (payload.paymentMethod === PaymentMethod.MOMO) {
+            this.momo.validateAmount(data.totalAmount);
+        }
+        const { order, payment } = await this.dataSource.transaction(async (manager) => {
             for (const item of data.stock) {
                 const result = await manager
                     .createQueryBuilder()
@@ -272,17 +278,30 @@ export class OrderService {
                 OrderItemEntity,
                 data.orderItems.map((item) => ({ ...item, orderId: order.id })),
             );
-            return manager.findOneOrFail(OrderEntity, {
-                where: { id: order.id },
-                relations: { orderItems: true },
-            });
+            const payment =
+                payload.paymentMethod === PaymentMethod.MOMO
+                    ? await this.momo.prepare(manager, order)
+                    : null;
+            return {
+                order: await manager.findOneOrFail(OrderEntity, {
+                    where: { id: order.id },
+                    relations: { orderItems: true },
+                }),
+                payment,
+            };
         });
+        return payment ? { ...order, ...(await this.momo.create(payment)) } : order;
     }
 
     async cancelOrder(orderId: string, userId: string) {
         const order = await this.orders.findOneBy({ id: orderId, userId });
         if (!order) {
             throw new BadRequestException('Order not found');
+        }
+        if (order.paymentMethod === PaymentMethod.MOMO) {
+            throw new BadRequestException(
+                'MoMo orders must be cancelled through the payment gateway',
+            );
         }
         if (order.status !== 'PENDING') {
             throw new BadRequestException('Only pending orders can be cancelled');
@@ -302,6 +321,17 @@ export class OrderService {
         const order = await this.getOrderById(orderId);
         if (!order) {
             throw new BadRequestException('Order not found');
+        }
+        if (order.paymentMethod === PaymentMethod.MOMO && status !== 'PENDING') {
+            const payment = await this.dataSource.getRepository(TransactionEntity).findOneBy({
+                orderId,
+                provider: 'MOMO',
+                type: 'PAYMENT',
+                status: 'SUCCESS',
+            });
+            if (!payment || payment.rawResponse?.requiresReview) {
+                throw new BadRequestException('MoMo payment has not been confirmed');
+            }
         }
         if (order.status === status) {
             throw new BadRequestException('Order is already in the desired status');

@@ -1,3 +1,4 @@
+import { PaymentModule } from '../payment/payment.module';
 import { Module } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { OrderAdminController } from './controllers/order.admin.controller';
@@ -8,7 +9,10 @@ import { OrderEntity } from 'src/database/entities/order.entity';
 import { ProductVariantEntity } from 'src/database/entities/product-variant.entity';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([OrderEntity, ProductVariantEntity, DiscountEntity])],
+    imports: [
+        PaymentModule,
+        TypeOrmModule.forFeature([OrderEntity, ProductVariantEntity, DiscountEntity]),
+    ],
     controllers: [OrderPublicController, OrderAdminController],
     providers: [OrderService],
 })

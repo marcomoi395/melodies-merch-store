@@ -26,6 +26,13 @@ import { parseCorsOrigins } from './runtime/runtime-config';
             isGlobal: true,
             validationSchema: Joi.object({
                 DATABASE_URL: Joi.string().required(),
+                API_URL: Joi.string()
+                    .uri({ scheme: ['http', 'https'] })
+                    .optional(),
+                MOMO_ENVIRONMENT: Joi.string().valid('sandbox', 'production').default('sandbox'),
+                MOMO_PARTNER_CODE: Joi.string().allow('').optional(),
+                MOMO_ACCESS_KEY: Joi.string().allow('').optional(),
+                MOMO_SECRET_KEY: Joi.string().allow('').optional(),
                 CUSTOMER_DATA_ENCRYPTION_KEY: Joi.string()
                     .pattern(/^[a-fA-F0-9]{64}$/)
                     .required(),

@@ -2,7 +2,8 @@
 /dist
 /node_modules
 /build
-/docs
+/docs/*
+!/docs/momo-integration.md
 
 # Logs
 logs
