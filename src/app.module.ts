@@ -29,6 +29,9 @@ import { parseCorsOrigins } from './runtime/runtime-config';
                 API_URL: Joi.string()
                     .uri({ scheme: ['http', 'https'] })
                     .optional(),
+                STRIPE_ENVIRONMENT: Joi.string().valid('test').default('test'),
+                STRIPE_SECRET_KEY: Joi.string().allow('').optional(),
+                STRIPE_WEBHOOK_SECRET: Joi.string().allow('').optional(),
                 MOMO_ENVIRONMENT: Joi.string().valid('sandbox', 'production').default('sandbox'),
                 MOMO_PARTNER_CODE: Joi.string().allow('').optional(),
                 MOMO_ACCESS_KEY: Joi.string().allow('').optional(),

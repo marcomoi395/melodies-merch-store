@@ -76,6 +76,7 @@ describeDatabase('customer encryption PostgreSQL', () => {
                 set: jest.fn().mockResolvedValue('OK'),
             } as any,
             {} as any,
+            {} as any,
         );
         expect((await service.trackGuestOrders({ email: 'guest@example.com' }))[0].id).toBe(id);
         expect((await service.trackGuestOrders({ phone: '0901234567' }))[0].id).toBe(id);

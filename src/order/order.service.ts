@@ -6,6 +6,7 @@ import { OrderEntity } from 'src/database/entities/order.entity';
 import { ProductVariantEntity } from 'src/database/entities/product-variant.entity';
 import { DataSource, In, IsNull, Repository } from 'typeorm';
 import { DiscountType } from 'src/promotion/dto/create-promotion.dto';
+import { StripeService } from '../payment/stripe.service';
 import { MomoService } from '../payment/momo.service';
 import { TransactionEntity } from '../database/entities/transaction.entity';
 import { CreateOrderDto, PaymentMethod } from './dto/create-order.dto';
@@ -27,6 +28,7 @@ export class OrderService {
         private dataSource: DataSource,
         @Inject('REDIS_CLIENT') private readonly redis: Redis,
         private readonly momo: MomoService,
+        private readonly stripe: StripeService,
     ) {}
 
     private async orderData(payload: OrderInput) {
@@ -225,9 +227,13 @@ export class OrderService {
 
     async createOrder(payload: CreateOrderDto, userId: string | null = null) {
         const data = await this.orderData(payload);
-        if (payload.paymentMethod === PaymentMethod.MOMO) {
-            this.momo.validateAmount(data.totalAmount);
-        }
+        const gateway =
+            payload.paymentMethod === PaymentMethod.MOMO
+                ? this.momo
+                : payload.paymentMethod === PaymentMethod.STRIPE
+                  ? this.stripe
+                  : null;
+        gateway?.validateAmount(data.totalAmount);
         const { order, payment } = await this.dataSource.transaction(async (manager) => {
             for (const item of data.stock) {
                 const result = await manager
@@ -278,10 +284,7 @@ export class OrderService {
                 OrderItemEntity,
                 data.orderItems.map((item) => ({ ...item, orderId: order.id })),
             );
-            const payment =
-                payload.paymentMethod === PaymentMethod.MOMO
-                    ? await this.momo.prepare(manager, order)
-                    : null;
+            const payment = gateway ? await gateway.prepare(manager, order) : null;
             return {
                 order: await manager.findOneOrFail(OrderEntity, {
                     where: { id: order.id },
@@ -290,7 +293,7 @@ export class OrderService {
                 payment,
             };
         });
-        return payment ? { ...order, ...(await this.momo.create(payment)) } : order;
+        return payment ? { ...order, ...(await gateway!.create(payment)) } : order;
     }
 
     async cancelOrder(orderId: string, userId: string) {
@@ -298,9 +301,13 @@ export class OrderService {
         if (!order) {
             throw new BadRequestException('Order not found');
         }
-        if (order.paymentMethod === PaymentMethod.MOMO) {
+        if (
+            [PaymentMethod.MOMO, PaymentMethod.STRIPE].includes(
+                order.paymentMethod as PaymentMethod,
+            )
+        ) {
             throw new BadRequestException(
-                'MoMo orders must be cancelled through the payment gateway',
+                'Online orders must be cancelled through the payment gateway',
             );
         }
         if (order.status !== 'PENDING') {
@@ -322,15 +329,20 @@ export class OrderService {
         if (!order) {
             throw new BadRequestException('Order not found');
         }
-        if (order.paymentMethod === PaymentMethod.MOMO && status !== 'PENDING') {
+        if (
+            [PaymentMethod.MOMO, PaymentMethod.STRIPE].includes(
+                order.paymentMethod as PaymentMethod,
+            ) &&
+            status !== 'PENDING'
+        ) {
             const payment = await this.dataSource.getRepository(TransactionEntity).findOneBy({
                 orderId,
-                provider: 'MOMO',
+                provider: order.paymentMethod!,
                 type: 'PAYMENT',
                 status: 'SUCCESS',
             });
             if (!payment || payment.rawResponse?.requiresReview) {
-                throw new BadRequestException('MoMo payment has not been confirmed');
+                throw new BadRequestException('Online payment has not been confirmed');
             }
         }
         if (order.status === status) {

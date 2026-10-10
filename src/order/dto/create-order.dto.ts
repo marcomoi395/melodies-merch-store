@@ -15,6 +15,7 @@ import {
 export enum PaymentMethod {
     COD = 'COD',
     MOMO = 'MOMO',
+    STRIPE = 'STRIPE',
 }
 
 class CustomerInfoDto {

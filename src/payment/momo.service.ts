@@ -340,7 +340,7 @@ export class MomoService implements OnModuleInit, OnModuleDestroy {
                 .update()
                 .set({ updatedAt: new Date() })
                 .where('id = :id AND status = :status', { id, status: 'PENDING' })
-                .andWhere("updated_at < NOW() - INTERVAL '5 seconds'")
+                .andWhere('updated_at < :queryBefore', { queryBefore: new Date(Date.now() - 5000) })
                 .execute();
             if (claim.affected) {
                 const { partnerCode, accessKey } = this.settings();
@@ -414,7 +414,9 @@ export class MomoService implements OnModuleInit, OnModuleDestroy {
                     provider: 'MOMO',
                     status: 'PENDING',
                 })
-                .andWhere("payment.created_at < NOW() - INTERVAL '1 minute'")
+                .andWhere('payment.created_at < :createdBefore', {
+                    createdBefore: new Date(Date.now() - 60000),
+                })
                 .orderBy('payment.updated_at', 'ASC')
                 .take(20)
                 .getMany();

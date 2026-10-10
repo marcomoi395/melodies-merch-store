@@ -11,3 +11,11 @@ Adoption tests also require `TEST_SHADOW_DATABASE_URL`: a separate disposable Po
 Each migration integration suite must use a unique database/schema identifier, apply migrations in that isolated target, and remove the target during teardown. A failed run must be cleaned up manually before reusing the identifier.
 
 `npm run test:database` requires `TEST_DATABASE_URL`. The application has one TypeORM connection path; test doubles must replace repositories or the DataSource at that boundary.
+
+Payment reconciliation regression (application in Vietnam, PostgreSQL in UTC):
+
+```sh
+TZ=Asia/Ho_Chi_Minh npm run test:database -- --runInBand payment-reconciliation.e2e-spec.ts
+```
+
+Set `TEST_DATABASE_URL` to a dedicated test database first, as described above. This check covers Stripe/MoMo status refresh and background reconciliation.

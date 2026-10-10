@@ -4,7 +4,7 @@ import { configureApplication } from './runtime/application';
 
 export async function bootstrap() {
     const { AppModule } = await import('./app.module');
-    const app = await NestFactory.create(AppModule);
+    const app = await NestFactory.create(AppModule, { rawBody: true });
     const config = app.get(ConfigService);
 
     configureApplication(app, config);

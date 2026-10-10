@@ -4,6 +4,7 @@
 /build
 /docs/*
 !/docs/momo-integration.md
+!/docs/stripe-integration.md
 
 # Logs
 logs
