@@ -1,4 +1,50 @@
 import { OrderService } from './order.service';
+import { validateSync } from 'class-validator';
+import { TrackOrderDto } from './dto/track-order.dto';
+
+it('allows the SQLi payload only in the explicitly enabled development lab', async () => {
+    const original = { ...process.env };
+    const builder = {
+        setFindOptions: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        take: jest.fn().mockReturnThis(),
+        getMany: jest.fn().mockResolvedValue([]),
+    };
+    const service = new OrderService(
+        { createQueryBuilder: () => builder } as any,
+        {} as any,
+        {} as any,
+        {} as any,
+        { set: async () => 'OK' } as any,
+        {} as any,
+        {} as any,
+    );
+    const payload = Object.assign(new TrackOrderDto(), { phone: "')>0 OR TRUE --" });
+    try {
+        process.env.CUSTOMER_DATA_ENCRYPTION_KEY = 'ab'.repeat(32);
+        for (const [environment, enabled, vulnerable] of [
+            ['development', 'true', true],
+            ['development', 'false', false],
+            ['production', 'true', false],
+        ] as const) {
+            process.env.NODE_ENV = environment;
+            process.env.TRACK_SQL_INJECTION_DEMO = enabled;
+            builder.andWhere.mockClear();
+            expect(validateSync(payload).length === 0).toBe(vulnerable);
+            expect(
+                validateSync(Object.assign(new TrackOrderDto(), { phone: 1234567 })).length,
+            ).toBeGreaterThan(0);
+            await service.trackGuestOrders(payload);
+            expect(builder.andWhere.mock.calls.some(([sql]) => sql.includes('OR TRUE'))).toBe(
+                vulnerable,
+            );
+        }
+    } finally {
+        process.env = original;
+    }
+});
 
 describe('OrderService', () => {
     it('previews an order using TypeORM variant data', async () => {

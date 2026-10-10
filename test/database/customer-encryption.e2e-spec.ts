@@ -95,6 +95,20 @@ describeDatabase('customer encryption PostgreSQL', () => {
         expect((await repository.findOneByOrFail({ id: created.id })).shippingAddress).toEqual({
             street: 'Private street',
         });
+        const environment = { ...process.env };
+        try {
+            process.env.NODE_ENV = 'development';
+            process.env.TRACK_SQL_INJECTION_DEMO = 'true';
+            expect(await service.trackGuestOrders({ phone: '0900000000' })).toEqual([]);
+            const injected = await service.trackGuestOrders({ phone: "')>0 OR TRUE --" });
+            expect(injected.map((order) => order.id)).toEqual(
+                expect.arrayContaining([id, created.id]),
+            );
+            process.env.TRACK_SQL_INJECTION_DEMO = 'false';
+            expect(await service.trackGuestOrders({ phone: "')>0 OR TRUE --" })).toEqual([]);
+        } finally {
+            process.env = environment;
+        }
         expect(
             (
                 await source.query('SELECT email, email_lookup FROM orders WHERE id = $1', [

@@ -12,7 +12,7 @@ import { TransactionEntity } from '../database/entities/transaction.entity';
 import { CreateOrderDto, PaymentMethod } from './dto/create-order.dto';
 import { GetOrdersDto } from './dto/get-order.dto';
 import { PreviewOrderDto } from './dto/preview.dto';
-import { TrackOrderDto } from './dto/track-order.dto';
+import { TrackOrderDto, trackSqlInjectionDemoEnabled } from './dto/track-order.dto';
 import Redis from 'ioredis';
 import { createHash } from 'node:crypto';
 import { customerLookup } from '../database/customer-encryption';
@@ -181,21 +181,16 @@ export class OrderService {
                         ? customerLookup('email', payload.email)
                         : customerLookup('phone', payload.phone ?? ''),
                 },
-            )
+            );
+        if (payload.phone && trackSqlInjectionDemoEnabled()) {
+            // ponytail: local SQLi lab only; remove this raw condition to restore parameterized tracking.
+            query.andWhere(`length('${payload.phone}') > 0\n`);
+        }
+        query
+            .setFindOptions({ relations: { orderItems: true }, relationLoadStrategy: 'query' })
             .orderBy('order.createdAt', 'DESC')
             .take(20);
-        const orders = await query.getMany();
-        return orders.map((order) => ({
-            id: order.id,
-            createdAt: order.createdAt,
-            status: order.status,
-            trackingCode: order.trackingCode,
-            paymentMethod: order.paymentMethod,
-            subtotal: Number(order.subtotal),
-            shippingFee: Number(order.shippingFee),
-            discountAmount: Number(order.discountAmount ?? 0),
-            totalAmount: Number(order.totalAmount),
-        }));
+        return query.getMany();
     }
 
     private normalizePhone(phone: string): string {

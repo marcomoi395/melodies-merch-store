@@ -74,7 +74,7 @@ describe('OrderPublicController', () => {
         });
     });
 
-    it('returns only the tracking projection for a guest lookup', async () => {
+    it('returns customer and order details for a guest lookup', async () => {
         mockOrderService.trackGuestOrders.mockResolvedValue([
             {
                 id: 'order_123',
@@ -86,7 +86,24 @@ describe('OrderPublicController', () => {
                 shippingFee: 0,
                 discountAmount: 0,
                 totalAmount: 100,
-                email: 'private@example.com',
+                email: 'guest@example.com',
+                fullName: 'Guest Customer',
+                phone: '0901234567',
+                shippingAddress: '123 Test Street',
+                note: 'Call before delivery',
+                currency: 'VND',
+                userId: 'internal-user-id',
+                orderItems: [
+                    {
+                        id: 'item-1',
+                        productName: 'Vinyl',
+                        variantName: 'Black',
+                        quantity: 2,
+                        price: '50',
+                        totalLinePrice: '100',
+                        orderId: 'order_123',
+                    },
+                ],
             },
         ]);
 
@@ -96,7 +113,17 @@ describe('OrderPublicController', () => {
         expect(result.data[0]).toEqual(
             expect.objectContaining({ id: 'order_123', totalAmount: 100 }),
         );
-        expect(result.data[0]).not.toHaveProperty('email');
+        expect(result.data[0]).toMatchObject({
+            email: 'guest@example.com',
+            fullName: 'Guest Customer',
+            phone: '0901234567',
+            shippingAddress: '123 Test Street',
+            note: 'Call before delivery',
+            currency: 'VND',
+            orderItems: [{ productName: 'Vinyl', quantity: 2, price: 50, totalLinePrice: 100 }],
+        });
+        expect(result.data[0]).not.toHaveProperty('userId');
+        expect(result.data[0].orderItems[0]).not.toHaveProperty('orderId');
     });
 
     describe('createOrder', () => {

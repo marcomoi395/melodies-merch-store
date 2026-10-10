@@ -1,35 +1,13 @@
 import { Expose } from 'class-transformer';
-import { DecimalToNumber } from 'src/products/dto/product-response.dto';
+import { OrderResponseDto } from './order-response.dto';
 
-export class TrackedOrderResponseDto {
-    @Expose()
-    id: string;
-
-    @Expose()
-    createdAt: Date;
-
-    @Expose()
-    status: string;
-
+export class TrackedOrderResponseDto extends OrderResponseDto {
     @Expose()
     trackingCode: string | null;
 
     @Expose()
-    paymentMethod: string;
+    currency: string;
 
     @Expose()
-    @DecimalToNumber()
-    subtotal: number;
-
-    @Expose()
-    @DecimalToNumber()
-    shippingFee: number;
-
-    @Expose()
-    @DecimalToNumber()
-    discountAmount: number;
-
-    @Expose()
-    @DecimalToNumber()
-    totalAmount: number;
+    updatedAt: Date;
 }
